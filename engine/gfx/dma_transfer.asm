@@ -329,69 +329,100 @@ HDMATransfer_NoDI:
 	ret
 
 HDMATransfer_Wait123Scanlines:
-	ld b, $7b
-	jr _continue_HDMATransfer
+;	ld b, $7b
+;	jr _continue_HDMATransfer
 
 HDMATransfer_Wait127Scanlines:
-	ld b, $7f
-_continue_HDMATransfer:
+;	ld b, $7f
+; _continue_HDMATransfer:
 ; a lot of waiting around for hardware registers
-	; [rHDMA1, rHDMA2] = hl & $fff0
-	ld a, h
-	ldh [rHDMA1], a
-	ld a, l
-	and $f0 ; high nybble
-	ldh [rHDMA2], a
-	; [rHDMA3, rHDMA4] = de & $1ff0
-	ld a, d
-	and $1f ; lower 5 bits
-	ldh [rHDMA3], a
-	ld a, e
-	and $f0 ; high nybble
-	ldh [rHDMA4], a
-	; e = c | %10000000
+; 	; [rHDMA1, rHDMA2] = hl & $fff0
+; 	ld a, h
+; 	ldh [rHDMA1], a
+; 	ld a, l
+; 	and $f0 ; high nybble
+; 	ldh [rHDMA2], a
+; 	; [rHDMA3, rHDMA4] = de & $1ff0
+; 	ld a, d
+; 	and $1f ; lower 5 bits
+; 	ldh [rHDMA3], a
+; 	ld a, e
+; 	and $f0 ; high nybble
+; 	ldh [rHDMA4], a
+; 	; e = c | %10000000
+; 	ld a, c
+; 	dec c
+; 	or $80
+; 	ld e, a
+; 	; d = b - c + 1
+; 	ld a, b
+; 	sub c
+; 	ld d, a
+; 	; while [rLY] >= d: pass
+; .ly_loop
+; 	ldh a, [rLY]
+; 	cp d
+; 	jr nc, .ly_loop
+
+; 	di
+; 	; while [rSTAT] & 3: pass
+; .rstat_loop_1
+; 	ldh a, [rSTAT]
+; 	and $3
+; 	jr nz, .rstat_loop_1
+; 	; while not [rSTAT] & 3: pass
+; .rstat_loop_2
+; 	ldh a, [rSTAT]
+; 	and $3
+; 	jr z, .rstat_loop_2
+; 	; load the 5th byte of HDMA
+; 	ld a, e
+; 	ldh [rHDMA5], a
+; 	; wait until rLY advances (c + 1) times
+; 	ldh a, [rLY]
+; 	inc c
+; 	ld hl, rLY
+; .final_ly_loop
+; 	cp [hl]
+; 	jr z, .final_ly_loop
+; 	ld a, [hl]
+; 	dec c
+; 	jr nz, .final_ly_loop
+; 	ld hl, rHDMA5
+; 	res 7, [hl]
+; 	ei
+
+; 	ret
+
+LegacyTransfer:
+	swap c
 	ld a, c
-	dec c
-	or $80
-	ld e, a
-	; d = b - c + 1
-	ld a, b
-	sub c
-	ld d, a
-	; while [rLY] >= d: pass
-.ly_loop
-	ldh a, [rLY]
-	cp d
-	jr nc, .ly_loop
-
-	di
-	; while [rSTAT] & 3: pass
-.rstat_loop_1
-	ldh a, [rSTAT]
-	and $3
-	jr nz, .rstat_loop_1
-	; while not [rSTAT] & 3: pass
-.rstat_loop_2
-	ldh a, [rSTAT]
-	and $3
-	jr z, .rstat_loop_2
-	; load the 5th byte of HDMA
-	ld a, e
-	ldh [rHDMA5], a
-	; wait until rLY advances (c + 1) times
-	ldh a, [rLY]
+	and a, $0F
+	ld b, a
+	ld a, c
+	and $F0
+	ld c, a
+	inc b
 	inc c
-	ld hl, rLY
-.final_ly_loop
-	cp [hl]
-	jr z, .final_ly_loop
-	ld a, [hl]
-	dec c
-	jr nz, .final_ly_loop
-	ld hl, rHDMA5
-	res 7, [hl]
+	jr .entry
+.wait1
+	ldh a, [rLY]
+	cp a, LY_VBLANK - 4
+	jr nc, .wait1
+	di
+.wait2
+	ldh a, [rSTAT]
+	and a, 2
+	jr nz, .wait2
+	ld a, [hli]
+	ld [de], a
 	ei
-
+	inc de
+.entry
+	dec c
+	jr nz, .wait1
+	dec b
+	jr nz, .wait1
 	ret
 
 _LoadHDMAParameters:
