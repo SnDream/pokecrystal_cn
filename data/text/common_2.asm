@@ -100,6 +100,7 @@ Text_Gained::
 	text_end
 
 _BoostedExpPointsText::
+; BUG: Five-digit experience gain is printed incorrectly (see docs/bugs_and_glitches.md)
 	text_start
 	line "a boosted"
 	cont "@"
@@ -108,37 +109,38 @@ _BoostedExpPointsText::
 	prompt
 
 _ExpPointsText::
+; BUG: Five-digit experience gain is printed incorrectly (see docs/bugs_and_glitches.md)
 	text_start
 	line "@"
 	text_decimal wStringBuffer2, 2, 4
 	text " EXP. Points!"
 	prompt
 
-Text_GoMon::
+_GoMonText::
 	text "Go! @"
 	text_end
 
-Text_DoItMon::
+_DoItMonText::
 	text "Do it! @"
 	text_end
 
-Text_GoForItMon::
+_GoForItMonText::
 	text "Go for it,"
 	line "@"
 	text_end
 
-Text_YourFoesWeakGetmMon::
+_YourFoesWeakGetmMonText::
 	text "Your foe's weak!"
 	line "Get'm, @"
 	text_end
 
 _BattleMonNicknameText::
-	text_ram wBattleMonNick
+	text_ram wBattleMonNickname
 	text "!"
 	done
 
-Text_BattleMonNickComma::
-	text_ram wBattleMonNick
+_BattleMonNickCommaText::
+	text_ram wBattleMonNickname
 	text ",@"
 	text_end
 
@@ -260,32 +262,32 @@ _MysteryGiftSentHomeText::
 	text "'s home."
 	prompt
 
-_MysteryGiftReceivedCardText::
+_NameCardReceivedCardText::
 	text "Received"
 	line "@"
-	text_ram wc850
+	text_ram wMysteryGiftCardHolderName
 	text "'s CARD."
 	prompt
 
-_MysteryGiftListedCardText::
-	text_ram wc850
+_NameCardListedCardText::
+	text_ram wMysteryGiftCardHolderName
 	text "'s CARD was"
 	line "listed as no.@"
-	text_decimal wDeciramBuffer, 1, 2
+	text_decimal wTextDecimalByte, 1, 2
 	text "."
 	prompt
 
-_MysteryGiftNotRegisteredCardText::
+_NameCardNotRegisteredCardText::
 	text "The CARD was not"
 	line "registered."
 	prompt
 
-_MysteryGiftLinkCancelledText::
+_NameCardLinkCancelledText::
 	text "The link has been"
 	line "cancelled."
 	prompt
 
-_MysteryGiftLinkCommErrorText::
+_NameCardLinkCommErrorText::
 	text "Communication"
 	line "error."
 	prompt
@@ -487,7 +489,6 @@ _RodNothingText::
 	text "Not even a nibble!"
 	prompt
 
-; unreferenced
 _UnusedNothingHereText::
 	text "Looks like there's"
 	line "nothing here."
@@ -610,7 +611,7 @@ _AskThrowAwayText::
 
 _AskQuantityThrowAwayText::
 	text "Throw away @"
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text_start
 	line "@"
 	text_ram wStringBuffer2
@@ -808,7 +809,7 @@ _BreedAskNicknameText::
 
 _LeftWithDayCareLadyText::
 	text "It's @"
-	text_ram wBreedMon2Nick
+	text_ram wBreedMon2Nickname
 	text_start
 	line "that was left with"
 	cont "the DAY-CARE LADY."
@@ -816,7 +817,7 @@ _LeftWithDayCareLadyText::
 
 _LeftWithDayCareManText::
 	text "It's @"
-	text_ram wBreedMon1Nick
+	text_ram wBreedMon1Nickname
 	text_start
 	line "that was left with"
 	cont "the DAY-CARE MAN."
@@ -1111,7 +1112,7 @@ _PlayersPCHowManyWithdrawText::
 
 _PlayersPCWithdrewItemsText::
 	text "Withdrew @"
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text_start
 	line "@"
 	text_ram wStringBuffer2
@@ -1134,7 +1135,7 @@ _PlayersPCHowManyDepositText::
 
 _PlayersPCDepositItemsText::
 	text "Deposited @"
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text_start
 	line "@"
 	text_ram wStringBuffer2
@@ -1369,11 +1370,11 @@ _TrainerRankingNoDataText:: ; unreferenced
 	para ""
 	done
 
-_DummyGameYeahText::
+_MemoryGameYeahText::
 	text " , yeah!"
 	done
 
-_DummyGameDarnText::
+_MemoryGameDarnText::
 	text "Darn…"
 	done
 
@@ -1391,7 +1392,7 @@ _ItemsTossOutHowManyText::
 
 _ItemsThrowAwayText::
 	text "Throw away @"
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text_start
 	line "@"
 	text_ram wStringBuffer2

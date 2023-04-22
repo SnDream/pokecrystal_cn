@@ -19,7 +19,7 @@ DMATransfer::
 
 UpdateBGMapBuffer::
 ; Copy [hBGMapTileCount] 16x8 tiles from wBGMapBuffer
-; to bg map addresses in wBGMapBufferPtrs.
+; to bg map addresses in wBGMapBufferPointers.
 
 ; [hBGMapTileCount] must be even since this is done in pairs.
 
@@ -32,9 +32,9 @@ UpdateBGMapBuffer::
 	ldh a, [rVBK]
 	push af
 
-; Relocate the stack pointer to wBGMapBufferPtrs
+; Relocate the stack pointer to wBGMapBufferPointers
 	ld [hSPBuffer], sp
-	ld hl, wBGMapBufferPtrs
+	ld hl, wBGMapBufferPointers
 	ld sp, hl
 
 ; We can now pop the addresses of affected spots on the BG Map
@@ -185,9 +185,9 @@ UpdateBGMap::
 ; 	jr z, .middle
 ; 	; 2
 
-; THIRD_HEIGHT EQU SCREEN_HEIGHT / 3
+; DEF THIRD_HEIGHT EQU SCREEN_HEIGHT / 3
 
-; .bottom
+; ; bottom
 ; 	ld de, 2 * THIRD_HEIGHT * SCREEN_WIDTH
 ; 	add hl, de
 ; 	ld sp, hl
@@ -270,7 +270,7 @@ UpdateBGMap::
 Serve1bppRequest::
 ; Only call during the first fifth of VBlank
 
-	ld a, [wRequested1bpp]
+	ld a, [wRequested1bppSize]
 	and a
 	ret z
 
@@ -281,7 +281,7 @@ Serve1bppRequest::
 	cp LY_VBLANK + 3
 	ret nc
 
-; Copy [wRequested1bpp] 1bpp tiles from [wRequested1bppSource] to [wRequested1bppDest]
+; Copy [wRequested1bppSize] 1bpp tiles from [wRequested1bppSource] to [wRequested1bppDest]
 
 	ld [hSPBuffer], sp
 
@@ -299,11 +299,11 @@ Serve1bppRequest::
 	ld l, a
 
 ; # tiles to copy
-	ld a, [wRequested1bpp]
+	ld a, [wRequested1bppSize]
 	ld b, a
 
 	xor a
-	ld [wRequested1bpp], a
+	ld [wRequested1bppSize], a
 
 .next
 
@@ -348,7 +348,7 @@ endr
 Serve2bppRequest::
 ; Only call during the first fifth of VBlank
 
-	ld a, [wRequested2bpp]
+	ld a, [wRequested2bppSize]
 	and a
 	ret z
 
@@ -361,12 +361,12 @@ Serve2bppRequest::
 	jr _Serve2bppRequest
 
 Serve2bppRequest_VBlank::
-	ld a, [wRequested2bpp]
+	ld a, [wRequested2bppSize]
 	and a
 	ret z
 
 _Serve2bppRequest::
-; Copy [wRequested2bpp] 2bpp tiles from [wRequested2bppSource] to [wRequested2bppDest]
+; Copy [wRequested2bppSize] 2bpp tiles from [wRequested2bppSource] to [wRequested2bppDest]
 
 	ld [hSPBuffer], sp
 
@@ -384,11 +384,11 @@ _Serve2bppRequest::
 	ld l, a
 
 ; # tiles to copy
-	ld a, [wRequested2bpp]
+	ld a, [wRequested2bppSize]
 	ld b, a
 
 	xor a
-	ld [wRequested2bpp], a
+	ld [wRequested2bppSize], a
 
 .next
 

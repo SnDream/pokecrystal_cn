@@ -1,6 +1,4 @@
 BattleCommand_Counter:
-; counter
-
 	ld a, 1
 	ld [wAttackMissed], a
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
@@ -36,7 +34,7 @@ BattleCommand_Counter:
 	cp SPECIAL
 	ret nc
 
-	; BUG: Move should fail with all non-damaging battle actions
+; BUG: Counter and Mirror Coat still work if the opponent uses an item (see docs/bugs_and_glitches.md)
 	ld hl, wCurDamage
 	ld a, [hli]
 	or [hl]

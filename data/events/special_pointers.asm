@@ -1,7 +1,7 @@
 ; Special routines can be used with the "special" map script command.
 ; They often use wScriptVar for arguments and return values.
 
-add_special: MACRO
+MACRO add_special
 \1Special::
 	dba \1
 ENDM
@@ -55,8 +55,8 @@ SpecialsPointers::
 	add_special UnownPuzzle
 	add_special SlotMachine
 	add_special CardFlip
-	add_special DummyNonfunctionalGameCornerGame
-	add_special ClearBGPalettesBufferScreen
+	add_special UnusedMemoryGame ; unused
+	add_special ClearBGPalettesBufferScreen ; unused
 	add_special FadeOutPalettes
 	add_special BattleTowerFade
 	add_special FadeBlackQuickly
@@ -65,21 +65,21 @@ SpecialsPointers::
 	add_special ReloadSpritesNoPalettes ; bank 0
 	add_special ClearBGPalettes ; bank 0
 	add_special UpdateTimePals ; bank 0
-	add_special ClearTilemap ; bank 0
+	add_special ClearTilemap ; bank 0; unused as special
 	add_special UpdateSprites ; bank 0
 	add_special UpdatePlayerSprite ; bank 0
 	add_special GameCornerPrizeMonCheckDex
-	add_special UnusedSetSeenMon
+	add_special UnusedSetSeenMon ; unused
 	add_special WaitSFX ; bank 0
 	add_special PlayMapMusic ; bank 0
 	add_special RestartMapMusic ; bank 0
 	add_special HealMachineAnim
 	add_special SurfStartStep
-	add_special FindPartyMonAboveLevel
-	add_special FindPartyMonAtLeastThatHappy
+	add_special FindPartyMonAboveLevel ; unused
+	add_special FindPartyMonAtLeastThatHappy ; unused
 	add_special FindPartyMonThatSpecies
 	add_special FindPartyMonThatSpeciesYourTrainerID
-	add_special UnusedCheckUnusedTwoDayTimer
+	add_special UnusedCheckUnusedTwoDayTimer ; unused
 	add_special DayCareMon1
 	add_special DayCareMon2
 	add_special SelectRandomBugContestContestants
@@ -87,7 +87,7 @@ SpecialsPointers::
 	add_special ToggleMaptileDecorations
 	add_special ToggleDecorationsVisibility
 	add_special GiveShuckle
-	add_special ReturnShuckle
+	add_special ReturnShuckie
 	add_special BillsGrandfather
 	add_special CheckPokerus
 	add_special DisplayCoinCaseBalance
@@ -123,7 +123,7 @@ SpecialsPointers::
 
 ; Crystal only
 	add_special Function11ac3e
-	add_special Function11b444
+	add_special TradeCornerHoldMon
 	add_special Function11b5e8
 	add_special Function11b7e5
 	add_special Function11b879
@@ -134,7 +134,7 @@ SpecialsPointers::
 	add_special Function170114
 	add_special BattleTowerBattle
 	add_special Function1704e1
-	add_special DummySpecial_17021d
+	add_special UnusedBattleTowerDummySpecial1
 	add_special LoadOpponentTrainerAndPokemonWithOTSprite
 	add_special Function11ba38
 	add_special CheckForBattleTowerRules
@@ -166,7 +166,7 @@ SpecialsPointers::
 	add_special BeastsCheck
 	add_special MonCheck
 	add_special SetPlayerPalette
-	add_special DummySpecial_170bd2
+	add_special UnusedBattleTowerDummySpecial2
 	add_special Mobile_SelectThreeMons
 	add_special Function1037eb
 	add_special Function10383c
@@ -179,8 +179,9 @@ SpecialsPointers::
 	add_special AskRememberPassword
 	add_special LoadMapPalettes
 	add_special UnusedFindItemInPCOrBag
+
 	add_special InitialSetDSTFlag
 	add_special InitialClearDSTFlag
-	add_special DummySpecial_c224
+	add_special UnusedDummySpecial ; unused
 
 	add_special SetGSBallEvent

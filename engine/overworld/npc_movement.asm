@@ -4,10 +4,10 @@ CanObjectMoveInDirection:
 	bit SWIMMING_F, [hl]
 	jr z, .not_swimming
 
+; BUG: Swimming NPCs aren't limited by their movement radius (see docs/bugs_and_glitches.md)
 	ld hl, OBJECT_FLAGS1
 	add hl, bc
-	bit NOCLIP_TILES_F, [hl] ; lost, uncomment next line to fix
-	; jr nz, .noclip_tiles
+	bit NOCLIP_TILES_F, [hl]
 	push hl
 	push bc
 	call WillObjectBumpIntoLand
@@ -60,17 +60,17 @@ CanObjectMoveInDirection:
 WillObjectBumpIntoWater:
 	call CanObjectLeaveTile
 	ret c
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld d, [hl]
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld e, [hl]
 	ld hl, OBJECT_PALETTE
 	add hl, bc
 	bit OAM_PRIORITY, [hl]
 	jp nz, WillObjectRemainOnWater
-	ld hl, OBJECT_NEXT_TILE
+	ld hl, OBJECT_TILE
 	add hl, bc
 	ld a, [hl]
 	ld d, a
@@ -83,7 +83,7 @@ WillObjectBumpIntoWater:
 WillObjectBumpIntoLand:
 	call CanObjectLeaveTile
 	ret c
-	ld hl, OBJECT_NEXT_TILE
+	ld hl, OBJECT_TILE
 	add hl, bc
 	ld a, [hl]
 	call GetTileCollision
@@ -93,13 +93,13 @@ WillObjectBumpIntoLand:
 	ret
 
 WillObjectBumpIntoTile:
-	ld hl, OBJECT_NEXT_TILE
+	ld hl, OBJECT_TILE
 	add hl, bc
 	ld a, [hl]
 	call GetSideWallDirectionMask
 	ret nc
 	push af
-	ld hl, OBJECT_DIRECTION_WALKING
+	ld hl, OBJECT_WALKING
 	add hl, bc
 	ld a, [hl]
 	maskbits NUM_DIRECTIONS
@@ -120,13 +120,13 @@ WillObjectBumpIntoTile:
 	db LEFT_MASK  ; RIGHT
 
 CanObjectLeaveTile:
-	ld hl, OBJECT_STANDING_TILE
+	ld hl, OBJECT_LAST_TILE
 	add hl, bc
 	ld a, [hl]
 	call GetSideWallDirectionMask
 	ret nc
 	push af
-	ld hl, OBJECT_DIRECTION_WALKING
+	ld hl, OBJECT_WALKING
 	add hl, bc
 	maskbits NUM_DIRECTIONS
 	ld e, a
@@ -177,7 +177,7 @@ GetSideWallDirectionMask:
 	db DOWN_MASK | LEFT_MASK  ; COLL_UP_LEFT_WALL/BUOY
 
 WillObjectRemainOnWater:
-	ld hl, OBJECT_DIRECTION_WALKING
+	ld hl, OBJECT_WALKING
 	add hl, bc
 	ld a, [hl]
 	maskbits NUM_DIRECTIONS
@@ -233,14 +233,14 @@ CheckFacingObject::
 	call CheckCounterTile
 	jr nz, .not_counter
 
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	sub d
 	cpl
 	inc a
 	add d
 	ld d, a
 
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	sub e
 	cpl
 	inc a
@@ -250,10 +250,10 @@ CheckFacingObject::
 .not_counter
 	ld bc, wObjectStructs ; redundant
 	ld a, 0
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	call IsNPCAtCoord
 	ret nc
-	ld hl, OBJECT_DIRECTION_WALKING
+	ld hl, OBJECT_WALKING
 	add hl, bc
 	ld a, [hl]
 	cp STANDING
@@ -266,26 +266,26 @@ CheckFacingObject::
 	ret
 
 WillObjectBumpIntoSomeoneElse:
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld d, [hl]
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld e, [hl]
 	jr IsNPCAtCoord
 
 IsObjectFacingSomeoneElse: ; unreferenced
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	call GetObjectStruct
 	call .GetFacingCoords
 	call IsNPCAtCoord
 	ret
 
 .GetFacingCoords:
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld d, [hl]
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld e, [hl]
 	call GetSpriteDirection
@@ -315,7 +315,7 @@ IsNPCAtCoord:
 	ld bc, wObjectStructs
 	xor a
 .loop
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	call DoesObjectHaveASprite
 	jr z, .next
 
@@ -333,38 +333,38 @@ IsNPCAtCoord:
 	jr .continue
 
 .not_big
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld a, [hl]
 	cp d
 	jr nz, .check_current_coords
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld a, [hl]
 	cp e
 	jr nz, .check_current_coords
 
 .continue
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld l, a
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	cp l
 	jr nz, .yes
 
 .check_current_coords
-	ld hl, OBJECT_MAP_X
+	ld hl, OBJECT_LAST_MAP_X
 	add hl, bc
 	ld a, [hl]
 	cp d
 	jr nz, .next
-	ld hl, OBJECT_MAP_Y
+	ld hl, OBJECT_LAST_MAP_Y
 	add hl, bc
 	ld a, [hl]
 	cp e
 	jr nz, .next
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld l, a
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	cp l
 	jr nz, .yes
 
@@ -373,7 +373,7 @@ IsNPCAtCoord:
 	add hl, bc
 	ld b, h
 	ld c, l
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	inc a
 	cp NUM_OBJECT_STRUCTS
 	jr nz, .loop
@@ -402,7 +402,7 @@ HasObjectReachedMovementLimit:
 	ld a, [hl]
 	add e
 	ld e, a
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld a, [hl]
 	cp d
@@ -427,7 +427,7 @@ HasObjectReachedMovementLimit:
 	ld a, [hl]
 	add e
 	ld e, a
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld a, [hl]
 	cp d
@@ -444,7 +444,7 @@ HasObjectReachedMovementLimit:
 	ret
 
 IsObjectMovingOffEdgeOfScreen:
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld a, [wXCoord]
 	cp [hl]
@@ -455,7 +455,7 @@ IsObjectMovingOffEdgeOfScreen:
 	jr c, .yes
 
 .check_y
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld a, [wYCoord]
 	cp [hl]
@@ -474,18 +474,18 @@ IsObjectMovingOffEdgeOfScreen:
 	ret
 
 IsNPCAtPlayerCoord: ; unreferenced
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	ld e, a
 	ld bc, wObjectStructs
 	xor a
 .loop
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	call DoesObjectHaveASprite
 	jr z, .next
 
-	ld hl, OBJECT_MOVEMENTTYPE
+	ld hl, OBJECT_MOVEMENT_TYPE
 	add hl, bc
 	ld a, [hl]
 	cp SPRITEMOVEDATA_BIGDOLLSYM
@@ -495,28 +495,28 @@ IsNPCAtPlayerCoord: ; unreferenced
 	jr .next
 
 .not_big
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld a, [hl]
 	cp e
 	jr nz, .check_current_coords
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld a, [hl]
 	cp d
 	jr nz, .check_current_coords
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	cp PLAYER_OBJECT
 	jr z, .next
 	jr .yes
 
 .check_current_coords
-	ld hl, OBJECT_MAP_Y
+	ld hl, OBJECT_LAST_MAP_Y
 	add hl, bc
 	ld a, [hl]
 	cp e
 	jr nz, .next
-	ld hl, OBJECT_MAP_X
+	ld hl, OBJECT_LAST_MAP_X
 	add hl, bc
 	ld a, [hl]
 	cp d
@@ -528,7 +528,7 @@ IsNPCAtPlayerCoord: ; unreferenced
 	add hl, bc
 	ld b, h
 	ld c, l
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	inc a
 	cp NUM_OBJECT_STRUCTS
 	jr nz, .loop
@@ -540,14 +540,14 @@ IsNPCAtPlayerCoord: ; unreferenced
 	ret
 
 WillObjectIntersectBigObject:
-	ld hl, OBJECT_NEXT_MAP_X
+	ld hl, OBJECT_MAP_X
 	add hl, bc
 	ld a, d
 	sub [hl]
 	jr c, .nope
 	cp 2 ; big doll width
 	jr nc, .nope
-	ld hl, OBJECT_NEXT_MAP_Y
+	ld hl, OBJECT_MAP_Y
 	add hl, bc
 	ld a, e
 	sub [hl]

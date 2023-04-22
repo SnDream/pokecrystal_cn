@@ -1,5 +1,6 @@
 TrainerClassDVs:
 ; entries correspond to trainer classes (see constants/trainer_constants.asm)
+	table_width 2, TrainerClassDVs
 	;  atk,def,spd,spc
 	dn  9, 10,  7,  7 ; FALKNER
 	dn  8,  8,  8,  8 ; WHITNEY
@@ -42,6 +43,7 @@ TrainerClassDVs:
 	dn  7,  8,  8,  8 ; SWIMMERF
 	dn  9,  8,  8,  8 ; SAILOR
 	dn  9,  8,  8,  8 ; SUPER_NERD
+; BUG: RIVAL2 has lower DVs than RIVAL1 (see docs/bugs_and_glitches.md)
 	dn  9,  8,  8,  8 ; RIVAL2
 	dn  9,  8,  8,  8 ; GUITARIST
 	dn 10,  8,  8,  8 ; HIKER
@@ -68,3 +70,4 @@ TrainerClassDVs:
 	dn  9,  8,  8,  8 ; OFFICER
 	dn  7, 14, 10,  8 ; GRUNTF
 	dn  9,  8,  8,  8 ; MYSTICALMAN
+	assert_table_length NUM_TRAINER_CLASSES

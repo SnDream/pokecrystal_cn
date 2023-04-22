@@ -21,7 +21,7 @@ CrystalIntro:
 	call DelayFrame
 	jp .loop
 
-.ShutOffMusic:
+.ShutOffMusic
 	ld de, MUSIC_NONE
 	call PlayMusic
 
@@ -39,9 +39,9 @@ CrystalIntro:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	pop af
 	ldh [hVBlank], a
@@ -146,9 +146,9 @@ IntroScene1:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -166,14 +166,14 @@ IntroScene2:
 	cp $80
 	jr nc, .endscene
 	cp $60
-	jr nz, .DontPlaySound
+	jr nz, .nosound
 	push af
 	depixel 11, 11
 	call CrystalIntro_InitUnownAnim
 	ld de, SFX_INTRO_UNOWN_1
 	call PlaySFX
 	pop af
-.DontPlaySound:
+.nosound
 	ld [wIntroSceneTimer], a
 	xor a
 	call CrystalIntro_UnownFade
@@ -219,9 +219,9 @@ IntroScene3:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	call Intro_ResetLYOverrides
 	call Intro_SetCGBPalUpdate
@@ -285,9 +285,9 @@ IntroScene5:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -395,9 +395,9 @@ IntroScene7:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	call Intro_ResetLYOverrides
 	farcall ClearSpriteAnims
@@ -550,9 +550,9 @@ IntroScene11:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -676,9 +676,9 @@ IntroScene13:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	depixel 13, 11, 4, 0
@@ -707,30 +707,30 @@ IntroScene14:
 	jr z, .done
 	cp $60
 	jr z, .jump
-	jr nc, .asm_e4e1a
+	jr nc, .run_after_jump
 	cp $40
-	jr nc, .asm_e4e33
+	jr nc, .run
 	ret
 
 .jump
 	ld de, SFX_INTRO_SUICUNE_4
 	call PlaySFX
 
-.asm_e4e1a
+.run_after_jump
 	ld a, $1
 	ld [wIntroSceneTimer], a
 	ld a, [wGlobalAnimXOffset]
 	cp $88
-	jr c, .asm_e4e2c
+	jr c, .disappear
 	sub $8
 	ld [wGlobalAnimXOffset], a
 	ret
 
-.asm_e4e2c
+.disappear
 	farcall DeinitializeAllSprites
 	ret
 
-.asm_e4e33
+.run
 	ld a, [wGlobalAnimXOffset]
 	sub $2
 	ld [wGlobalAnimXOffset], a
@@ -784,11 +784,11 @@ IntroScene15:
 	ldh [rSVBK], a
 	xor a
 	ldh [hSCX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -859,9 +859,9 @@ IntroScene17:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -932,15 +932,15 @@ IntroScene19:
 	ldh [rSVBK], a
 	xor a
 	ldh [hSCX], a
-	ld a, $d8
+	ld a, -5 * TILE_WIDTH
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	ld hl, wSpriteAnimDict
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld [hli], a
 	ld [hl], $7f
 	call Intro_SetCGBPalUpdate
@@ -985,7 +985,8 @@ IntroScene20:
 	xor a
 	call Intro_Scene20_AppearUnown
 	ret
-; unused
+
+.AppearUnownPal2: ; unreferenced
 	ld a, c
 	and $1c
 	srl a
@@ -995,7 +996,7 @@ IntroScene20:
 	call Intro_Scene20_AppearUnown
 	ret
 
-.finished
+.finished:
 	call NextIntroScene
 	ret
 
@@ -1102,9 +1103,9 @@ IntroScene26:
 	xor a
 	ldh [hSCX], a
 	ldh [hSCY], a
-	ld a, $7
+	ld a, 7
 	ldh [hWX], a
-	ld a, $90
+	ld a, SCREEN_HEIGHT_PX
 	ldh [hWY], a
 	farcall ClearSpriteAnims
 	call Intro_SetCGBPalUpdate
@@ -1245,7 +1246,7 @@ CrystalIntro_UnownFade:
 	add a
 	add a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wBGPals2
 	add hl, de
 	inc hl
@@ -1261,7 +1262,7 @@ CrystalIntro_UnownFade:
 .okay
 
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBGPals2)
@@ -1323,26 +1324,20 @@ CrystalIntro_UnownFade:
 
 .BWFade:
 ; Fade between black and white.
-hue = 0
-rept 32
+for hue, 32
 	RGB hue, hue, hue
-hue = hue + 1
 endr
 
 .BlackLBlueFade:
 ; Fade between black and light blue.
-hue = 0
-rept 32
+for hue, 32
 	RGB 0, hue / 2, hue
-hue = hue + 1
 endr
 
 .BlackBlueFade:
 ; Fade between black and blue.
-hue = 0
-rept 32
+for hue, 32
 	RGB 0, 0, hue
-hue = hue + 1
 endr
 
 Intro_Scene20_AppearUnown:
@@ -1399,24 +1394,18 @@ Intro_Scene20_AppearUnown:
 	ldh [hCGBPalUpdate], a
 	ret
 
-.pal1
-	RGB 24, 12, 09
-	RGB 31, 31, 31
-	RGB 12, 00, 31
-	RGB 00, 00, 00
+.pal1:
+INCLUDE "gfx/intro/unown_1.pal"
 
-.pal2
-	RGB 24, 12, 09
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 31, 31, 31
+.pal2:
+INCLUDE "gfx/intro/unown_2.pal"
 
 Intro_FadeUnownWordPals:
 	add a
 	add a
 	add a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wBGPals2
 	add hl, de
 rept 4
@@ -1425,7 +1414,7 @@ endr
 	ld a, [wIntroSceneTimer]
 	add a
 	ld c, a
-	ld b, $0
+	ld b, 0
 
 	ldh a, [rSVBK]
 	push af
@@ -1463,19 +1452,19 @@ endr
 	ret
 
 .FastFadePalettes:
-hue = 31
+DEF hue = 31
 rept 8
 	RGB hue, hue, hue
-hue = hue - 1
+	DEF hue -= 1
 	RGB hue, hue, hue
-hue = hue - 2
+	DEF hue -= 2
 endr
 
 .SlowFadePalettes:
-hue = 31
+DEF hue = 31
 rept 16
 	RGB hue, hue, hue
-hue = hue - 1
+	DEF hue -= 1
 endr
 
 Intro_LoadTilemap:
@@ -1549,7 +1538,7 @@ Intro_RustleGrass:
 	and $c
 	srl a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, .RustlingGrassPointers
 	add hl, de
 	ld a, [hli]

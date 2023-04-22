@@ -250,7 +250,7 @@ HatchEggs:
 	ld a, [wCurPartySpecies]
 	dec de
 	ld [de], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wCurSpecies], a
 	call GetPokemonName
 	xor a
@@ -303,7 +303,7 @@ HatchEggs:
 	ld a, [wPlayerID + 1]
 	ld [hl], a
 	ld a, [wCurPartyMon]
-	ld hl, wPartyMonOT
+	ld hl, wPartyMonOTs
 	ld bc, NAME_LENGTH
 	call AddNTimes
 	ld d, h
@@ -428,7 +428,7 @@ GetEggMove:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EggMovePointers)
-	call GetFarHalfword
+	call GetFarWord
 .loop
 	ld a, BANK("Egg Moves")
 	call GetFarByte
@@ -462,7 +462,7 @@ GetEggMove:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EvosAttacksPointers)
-	call GetFarHalfword
+	call GetFarWord
 .loop3
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
@@ -620,6 +620,7 @@ GetBreedmonMovePointer:
 	ret
 
 GetEggFrontpic:
+; BUG: A hatching Unown egg would not show the right letter (see docs/bugs_and_glitches.md)
 	push de
 	ld [wCurPartySpecies], a
 	ld [wCurSpecies], a
@@ -673,7 +674,7 @@ EggHatch_DoAnimFrame:
 	ret
 
 EggHatch_AnimationSequence:
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	ld [wJumptableIndex], a
 	ld a, [wCurSpecies]
 	push af
@@ -835,7 +836,7 @@ Hatch_InitShellFragments:
 	call EggHatch_DoAnimFrame
 	ret
 
-shell_fragment: MACRO
+MACRO shell_fragment
 ; y tile, y pxl, x tile, x pxl, frameset offset, ???
 	db (\1 * 8) % $100 + \2, (\3 * 8) % $100 + \4, \5 - SPRITE_ANIM_FRAMESET_EGG_HATCH_1, \6
 ENDM
@@ -870,7 +871,7 @@ DayCareMon1:
 	bit DAYCARELADY_HAS_MON_F, a
 	jr z, DayCareMonCursor
 	call PromptButton
-	ld hl, wBreedMon2Nick
+	ld hl, wBreedMon2Nickname
 	call DayCareMonCompatibilityText
 	jp PrintText
 
@@ -883,7 +884,7 @@ DayCareMon2:
 	bit DAYCAREMAN_HAS_MON_F, a
 	jr z, DayCareMonCursor
 	call PromptButton
-	ld hl, wBreedMon1Nick
+	ld hl, wBreedMon1Nickname
 	call DayCareMonCompatibilityText
 	jp PrintText
 

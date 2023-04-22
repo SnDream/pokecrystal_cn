@@ -1,4 +1,4 @@
-MAP_NAME_SIGN_START EQU $60
+DEF MAP_NAME_SIGN_START EQU $60
 
 InitMapNameSign::
 	xor a
@@ -153,7 +153,7 @@ PlaceMapNameCenterAlign:
 	ld a, SCREEN_WIDTH
 	sub b
 	srl a
-	ld b, $0
+	ld b, 0
 	ld c, a
 	hlcoord 0, 2
 	add hl, bc

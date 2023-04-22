@@ -15,7 +15,7 @@ TMHMPocket:
 	ld b, 0
 	add hl, bc
 	ld a, [hl]
-	ld [wItemQuantityBuffer], a
+	ld [wItemQuantity], a
 	call .ConvertItemToTMHMNumber
 	scf
 	ret
@@ -73,7 +73,7 @@ AskTeachTMHM:
 ChooseMonToLearnTMHM:
 	ld hl, wStringBuffer2
 	ld de, wTMHMMoveNameBackup
-	ld bc, 12
+	ld bc, MOVE_NAME_LENGTH - 1
 	call CopyBytes
 	call ClearBGPalettes
 ChooseMonToLearnTMHM_NoRefresh:
@@ -97,7 +97,7 @@ ChooseMonToLearnTMHM_NoRefresh:
 	push bc
 	ld hl, wTMHMMoveNameBackup
 	ld de, wStringBuffer2
-	ld bc, 12
+	ld bc, MOVE_NAME_LENGTH - 1
 	call CopyBytes
 	pop af ; now contains the original contents of af
 	ret
@@ -122,7 +122,7 @@ TeachTMHM:
 	push bc
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	pop bc
 
 	ld a, c
@@ -159,7 +159,7 @@ TeachTMHM:
 	and a
 	ret
 
-.unused
+.didnt_use ; unreferenced
 	ld a, 2
 	ld [wItemEffectSucceeded], a
 .learned_move
@@ -290,7 +290,7 @@ TMHM_CheckHoveringOverCancel:
 TMHM_ExitPack:
 	call TMHM_PlaySFX_ReadText2
 _TMHM_ExitPack:
-	ld a, $2
+	ld a, B_BUTTON
 	ld [wMenuJoypad], a
 	and a
 	ret
@@ -379,7 +379,7 @@ TMHM_DisplayPocketItems:
 	ld [wTempTMHM], a
 .okay
 	predef GetTMHMMove
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	ld [wPutativeTMHMMove], a
 	call GetMoveName
 	pop hl

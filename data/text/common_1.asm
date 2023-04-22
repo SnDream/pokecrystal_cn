@@ -215,32 +215,32 @@ _OakTimeIsItText::
 
 ; Mobile Adapter
 
-UnknownText_0x1bc384:: ; unreferenced
+_ThereIsNothingConnectedText:: ; unreferenced
 	text "There is nothing"
 	line "connected."
 	done
 
-UnknownText_0x1bc3a1:: ; unreferenced
+_CheckCellPhoneAdapterText:: ; unreferenced
 	text "Check cell phone"
 	line "adapter."
 	done
 
-UnknownText_0x1bc3bc:: ; unreferenced
+_CheckCDMAAdapterText:: ; unreferenced
 	text "Check CDMA"
 	line "adapter."
 	done
 
-UnknownText_0x1bc3d1:: ; unreferenced
+_CheckDOCOMOPHSAdapterText:: ; unreferenced
 	text "Check DOCOMO PHS"
 	line "adapter."
 	done
 
-UnknownText_0x1bc3ec:: ; unreferenced
+_CheckDDIPHSAdapterText:: ; unreferenced
 	text "Check DDI PHS"
 	line "adapter."
 	done
 
-UnknownText_0x1bc404:: ; unreferenced
+_CheckMobileAdapterText:: ; unreferenced
 	text "Check unlimited"
 	line "battle mobile"
 	cont "adapter."
@@ -463,7 +463,6 @@ _MobileForPartnersMonText::
 	text "."
 	done
 
-; unreferenced
 _MobilePlayersMonTradeText::
 	text_ram wPlayerTrademonSenderName
 	text "'s"
@@ -1107,7 +1106,7 @@ _EnemyWithdrewText::
 	text "<ENEMY>"
 	line "withdrew"
 	cont "@"
-	text_ram wEnemyMonNick
+	text_ram wEnemyMonNickname
 	text "!"
 	prompt
 
@@ -1117,7 +1116,7 @@ _EnemyUsedOnText::
 	text_ram wMonOrItemNameBuffer
 	text_start
 	cont "on @"
-	text_ram wEnemyMonNick
+	text_ram wEnemyMonNickname
 	text "!"
 	prompt
 
@@ -1226,19 +1225,19 @@ _TheBoxIsFullText:: ; unreferenced
 
 ; Mobile Adapter
 
-UnknownText_0x1bd19a::
+_NewCardArrivedText::
 	text "A new CARD arrived"
 	line "from @"
 	text_ram wStringBuffer2
 	text "."
 	done
 
-UnknownText_0x1bd1ba::
+_PutCardInCardFolderText::
 	text "Put this CARD in"
 	line "the CARD FOLDER?"
 	done
 
-UnknownText_0x1bd1dd::
+_CardWasListedText::
 	text_ram wStringBuffer2
 	text "'s CARD was"
 	line "listed as no.@"
@@ -1246,34 +1245,34 @@ UnknownText_0x1bd1dd::
 	text "."
 	prompt
 
-UnknownText_0x1bd201::
+_StartingLinkText::
 	text "Starting link."
 	done
 
-UnknownText_0x1bd211::
+_LinkTerminatedText::
 	text "Link terminated."
 	done
 
-UnknownText_0x1bd223::
+_ClosingLinkText::
 	text "Closing link."
 	done
 
-UnknownText_0x1bd232:: ; unreferenced
+_ClearTimeLimitText:: ; unreferenced
 	text "Clear the time"
 	line "limit?"
 	done
 
-UnknownText_0x1bd249:: ; unreferenced
+_TimeLimitWasClearedText:: ; unreferenced
 	text "The time limit was"
 	line "cleared."
 	done
 
-UnknownText_0x1bd266:: ; unreferenced
+_PickErrorPacketText:: ; unreferenced
 	text "Pick which packet"
 	line "as an error?"
 	done
 
-UnknownText_0x1bd286::
+_TradingMonForOTMonText::
 	text "Trading @"
 	text_ram wStringBuffer2
 	text_start
@@ -1665,7 +1664,7 @@ _DayCareManIntroText::
 	cont "raise a #MON?"
 	done
 
-_DayCareManOddEggText::
+_DayCareManIntroEggText::
 	text "I'm the DAY-CARE"
 	line "MAN. Do you know"
 	cont "about EGGS?"
@@ -1692,7 +1691,7 @@ _DayCareLadyIntroText::
 	line "#MON for you?"
 	done
 
-_DayCareLadyOddEggText::
+_DayCareLadyIntroEggText::
 	text "I'm the DAY-CARE"
 	line "LADY. Do you know"
 	cont "about EGGS?"

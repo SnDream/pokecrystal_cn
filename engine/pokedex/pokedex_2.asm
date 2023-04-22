@@ -41,7 +41,7 @@ AnimateDexSearchSlowpoke:
 DoDexSearchSlowpokeFrame:
 	ld a, [wDexSearchSlowpokeFrame]
 	ld hl, .SlowpokeSpriteData
-	ld de, wVirtualOAMSprite00
+	ld de, wShadowOAMSprite00
 .loop
 	ld a, [hli]
 	cp -1
@@ -87,7 +87,7 @@ DisplayDexEntry:
 	push af
 	call IncreaseDFSCombineLevel
 	hlcoord 9, 4
-	call FarString ; dex species
+	call PlaceFarString ; dex species
 	ld h, b
 	ld l, c
 	push de
@@ -117,7 +117,7 @@ DisplayDexEntry:
 	ld a, b
 	push af
 	; push hl
-	; call GetFarHalfword
+	; call GetFarWord
 	; ld d, l
 	; ld e, h
 	; pop hl
@@ -153,7 +153,7 @@ DisplayDexEntry:
 	inc hl
 	push hl
 	dec hl
-	call GetFarHalfword
+	call GetFarWord
 	ld d, l
 	ld e, h
 	ld a, e
@@ -192,7 +192,7 @@ DisplayDexEntry:
 	pop af
 	hlcoord 2, 11
 	; push af
-	call FarString
+	call PlaceFarString
 	; pop bc
 	; ld a, [wPokedexStatus]
 	; or a ; check for page 2
@@ -222,7 +222,7 @@ DisplayDexEntry:
 	; inc de
 	; pop af
 	; hlcoord 2, 11
-	; call FarString
+	; call PlaceFarString
 	; ret
 
 POKeString: ; unreferenced

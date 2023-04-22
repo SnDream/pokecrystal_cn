@@ -17,19 +17,19 @@ LoadSGBLayoutCGB:
 	ld l, a
 	ld h, 0
 	add hl, hl
-	ld de, .dw
+	ld de, CGBLayoutJumptable
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, .ReturnFromJumpTable
+	ld de, .done
 	push de
 	jp hl
-
-.ReturnFromJumpTable:
+.done:
 	ret
 
-.dw
+CGBLayoutJumptable:
+	table_width 2, CGBLayoutJumptable
 	dw _CGB_BattleGrayscale
 	dw _CGB_BattleColors
 	dw _CGB_PokegearPals
@@ -43,7 +43,7 @@ LoadSGBLayoutCGB:
 	dw _CGB_PartyMenu
 	dw _CGB_Evolution
 	dw _CGB_GSTitleScreen
-	dw _CGB0d
+	dw _CGB_Unused0D
 	dw _CGB_MoveList
 	dw _CGB_BetaPikachuMinigame
 	dw _CGB_PokedexSearchOption
@@ -60,7 +60,8 @@ LoadSGBLayoutCGB:
 	dw _CGB_TradeTube
 	dw _CGB_TrainerOrMonFrontpicPals
 	dw _CGB_MysteryGift
-	dw _CGB1e
+	dw _CGB_Unused1E
+	assert_table_length NUM_SCGB_LAYOUTS
 
 _CGB_BattleGrayscale:
 	ld hl, PalPacket_BattleGrayscale + 1
@@ -87,7 +88,7 @@ _CGB_BattleColors:
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_ENEMY
 	ld a, [wEnemyHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -95,7 +96,7 @@ _CGB_BattleColors:
 	call LoadPalette_White_Col1_Col2_Black ; PAL_BATTLE_BG_ENEMY_HP
 	ld a, [wPlayerHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -202,7 +203,7 @@ _CGB_StatsScreenHPPals:
 	ld de, wBGPals1
 	ld a, [wCurHPPal]
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld bc, HPBarPals
@@ -324,7 +325,7 @@ _CGB_BillsPC:
 	call WipeAttrmapWithoutVramNo
 	hlcoord 1, 1, wAttrmap
 	lb bc, 8, 8
-	ld a, $1
+	ld a, $1 ; mon palette
 	call FillBoxCGB
 	call InitPartyMenuOBPals
 	call ApplyAttrmap
@@ -333,12 +334,12 @@ _CGB_BillsPC:
 	ldh [hCGBPalUpdate], a
 	ret
 
-Function9009: ; unreferenced
+_CGB_Unknown: ; unreferenced
 	ld hl, BillsPCOrangePalette
 	call LoadHLPaletteIntoDE
 	jr .GotPalette
 
-.GetMonPalette:
+.GetMonPalette: ; unreferenced
 	ld bc, wTempMonDVs
 	call GetPlayerOrMonPalettePointer
 	call LoadPalette_White_Col1_Col2_Black
@@ -346,7 +347,7 @@ Function9009: ; unreferenced
 	call WipeAttrmap
 	hlcoord 1, 1, wAttrmap
 	lb bc, 7, 7
-	ld a, $1
+	ld a, $1 ; mon palette
 	call FillBoxCGB
 	call InitPartyMenuOBPals
 	call ApplyAttrmap
@@ -369,7 +370,7 @@ _CGB_PokedexUnownMode:
 	call WipeAttrmap
 	hlcoord 7, 5, wAttrmap
 	lb bc, 7, 7
-	ld a, $1
+	ld a, $1 ; mon palette
 	call FillBoxCGB
 	call InitPartyMenuOBPals
 	call ApplyAttrmap
@@ -387,43 +388,43 @@ _CGB_SlotMachine:
 	call WipeAttrmap
 	hlcoord 0, 2, wAttrmap
 	lb bc, 10, 3
-	ld a, $2
+	ld a, $2 ; "3" palette
 	call FillBoxCGB
 	hlcoord 17, 2, wAttrmap
 	lb bc, 10, 3
-	ld a, $2
+	ld a, $2 ; "3" palette
 	call FillBoxCGB
 	hlcoord 0, 4, wAttrmap
 	lb bc, 6, 3
-	ld a, $3
+	ld a, $3 ; "2" palette
 	call FillBoxCGB
 	hlcoord 17, 4, wAttrmap
 	lb bc, 6, 3
-	ld a, $3
+	ld a, $3 ; "2" palette
 	call FillBoxCGB
 	hlcoord 0, 6, wAttrmap
 	lb bc, 2, 3
-	ld a, $4
+	ld a, $4 ; "1" palette
 	call FillBoxCGB
 	hlcoord 17, 6, wAttrmap
 	lb bc, 2, 3
-	ld a, $4
+	ld a, $4 ; "1" palette
 	call FillBoxCGB
 	hlcoord 4, 2, wAttrmap
 	lb bc, 2, 12
-	ld a, $1
+	ld a, $1 ; Vileplume palette
 	call FillBoxCGB
 	hlcoord 3, 2, wAttrmap
 	lb bc, 10, 1
-	ld a, $1
+	ld a, $1 ; lights palette
 	call FillBoxCGB
 	hlcoord 16, 2, wAttrmap
 	lb bc, 10, 1
-	ld a, $1
+	ld a, $1 ; lights palette
 	call FillBoxCGB
 	hlcoord 0, 12, wAttrmap
-	ld bc, $78
-	ld a, $7
+	ld bc, 6 * SCREEN_WIDTH
+	ld a, $7 ; text palette
 	call ByteFill
 	call ApplyAttrmap
 	call ApplyPals
@@ -477,21 +478,10 @@ _CGB_GSIntro:
 	ret
 
 .ShellderLaprasBGPalette:
-	RGB 19, 31, 19
-	RGB 18, 23, 31
-	RGB 11, 21, 28
-	RGB 04, 16, 24
+INCLUDE "gfx/intro/gs_shellder_lapras_bg.pal"
 
 .ShellderLaprasOBPals:
-	RGB 29, 29, 29
-	RGB 20, 19, 20
-	RGB 19, 06, 04
-	RGB 03, 04, 06
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 31, 00, 00
-	RGB 03, 04, 06
+INCLUDE "gfx/intro/gs_shellder_lapras_ob.pal"
 
 .JigglypuffPikachuScene:
 	ld de, wBGPals1
@@ -611,7 +601,7 @@ _CGB_GSTitleScreen:
 	ldh [hCGBPalUpdate], a
 	ret
 
-_CGB0d:
+_CGB_Unused0D:
 	ld hl, PalPacket_Diploma + 1
 	call CopyFourPalettes
 	call WipeAttrmap
@@ -861,7 +851,7 @@ _CGB_Pokepic:
 .found_top
 	ld a, [wMenuBorderLeftCoord]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [wMenuBorderTopCoord]
 	ld b, a
@@ -875,22 +865,22 @@ _CGB_Pokepic:
 	sub c
 	inc a
 	ld c, a
-	ld a, $0
+	ld a, PAL_BG_GRAY
 	call FillBoxCGB
 	call ApplyAttrmap
 	ret
 
-_CGB_MagnetTrain:
+_CGB_MagnetTrain: ; unused
 	ld hl, PalPacket_MagnetTrain + 1
 	call CopyFourPalettes
 	call WipeAttrmap
 	hlcoord 0, 4, wAttrmap
 	lb bc, 10, SCREEN_WIDTH
-	ld a, $2
+	ld a, PAL_BG_GREEN
 	call FillBoxCGB
 	hlcoord 0, 6, wAttrmap
 	lb bc, 6, SCREEN_WIDTH
-	ld a, $1
+	ld a, PAL_BG_RED
 	call FillBoxCGB
 	call ApplyAttrmap
 	call ApplyPals
@@ -928,7 +918,7 @@ _CGB_PlayerOrMonFrontpicPals:
 	call ApplyPals
 	ret
 
-_CGB1e:
+_CGB_Unused1E:
 	ld de, wBGPals1
 	ld a, [wCurPartySpecies]
 	call GetMonPalettePointer
@@ -1009,7 +999,4 @@ GS_CGB_MysteryGift: ; unreferenced
 	ret
 
 .MysteryGiftPalette:
-	RGB 31, 31, 31
-	RGB 09, 31, 31
-	RGB 10, 12, 31
-	RGB 00, 03, 19
+INCLUDE "gfx/mystery_gift/gs_mystery_gift.pal"

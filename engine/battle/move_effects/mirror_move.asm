@@ -1,6 +1,4 @@
 BattleCommand_MirrorMove:
-; mirrormove
-
 	call ClearLastMove
 
 	ld a, BATTLE_VARS_MOVE
@@ -24,7 +22,7 @@ BattleCommand_MirrorMove:
 .use
 	ld a, b
 	ld [hl], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 
 	push af
 	ld a, BATTLE_VARS_MOVE_ANIM

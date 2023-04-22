@@ -1,6 +1,6 @@
-CELADONDEPTSTORE6F_FRESH_WATER_PRICE EQU 200
-CELADONDEPTSTORE6F_SODA_POP_PRICE    EQU 300
-CELADONDEPTSTORE6F_LEMONADE_PRICE    EQU 350
+DEF CELADONDEPTSTORE6F_FRESH_WATER_PRICE EQU 200
+DEF CELADONDEPTSTORE6F_SODA_POP_PRICE    EQU 300
+DEF CELADONDEPTSTORE6F_LEMONADE_PRICE    EQU 350
 
 	object_const_def
 	const CELADONDEPTSTORE6F_SUPER_NERD
@@ -10,9 +10,9 @@ CeladonDeptStore6F_MapScripts:
 	def_scene_scripts
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .HideRooftopStairs
+	callback MAPCALLBACK_TILES, CeladonDeptStore6FHideRooftopStairsCallback
 
-.HideRooftopStairs:
+CeladonDeptStore6FHideRooftopStairsCallback:
 	changeblock 12, 0, $03 ; wall
 	endcallback
 
@@ -90,16 +90,15 @@ CeladonDeptStore6FVendingMachine:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "美味之水   200¥@"
-	db "劲爽汽水   300¥@"
-	db "果汁牛奶   350¥@"
+	db "美味之水   {d:CELADONDEPTSTORE6F_FRESH_WATER_PRICE}¥@"
+	db "劲爽汽水   {d:CELADONDEPTSTORE6F_SODA_POP_PRICE}¥@"
+	db "果汁牛奶   {d:CELADONDEPTSTORE6F_LEMONADE_PRICE}¥@"
 	db "取消@"
 
 CeladonDeptStore6FDirectory:
 	jumptext CeladonDeptStore6FDirectoryText
 
-; unused
-CeladonDeptStore6FElevatorButton:
+CeladonDeptStore6FElevatorButton: ; unreferenced
 	jumpstd ElevatorButtonScript
 
 CeladonVendingText:

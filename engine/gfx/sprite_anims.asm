@@ -12,7 +12,8 @@ DoAnimFrame:
 	jp hl
 
 .Jumptable:
-; entries correspond to SPRITE_ANIM_SEQ_* constants
+; entries correspond to SPRITE_ANIM_SEQ_* constants (see constants/sprite_anim_constants.asm)
+	table_width 2, DoAnimFrame.Jumptable
 	dw AnimSeq_Null
 	dw AnimSeq_PartyMon
 	dw AnimSeq_PartyMonSwitch
@@ -27,7 +28,7 @@ DoAnimFrame:
 	dw AnimSeq_SlotsChanseyEgg
 	dw AnimSeq_MailCursor
 	dw AnimSeq_UnusedCursor
-	dw AnimSeq_DummyGameCursor
+	dw AnimSeq_MemoryGameCursor
 	dw AnimSeq_PokegearArrow
 	dw AnimSeq_TradePokeBall
 	dw AnimSeq_TradeTubeBulge
@@ -48,6 +49,7 @@ DoAnimFrame:
 	dw AnimSeq_IntroUnown
 	dw AnimSeq_IntroUnownF
 	dw AnimSeq_IntroSuicuneAway
+	assert_table_length NUM_SPRITE_ANIM_SEQS
 
 AnimSeq_Null:
 	ret
@@ -357,7 +359,7 @@ AnimSeq_SlotsGolem:
 
 AnimSeq_SlotsChansey:
 	callfar Slots_AnimateChansey
-	ld hl, wcf64
+	ld hl, wSlotsDelay
 	ld a, [hl]
 	cp $2
 	ret nz
@@ -382,7 +384,7 @@ AnimSeq_SlotsChanseyEgg:
 	jr c, .move_right
 	call DeinitializeSprite
 	ld a, $4
-	ld [wcf64], a
+	ld [wSlotsDelay], a
 	ld de, SFX_PLACE_PUZZLE_PIECE_DOWN
 	call PlaySFX
 	ret
@@ -407,8 +409,8 @@ AnimSeq_PokegearArrow:
 	callfar AnimatePokegearModeIndicatorArrow
 	ret
 
-AnimSeq_DummyGameCursor:
-	callfar DummyGame_InterpretJoypad_AnimateCursor
+AnimSeq_MemoryGameCursor:
+	callfar MemoryGame_InterpretJoypad_AnimateCursor
 	ret
 
 AnimSeq_TradePokeBall:
@@ -819,7 +821,7 @@ AnimSeq_IntroUnown:
 	ret
 
 AnimSeq_IntroUnownF:
-	ld a, [wcf64]
+	ld a, [wSlotsDelay]
 	cp $40
 	ret nz
 	ld a, SPRITE_ANIM_FRAMESET_INTRO_UNOWN_F_2

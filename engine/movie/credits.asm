@@ -1,6 +1,3 @@
-INCLUDE "constants.asm"
-
-
 SECTION "Credits", ROMX
 
 Credits::
@@ -77,6 +74,7 @@ Credits::
 
 	call GetCreditsPalette
 	call SetPalettes
+; BUG: Credits sequence changes move selection menu behavior (see docs/bugs_and_glitches.md)
 	ldh a, [hVBlank]
 	push af
 	ld a, $5
@@ -200,7 +198,7 @@ Credits_RequestGFX:
 	xor a
 	ldh [hBGMapMode], a
 	ld a, 8
-	ld [wRequested2bpp], a
+	ld [wRequested2bppSize], a
 	jp Credits_Next
 
 Credits_LYOverride:

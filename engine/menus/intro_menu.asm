@@ -9,7 +9,7 @@ Intro_MainMenu:
 	farcall MainMenu
 	jp StartTitleScreen
 
-; unused
+IntroMenu_DummyFunction: ; unreferenced
 	ret
 
 PrintDayOfWeek:
@@ -103,8 +103,8 @@ ResetWRAM:
 	ret
 
 _ResetWRAM:
-	ld hl, wVirtualOAM
-	ld bc, wOptions - wVirtualOAM
+	ld hl, wShadowOAM
+	ld bc, wOptions - wShadowOAM
 	xor a
 	call ByteFill
 
@@ -175,12 +175,13 @@ _ResetWRAM:
 	ld [wRoamMon2MapNumber], a
 	ld [wRoamMon3MapNumber], a
 
-	ld a, BANK(sMysteryGiftItem)
+	ld a, BANK(sMysteryGiftItem) ; aka BANK(sMysteryGiftUnlocked)
 	call OpenSRAM
 	ld hl, sMysteryGiftItem
 	xor a
 	ld [hli], a
-	dec a
+	assert sMysteryGiftItem + 1 == sMysteryGiftUnlocked
+	dec a ; -1
 	ld [hl], a
 	call CloseSRAM
 
@@ -372,7 +373,7 @@ Continue:
 	ld c, 20
 	call DelayFrames
 	farcall JumpRoamMons
-	farcall MysteryGift_CopyReceivedDecosToPC
+	farcall CopyMysteryGiftReceivedDecorationsToPC
 	farcall ClockContinue
 	ld a, [wSpawnAfterChampion]
 	cp SPAWN_LANCE
@@ -466,9 +467,9 @@ FinishContinueFunction:
 	xor a
 	ld [wDontPlayMapMusicOnReload], a
 	ld [wLinkMode], a
-	ld hl, wGameTimerPause
-	set GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
-	res GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	set GAME_TIMER_PAUSED_F, [hl]
+	res GAME_TIMER_MOBILE_F, [hl]
 	ld hl, wEnteredMapFromContinue
 	set 1, [hl]
 	farcall OverworldLoop
@@ -942,7 +943,7 @@ Intro_PlacePlayerSprite:
 	ld hl, vTiles0
 	call Request2bpp
 
-	ld hl, wVirtualOAMSprite00
+	ld hl, wShadowOAMSprite00
 	ld de, .sprites
 	ld a, [de]
 	inc de
@@ -987,7 +988,7 @@ Intro_PlacePlayerSprite:
 	const TITLESCREENOPTION_RESTART
 	const TITLESCREENOPTION_UNUSED
 	const TITLESCREENOPTION_RESET_CLOCK
-NUM_TITLESCREENOPTIONS EQU const_value
+DEF NUM_TITLESCREENOPTIONS EQU const_value
 
 IntroSequence:
 	callfar SplashScreen
@@ -1069,7 +1070,8 @@ RunTitleScreen:
 	scf
 	ret
 
-Function6292: ; unreferenced
+UnusedTitlePerspectiveScroll: ; unreferenced
+; Similar behavior to Intro_PerspectiveScrollBG.
 	ldh a, [hVBlankCounter]
 	and $7
 	ret nz
@@ -1324,16 +1326,15 @@ UpdateTitleTrailSprite: ; unreferenced
 	ret
 
 .TitleTrailCoords:
-trail_coords: MACRO
-rept _NARG / 2
-_dx = 4
-if \1 == 0 && \2 == 0
-_dx = 0
-endc
-	dbpixel \1, \2, _dx, 0
-	shift
-	shift
-endr
+MACRO trail_coords
+	rept _NARG / 2
+		DEF _dx = 4
+		if \1 == 0 && \2 == 0
+			DEF _dx = 0
+		endc
+		dbpixel \1, \2, _dx, 0
+		shift 2
+	endr
 ENDM
 	; frame 0 y, x; frame 1 y, x
 	trail_coords 11, 10,  0,  0

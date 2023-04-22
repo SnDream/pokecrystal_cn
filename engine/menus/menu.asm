@@ -51,7 +51,7 @@ _InterpretMobileMenu::
 	ld c, a
 	ld a, [w2DMenuNumRows]
 	call SimpleMultiply
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	and a
 	ret
 
@@ -91,7 +91,7 @@ Mobile_GetMenuSelection:
 	ld c, a
 	ld a, [wMenuCursorX]
 	add c
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	and a
 	ret
 
@@ -172,7 +172,7 @@ Init2DMenuCursorPosition:
 	call .InitFlags_c
 	ld a, [w2DMenuNumCols]
 	ld e, a
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	ld b, a
 	xor a
 	ld d, 0
@@ -276,7 +276,7 @@ Function241d5: ; unreferenced
 	call Place2DMenuCursor
 .loop
 	call Move2DMenuCursor
-	call HDMATransferTilemapToWRAMBank3 ; BUG: This function is in another bank.
+	call HDMATransferTilemapToWRAMBank3 ; should be farcall
 	call .loop2
 	jr nc, .done
 	call _2DMenuInterpretJoypad
@@ -298,7 +298,7 @@ Function241d5: ; unreferenced
 	ret c
 	ld c, 1
 	ld b, 3
-	call AdvanceMobileInactivityTimerAndCheckExpired ; BUG: This function is in another bank.
+	call AdvanceMobileInactivityTimerAndCheckExpired ; should be farcall
 	ret c
 	farcall Function100337
 	ret c
@@ -362,7 +362,9 @@ Menu_WasButtonPressed:
 	call GetMenuJoypad
 	and a
 	ret z
+	vc_hook Forbid_printing_photo_studio
 	scf
+	vc_hook Forbid_printing_PC_Box
 	ret
 
 _2DMenuInterpretJoypad:
@@ -856,7 +858,7 @@ _InitVerticalMenuCursor::
 .skip_bit_1
 	ld [hli], a
 ; wMenuCursorY
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	and a
 	jr z, .load_at_the_top
 	ld c, a

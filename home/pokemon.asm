@@ -166,7 +166,7 @@ LoadCry::
 	rst Bankswitch
 
 	ld hl, PokemonCries
-rept 6 ; sizeof(mon_cry)
+rept MON_CRY_LENGTH
 	add hl, bc
 endr
 
@@ -229,8 +229,8 @@ PrintLevel_Force3Digits::
 	ld c, 3
 
 Print8BitNumLeftAlign::
-	ld [wDeciramBuffer], a
-	ld de, wDeciramBuffer
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
 	ld b, PRINTNUM_LEFTALIGN | 1
 	jp PrintNum
 
@@ -298,11 +298,11 @@ GetBaseData::
 	pop bc
 	ret
 
-GetCurNick::
+GetCurNickname::
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
 
-GetNick::
+GetNickname::
 ; Get nickname a from list hl.
 
 	push hl

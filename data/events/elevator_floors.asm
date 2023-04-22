@@ -1,5 +1,6 @@
 ElevatorFloorNames:
 ; entries correspond to FLOOR_* constants
+	table_width 2, ElevatorFloorNames
 	dw .B4F
 	dw .B3F
 	dw .B2F
@@ -16,6 +17,7 @@ ElevatorFloorNames:
 	dw ._10F
 	dw ._11F
 	dw .ROOF
+	assert_table_length NUM_FLOORS
 
 .B4F:  db "地下4楼@"
 .B3F:  db "地下3楼@"

@@ -32,7 +32,7 @@
 	const DEBUGCOLORMAIN_INITTMHM       ; 4
 	const DEBUGCOLORMAIN_TMHMJOYPAD     ; 5
 
-DebugColorPicker:
+DebugColorPicker: ; unreferenced
 ; A debug menu to test monster and trainer palettes at runtime.
 	ldh a, [hCGB]
 	and a
@@ -99,7 +99,7 @@ DebugColor_InitMonColor:
 DebugColor_InitTrainerColor:
 	ld hl, TrainerPalettes
 	ld de, wDebugOriginalColors
-	ld c, NUM_TRAINER_CLASSES
+	ld c, NUM_TRAINER_CLASSES + 1
 .loop
 	push bc
 	push hl
@@ -127,17 +127,17 @@ endr
 	ret
 
 DebugColor_InitVRAM:
-	ld a, BANK(vTiles3)
+	ld a, $1
 	ldh [rVBK], a
-	ld hl, vTiles3
-	ld bc, sScratch - vTiles3
+	ld hl, VRAM_Begin
+	ld bc, VRAM_End - VRAM_Begin
 	xor a
 	call ByteFill
 
-	ld a, BANK(vTiles0)
+	ld a, $0
 	ldh [rVBK], a
-	ld hl, vTiles0
-	ld bc, sScratch - vTiles0
+	ld hl, VRAM_Begin
+	ld bc, VRAM_End - VRAM_Begin
 	xor a
 	call ByteFill
 
@@ -284,7 +284,7 @@ DebugColorMain:
 	ld a, NUM_POKEMON ; CELEBI
 	ret
 .trainer
-	ld a, NUM_TRAINER_CLASSES - 1 ; MYSTICALMAN
+	ld a, NUM_TRAINER_CLASSES ; MYSTICALMAN
 	ret
 
 .Jumptable:
@@ -320,9 +320,9 @@ DebugColor_InitScreen:
 	ld a, [wDebugColorCurMon]
 	inc a
 	ld [wCurPartySpecies], a
-	ld [wDeciramBuffer], a
+	ld [wTextDecimalByte], a
 	hlcoord 0, 1
-	ld de, wDeciramBuffer
+	ld de, wTextDecimalByte
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
 	call PrintNum
 	ld a, [wDebugColorIsTrainer]
@@ -364,7 +364,7 @@ DebugColor_InitScreen:
 	jr .done
 
 .trainer
-	ld a, [wDeciramBuffer]
+	ld a, [wTextDecimalByte]
 	ld [wTrainerClass], a
 	callfar GetTrainerAttributes
 	ld de, wStringBuffer1
@@ -929,13 +929,13 @@ DebugColor_FillBoxWithByte:
 	ret
 
 DebugColor_PushSGBPals:
-	ld a, [wcfbe]
+	ld a, [wJoypadDisable]
 	push af
-	set 7, a
-	ld [wcfbe], a
+	set JOYPAD_DISABLE_SGB_TRANSFER_F, a
+	ld [wJoypadDisable], a
 	call _DebugColor_PushSGBPals
 	pop af
-	ld [wcfbe], a
+	ld [wJoypadDisable], a
 	ret
 
 _DebugColor_PushSGBPals:
@@ -1026,7 +1026,7 @@ DebugColor_PlaceCursor:
 
 	ld b, $70 ; initial tile id
 	ld c, 5 ; initial palette
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	ld de, wDebugRedChannel
 	call .placesprite
 	ld de, wDebugGreenChannel
@@ -1069,7 +1069,7 @@ INCBIN "gfx/debug/up_arrow.2bpp"
 DebugColor_GFX:
 INCBIN "gfx/debug/color_test.2bpp"
 
-TilesetColorPicker:
+TilesetColorPicker: ; unreferenced
 ; A debug menu to test tileset palettes at runtime.
 ; dummied out
 	ret
@@ -1437,8 +1437,8 @@ DebugTileset_CalculatePalette:
 	ld [hl], d
 	ret
 
-; unused
+.dummy1: ; unreferenced
 	ret
 
-; unused
+.dummy2: ; unreferenced
 	ret

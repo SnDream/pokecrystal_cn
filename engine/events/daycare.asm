@@ -1,9 +1,9 @@
 ; PrintDayCareText.TextTable indexes
 	const_def
 	const DAYCARETEXT_MAN_INTRO
-	const DAYCARETEXT_MAN_ODD_EGG
+	const DAYCARETEXT_MAN_INTRO_EGG
 	const DAYCARETEXT_LADY_INTRO
-	const DAYCARETEXT_LADY_ODD_EGG
+	const DAYCARETEXT_LADY_INTRO_EGG
 	const DAYCARETEXT_WHICH_ONE
 	const DAYCARETEXT_DEPOSIT
 	const DAYCARETEXT_CANT_BREED_EGG
@@ -40,7 +40,7 @@ DayCareMan:
 
 .AskWithdrawMon:
 	farcall GetBreedMon1LevelGrowth
-	ld hl, wBreedMon1Nick
+	ld hl, wBreedMon1Nickname
 	call GetPriceToRetrieveBreedmon
 	call DayCare_AskWithdrawBreedMon
 	jr c, .print_text
@@ -78,7 +78,7 @@ DayCareLady:
 
 .AskWithdrawMon:
 	farcall GetBreedMon2LevelGrowth
-	ld hl, wBreedMon2Nick
+	ld hl, wBreedMon2Nickname
 	call GetPriceToRetrieveBreedmon
 	call DayCare_AskWithdrawBreedMon
 	jr c, .print_text
@@ -137,7 +137,7 @@ DayCareAskDepositPokemon:
 	jr c, .HoldingMail
 	ld hl, wPartyMonNicknames
 	ld a, [wCurPartyMon]
-	call GetNick
+	call GetNickname
 	and a
 	ret
 
@@ -166,7 +166,7 @@ DayCareAskDepositPokemon:
 	scf
 	ret
 
-.DaycareDummyText:
+.DaycareDummyText: ; unreferenced
 	text_far _DaycareDummyText
 	text_end
 
@@ -274,9 +274,9 @@ PrintDayCareText:
 .TextTable:
 ; entries correspond to DAYCARETEXT_* constants
 	dw .DayCareManIntroText ; 00
-	dw .DayCareManOddEggText ; 01
+	dw .DayCareManIntroEggText ; 01
 	dw .DayCareLadyIntroText ; 02
-	dw .DayCareLadyOddEggText ; 03
+	dw .DayCareLadyIntroEggText ; 03
 	dw .WhatShouldIRaiseText ; 04
 	dw .IllRaiseYourMonText ; 05
 	dw .CantAcceptEggText ; 06
@@ -298,16 +298,16 @@ PrintDayCareText:
 	text_far _DayCareManIntroText
 	text_end
 
-.DayCareManOddEggText:
-	text_far _DayCareManOddEggText
+.DayCareManIntroEggText:
+	text_far _DayCareManIntroEggText
 	text_end
 
 .DayCareLadyIntroText:
 	text_far _DayCareLadyIntroText
 	text_end
 
-.DayCareLadyOddEggText:
-	text_far _DayCareLadyOddEggText
+.DayCareLadyIntroEggText:
+	text_far _DayCareLadyIntroEggText
 	text_end
 
 .WhatShouldIRaiseText:
@@ -467,13 +467,13 @@ DayCare_GiveEgg:
 	ld hl, wPartyMonNicknames
 	ld bc, MON_NAME_LENGTH
 	call DayCare_GetCurrentPartyMember
-	ld hl, wEggNick
+	ld hl, wEggMonNickname
 	call CopyBytes
 
-	ld hl, wPartyMonOT
+	ld hl, wPartyMonOTs
 	ld bc, NAME_LENGTH
 	call DayCare_GetCurrentPartyMember
-	ld hl, wEggOT
+	ld hl, wEggMonOT
 	call CopyBytes
 
 	ld hl, wPartyMon1
@@ -550,10 +550,10 @@ DayCare_InitBreeding:
 	ld hl, wEggMon
 	ld bc, BOXMON_STRUCT_LENGTH
 	call ByteFill
-	ld hl, wEggNick
+	ld hl, wEggMonNickname
 	ld bc, MON_NAME_LENGTH
 	call ByteFill
-	ld hl, wEggOT
+	ld hl, wEggMonOT
 	ld bc, NAME_LENGTH
 	call ByteFill
 	ld a, [wBreedMon1DVs]
@@ -562,7 +562,7 @@ DayCare_InitBreeding:
 	ld [wTempMonDVs + 1], a
 	ld a, [wBreedMon1Species]
 	ld [wCurPartySpecies], a
-	ld a, $3
+	ld a, TEMPMON
 	ld [wMonType], a
 	ld a, [wBreedMon1Species]
 	cp DITTO
@@ -606,18 +606,18 @@ DayCare_InitBreeding:
 	ld [wEggMonSpecies], a
 
 	call GetBaseData
-	ld hl, wEggNick
+	ld hl, wEggMonNickname
 	ld de, .String_EGG
 	call CopyName2
 	ld hl, wPlayerName
-	ld de, wEggOT
+	ld de, wEggMonOT
 	ld bc, NAME_LENGTH
 	call CopyBytes
 	xor a
 	ld [wEggMonItem], a
 	ld de, wEggMonMoves
-	xor a
-	ld [wBuffer1], a
+	xor a ; FALSE
+	ld [wSkipMovesBeforeLevelUp], a
 	predef FillMoves
 	farcall InitEggMoves
 	ld hl, wEggMonID

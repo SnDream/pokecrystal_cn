@@ -1,5 +1,5 @@
-TIMESET_UP_ARROW   EQU "♂" ; $ef
-TIMESET_DOWN_ARROW EQU "♀" ; $f5
+DEF TIMESET_UP_ARROW   EQU "♂" ; $ef
+DEF TIMESET_DOWN_ARROW EQU "♀" ; $f5
 
 InitClock:
 ; Ask the player to set the time.
@@ -672,7 +672,8 @@ MrChrono: ; unreferenced
 	ret
 
 .NowOnDebug:
-	text "<PARA>Now on DEBUG…"
+	text_start
+	para "Now on DEBUG…"
 	prompt
 
 .PrintTime:
@@ -701,8 +702,8 @@ PrintHour:
 	inc hl
 	pop bc
 	call AdjustHourForAMorPM
-	ld [wDeciramBuffer], a
-	ld de, wDeciramBuffer
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
 	call PrintTwoDigitNumberLeftAlign
 	ret
 
@@ -755,8 +756,8 @@ PrintDayHourMin::
 	ld h, b
 	pop bc
 	ld a, c
-	ld [wDeciramBuffer], a
-	ld de, wDeciramBuffer
+	ld [wTextDecimalByte], a
+	ld de, wTextDecimalByte
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 2
 	call PrintNum
 	ld de, String_min

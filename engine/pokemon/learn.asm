@@ -2,7 +2,7 @@ LearnMove:
 	call LoadTilemapToTempTilemap
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	ld hl, wStringBuffer1
 	ld de, wMonOrItemNameBuffer
 	ld bc, MON_NAME_LENGTH
@@ -36,7 +36,7 @@ LearnMove:
 
 	push hl
 	push de
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 
 	ld b, a
 	ld a, [wBattleMode]
@@ -142,7 +142,7 @@ ForgetMove:
 	call Textbox
 	hlcoord 5 + 2 + 4, 2 + 2 + 6
 	ld a, SCREEN_WIDTH * 2
-	ld [wBuffer1], a
+	ld [wListMovesLineSpacing], a
 	predef ListMoves
 	; w2DMenuData
 	ld a, $4 + 6

@@ -1,4 +1,5 @@
 PokemonNames::
+	table_width NAME_LENGTH - 1, PokemonNames
 	db "妙蛙种子@@"
 	db "妙蛙草@@@@"
 	db "妙蛙花@@@@"
@@ -250,8 +251,11 @@ PokemonNames::
 	db "洛奇亚@@@@"
 	db "凤王@@@@@@"
 	db "时拉比@@@@"
+	assert_table_length NUM_POKEMON
 	db "?????@@@@@"
 	db "蛋@@@@@@@@"
+	assert_table_length EGG
 	db "?????@@@@@"
 	db "?????@@@@@"
 	db "?????@@@@@"
+	assert_table_length $100

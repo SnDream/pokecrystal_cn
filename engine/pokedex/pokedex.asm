@@ -15,7 +15,7 @@
 	const DEXSTATE_UPDATE_UNOWN_MODE
 	const DEXSTATE_EXIT
 
-POKEDEX_SCX EQU 5
+DEF POKEDEX_SCX EQU 5
 EXPORT POKEDEX_SCX
 
 Pokedex:
@@ -91,7 +91,7 @@ InitPokedex:
 	ld [wJumptableIndex], a
 	ld [wPrevDexEntryJumptableIndex], a
 	ld [wPrevDexEntryBackup], a
-	ld [wcf66], a
+	ld [wUnusedPokedexByte], a
 
 	call Pokedex_CheckUnlockedUnownMode
 
@@ -360,6 +360,7 @@ Pokedex_UpdateDexEntryScreen:
 	ld a, [hl]
 	and B_BUTTON
 	jr nz, .return_to_prev_screen
+	vc_hook Forbid_printing_Pokedex
 	ld a, [hl]
 	and A_BUTTON
 	jr nz, .do_menu_action
@@ -378,7 +379,7 @@ Pokedex_UpdateDexEntryScreen:
 	ld a, [wLastVolume]
 	and a
 	jr z, .max_volume
-	ld a, $77
+	ld a, MAX_VOLUME
 	ld [wLastVolume], a
 
 .max_volume
@@ -468,6 +469,7 @@ DexEntryScreen_MenuActionJumptable:
 	ret
 
 .Cry:
+; BUG: Playing Entei's Pokédex cry can distort Raikou's and Suicune's (see docs/bugs_and_glitches.md)
 	call Pokedex_GetSelectedMon
 	ld a, [wTempSpecies]
 	call GetCryIndex
@@ -517,7 +519,8 @@ Pokedex_InitOptionScreen:
 	call ClearSprites
 	call Pokedex_DrawOptionScreenBG
 	call Pokedex_InitArrowCursor
-	ld a, [wCurDexMode] ; Index of the topmost visible item in a scrolling menu ???
+	; point cursor to the current dex mode (modes == menu item indexes)
+	ld a, [wCurDexMode]
 	ld [wDexArrowCursorPosIndex], a
 	call Pokedex_DisplayModeDescription
 	call WaitBGMap
@@ -1196,13 +1199,15 @@ Pokedex_DrawDexEntryScreenBG:
 	call Pokedex_PlaceFrontpicTopLeftCorner
 	ret
 
-.Unused:
+.Number: ; unreferenced
 	db $5c, $5d, -1 ; No.
-.Height: ; 40852
+.Height:
+	; db "HT  ?", $5e, "??", $5f, -1 ; HT  ?'??"
 	db "身高@"
 .Height2:
 	db $6f, $6f, $6f, $5e, -1 ; ???m
-.Weight: ; 4085c
+.Weight:
+	; db "WT   ???lb", -1
 	db "体重@"
 .Weight2:
 	db $6f, $6f, $6f, $5f, $60, -1 ; ???kg
@@ -1539,7 +1544,7 @@ Pokedex_PrintListing:
 ; Load de with wPokedexOrder + [wDexListingScrollOffset]
 	ld a, [wDexListingScrollOffset]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPokedexOrder
 	add hl, de
 	ld e, l
@@ -1554,7 +1559,8 @@ Pokedex_PrintListing:
 .loop
 	push af
 	ld a, [de]
-	ld [wTempSpecies], a ; also sets wNamedObjectIndexBuffer
+	ld [wTempSpecies], a ; also sets wNamedObjectIndex
+	assert wTempSpecies == wNamedObjectIndex
 	push de
 	push hl
 	call .PrintEntry
@@ -1662,7 +1668,7 @@ Pokedex_GetSelectedMon:
 	ld hl, wDexListingScrollOffset
 	add [hl]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wPokedexOrder
 	add hl, de
 	ld a, [hl]
@@ -1883,7 +1889,7 @@ Pokedex_PrevSearchMonType:
 	jr .done
 
 .wrap_around
-	ld [hl], NUM_TYPES - 1
+	ld [hl], NUM_TYPES
 
 .done
 	scf
@@ -1896,7 +1902,7 @@ Pokedex_NextSearchMonType:
 
 	ld hl, wDexSearchMonType1
 	ld a, [hl]
-	cp NUM_TYPES - 1
+	cp NUM_TYPES
 	jr nc, .type1_wrap_around
 	inc [hl]
 	jr .done
@@ -1907,7 +1913,7 @@ Pokedex_NextSearchMonType:
 .type2
 	ld hl, wDexSearchMonType2
 	ld a, [hl]
-	cp NUM_TYPES - 1
+	cp NUM_TYPES
 	jr nc, .type2_wrap_around
 	inc [hl]
 	jr .done
@@ -1940,7 +1946,7 @@ Pokedex_PlaceTypeString:
 	ld e, a
 	ld d, 0
 	ld hl, PokedexTypeSearchStrings
-rept 7
+rept POKEDEX_TYPE_STRING_LENGTH
 	add hl, de
 endr
 	ld e, l
@@ -2195,7 +2201,7 @@ Pokedex_UpdateSearchResultsCursorOAM:
 	db -1
 
 Pokedex_LoadCursorOAM:
-	ld de, wVirtualOAMSprite00
+	ld de, wShadowOAMSprite00
 .loop
 	ld a, [hl]
 	cp -1
@@ -2572,6 +2578,7 @@ Pokedex_LoadUnownFont:
 	ld a, BANK(sScratch)
 	call OpenSRAM
 	ld hl, UnownFont
+	; sScratch + $188 was the address of sDecompressBuffer in pokegold
 	ld de, sScratch + $188
 	ld bc, 39 tiles
 	ld a, BANK(UnownFont)

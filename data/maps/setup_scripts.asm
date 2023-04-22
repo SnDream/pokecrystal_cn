@@ -1,5 +1,6 @@
 MapSetupScripts:
 ; entries correspond to MAPSETUP_* constants (see constants/map_setup_constants.asm)
+	table_width 2, MapSetupScripts
 	dw MapSetupScript_Warp
 	dw MapSetupScript_Continue
 	dw MapSetupScript_ReloadMap
@@ -12,9 +13,10 @@ MapSetupScripts:
 	dw MapSetupScript_Submenu
 	dw MapSetupScript_BadWarp
 	dw MapSetupScript_Fly
+	assert_table_length NUM_MAPSETUP_SCRIPTS
 
 ; valid commands are listed in MapSetupCommands (see data/maps/setup_script_pointers.asm)
-mapsetup: MACRO
+MACRO mapsetup
 	db (\1_MapSetupCmd - MapSetupCommands) / 3
 ENDM
 

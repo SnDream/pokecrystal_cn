@@ -1,4 +1,4 @@
-engine_flag: MACRO
+MACRO engine_flag
 ; location, bit
 ; (all locations are in WRAM bank 1)
 	dwb \1 + (\2 / 8), 1 << (\2 % 8)
@@ -6,6 +6,7 @@ ENDM
 
 EngineFlags:
 ; entries correspond to ENGINE_* constants
+	table_width 3, EngineFlags
 
 	; pokegear
 	engine_flag wPokegearFlags, POKEGEAR_RADIO_CARD_F
@@ -62,10 +63,10 @@ EngineFlags:
 	engine_flag wKantoBadges, EARTHBADGE
 
 	; unown sets (see data/wild/unlocked_unowns.asm)
-	engine_flag wUnlockedUnowns, 0 ; A-K
-	engine_flag wUnlockedUnowns, 1 ; L-R
-	engine_flag wUnlockedUnowns, 2 ; S-W
-	engine_flag wUnlockedUnowns, 3 ; X-Z
+	engine_flag wUnlockedUnowns, UNLOCKED_UNOWNS_A_TO_K_F
+	engine_flag wUnlockedUnowns, UNLOCKED_UNOWNS_L_TO_R_F
+	engine_flag wUnlockedUnowns, UNLOCKED_UNOWNS_S_TO_W_F
+	engine_flag wUnlockedUnowns, UNLOCKED_UNOWNS_X_TO_Z_F
 	engine_flag wUnlockedUnowns, 4 ; unused
 	engine_flag wUnlockedUnowns, 5 ; unused
 	engine_flag wUnlockedUnowns, 6 ; unused
@@ -125,7 +126,7 @@ EngineFlags:
 	engine_flag wSwarmFlags, SWARMFLAGS_BUENAS_PASSWORD_F
 	engine_flag wSwarmFlags, SWARMFLAGS_GOLDENROD_DEPT_STORE_SALE_F
 
-	engine_flag wGameTimerPause, GAMETIMERPAUSE_MOBILE_7_F
+	engine_flag wGameTimerPaused, GAME_TIMER_MOBILE_F
 
 	engine_flag wPlayerGender, PLAYERGENDER_FEMALE_F
 
@@ -197,3 +198,5 @@ EngineFlags:
 
 	engine_flag wSwarmFlags, SWARMFLAGS_DUNSPARCE_SWARM_F
 	engine_flag wSwarmFlags, SWARMFLAGS_YANMA_SWARM_F
+
+	assert_table_length NUM_ENGINE_FLAGS

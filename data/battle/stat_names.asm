@@ -1,10 +1,12 @@
 StatNames:
 ; entries correspond to stat ids
-	db "攻击@"
-	db "防御@"
-	db "速度@"
-	db "特攻@"
-	db "特防@"
-	db "命中率@"
-	db "闪避率@"
-	db "能力@" ; used for BattleCommand_Curse
+	list_start StatNames
+	li "攻击"
+	li "防御"
+	li "速度"
+	li "特攻"
+	li "特防"
+	li "命中率"
+	li "闪避率"
+	li "能力" ; used for BattleCommand_Curse
+	assert_list_length NUM_LEVEL_STATS

@@ -15,7 +15,7 @@ Special::
 
 INCLUDE "data/events/special_pointers.asm"
 
-DummySpecial_c224:
+UnusedDummySpecial:
 	ret
 
 SetPlayerPalette:
@@ -34,7 +34,7 @@ GameCornerPrizeMonCheckDex:
 	call SetSeenAndCaughtMon
 	call FadeToMenu
 	ld a, [wScriptVar]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	farcall NewPokedexEntry
 	call ExitAllMenus
 	ret
@@ -87,13 +87,12 @@ NameRival:
 	ld b, NAME_RIVAL
 	ld de, wRivalName
 	farcall _NamingScreen
-	; default to "SILVER"
 	ld hl, wRivalName
-	ld de, .default
+	ld de, .DefaultName
 	call InitName
 	ret
 
-.default
+.DefaultName:
 	db "小银@"
 
 NameRater:
@@ -145,7 +144,7 @@ GetMysteryGiftItem:
 	ld a, [sMysteryGiftItem]
 	ld [wCurItem], a
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	call ReceiveItem
 	jr nc, .no_room
@@ -153,7 +152,7 @@ GetMysteryGiftItem:
 	ld [sMysteryGiftItem], a
 	call CloseSRAM
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld hl, .ReceiveItemText
 	call PrintText
@@ -207,11 +206,11 @@ CardFlip:
 	call StartGameCornerGame
 	ret
 
-DummyNonfunctionalGameCornerGame:
+UnusedMemoryGame:
 	call CheckCoinsAndCoinCase
 	ret c
-	ld a, BANK(_DummyGame)
-	ld hl, _DummyGame
+	ld a, BANK(_MemoryGame)
+	ld hl, _MemoryGame
 	call StartGameCornerGame
 	ret
 
@@ -380,17 +379,17 @@ GameboyCheck:
 	ldh a, [hCGB]
 	and a
 	jr nz, .cgb
-
 	ldh a, [hSGB]
 	and a
 	jr nz, .sgb
-
-.gb
+; gb
 	xor a ; GBCHECK_GB
 	jr .done
+
 .sgb
 	ld a, GBCHECK_SGB
 	jr .done
+
 .cgb
 	ld a, GBCHECK_CGB
 .done

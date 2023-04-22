@@ -58,7 +58,7 @@ DisableLCD::
 	jr nz, .wait
 
 	ldh a, [rLCDC]
-	and $ff ^ (1 << rLCDC_ENABLE)
+	and ~(1 << rLCDC_ENABLE)
 	ldh [rLCDC], a
 
 	xor a

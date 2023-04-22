@@ -6,9 +6,9 @@ MoveTutor:
 	ld b, SCGB_PACKPALS
 	call GetSGBLayout
 	xor a
-	ld [wItemAttributeParamBuffer], a
+	ld [wItemAttributeValue], a
 	call .GetMoveTutorMove
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld [wPutativeTMHMMove], a
 	call GetMoveName
 	call CopyName1
@@ -60,7 +60,7 @@ CheckCanLearnMoveTutorMove:
 	push bc
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	pop bc
 
 	ld a, c

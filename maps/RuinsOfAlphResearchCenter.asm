@@ -5,20 +5,20 @@
 
 RuinsOfAlphResearchCenter_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_RUINSOFALPHRESEARCHCENTER_NOTHING
-	scene_script .GetUnownDex ; SCENE_RUINSOFALPHRESEARCHCENTER_GET_UNOWN_DEX
+	scene_script RuinsOfAlphResearchCenterNoopScene,        SCENE_RUINSOFALPHRESEARCHCENTER_NOOP
+	scene_script RuinsOfAlphResearchCenterGetUnownDexScene, SCENE_RUINSOFALPHRESEARCHCENTER_GET_UNOWN_DEX
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .ScientistCallback
+	callback MAPCALLBACK_OBJECTS, RuinsOfAlphResearchCenterScientistCallback
 
-.DummyScene0:
+RuinsOfAlphResearchCenterNoopScene:
 	end
 
-.GetUnownDex:
-	prioritysjump .GetUnownDexScript
+RuinsOfAlphResearchCenterGetUnownDexScene:
+	sdefer RuinsOfAlphResearchCenterGetUnownDexScript
 	end
 
-.ScientistCallback:
+RuinsOfAlphResearchCenterScientistCallback:
 	checkscene
 	ifequal SCENE_RUINSOFALPHRESEARCHCENTER_GET_UNOWN_DEX, .ShowScientist
 	endcallback
@@ -28,7 +28,7 @@ RuinsOfAlphResearchCenter_MapScripts:
 	appear RUINSOFALPHRESEARCHCENTER_SCIENTIST3
 	endcallback
 
-.GetUnownDexScript:
+RuinsOfAlphResearchCenterGetUnownDexScript:
 	applymovement RUINSOFALPHRESEARCHCENTER_SCIENTIST3, RuinsOfAlphResearchCenterApproachesComputerMovement
 	playsound SFX_BOOT_PC
 	pause 60
@@ -53,7 +53,7 @@ RuinsOfAlphResearchCenter_MapScripts:
 	waitbutton
 	closetext
 	applymovement RUINSOFALPHRESEARCHCENTER_SCIENTIST3, RuinsOfAlphResearchCenterLeavesPlayerMovement
-	setscene SCENE_RUINSOFALPHRESEARCHCENTER_NOTHING
+	setscene SCENE_RUINSOFALPHRESEARCHCENTER_NOOP
 	special RestartMapMusic
 	end
 
@@ -167,8 +167,7 @@ RuinsOfAlphResearchCenterPrinter:
 	closetext
 	end
 
-RuinsOfAlphResearchCenterPhoto:
-; unreferenced
+RuinsOfAlphResearchCenterPhoto: ; unreferenced
 	jumptext RuinsOfAlphResearchCenterProfSilktreePhotoText
 
 RuinsOfAlphResearchCenterBookshelf:
@@ -307,8 +306,7 @@ RuinsOfAlphResearchCenterScientist2Text_UnownAppeared:
 	cont "kinds of them…"
 	done
 
-RuinsOfAlphResearchCenterUnusedText1:
-; unused
+RuinsOfAlphResearchCenterUnusedText1: ; unreferenced
 	text "We think something"
 	line "caused the cryptic"
 
@@ -319,8 +317,7 @@ RuinsOfAlphResearchCenterUnusedText1:
 	line "studies on that."
 	done
 
-RuinsOfAlphResearchCenterUnusedText2:
-; unused
+RuinsOfAlphResearchCenterUnusedText2: ; unreferenced
 	text "According to my"
 	line "research…"
 
@@ -359,7 +356,7 @@ RuinsOfAlphResearchCenterComputerText_GotAllUnown:
 	text "Mystery #MON"
 	line "Name: UNOWN"
 
-	para "A total of 26"
+	para "A total of {d:NUM_UNOWN}"
 	line "kinds found."
 	done
 
@@ -374,7 +371,6 @@ RuinsOfAlphResearchCenterUnownPrinterText:
 	done
 
 RuinsOfAlphResearchCenterProfSilktreePhotoText:
-; unused
 	text "It's a photo of"
 	line "the RESEARCH"
 

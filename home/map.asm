@@ -125,12 +125,12 @@ LoadMetatiles::
 	ld a, [wOverworldMapAnchor + 1]
 	ld d, a
 	ld hl, wSurroundingTiles
-	ld b, SURROUNDING_HEIGHT / METATILE_WIDTH ; 5
+	ld b, SCREEN_META_HEIGHT
 
 .row
 	push de
 	push hl
-	ld c, SURROUNDING_WIDTH / METATILE_WIDTH ; 6
+	ld c, SCREEN_META_WIDTH
 
 .col
 	push de
@@ -147,9 +147,8 @@ LoadMetatiles::
 	ld e, l
 	ld d, h
 	; Set hl to the address of the current metatile data ([wTilesetBlocksAddress] + (a) tiles).
-	; This is buggy; it wraps around past 128 blocks.
-	; To fix, uncomment the line below.
-	; FIXED - add a ; Comment or delete this line to fix the above bug.
+; BUG: LoadMetatiles wraps around past 128 blocks (see docs/bugs_and_glitches.md)
+	; add a
 	ld l, a
 	ld h, 0
 	add hl, hl ; FIXED
@@ -196,7 +195,7 @@ endr
 	add hl, de
 	pop de
 	ld a, [wMapWidth]
-	add 6
+	add MAP_CONNECTION_PADDING_WIDTH * 2
 	add e
 	ld e, a
 	jr nc, .ok2
@@ -249,10 +248,10 @@ GetDestinationWarpNumber::
 	ret
 
 .GetDestinationWarpNumber:
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	sub 4
 	ld e, a
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	sub 4
 	ld d, a
 	ld a, [wCurMapWarpCount]
@@ -585,18 +584,16 @@ ReadObjectEvents::
 	call CopyMapObjectEvents
 
 ; get NUM_OBJECTS - [wCurMapObjectEventCount]
+; BUG: ReadObjectEvents overflows into wObjectMasks (see docs/bugs_and_glitches.md)
 	ld a, [wCurMapObjectEventCount]
 	ld c, a
-	ld a, NUM_OBJECTS ; - 1
+	ld a, NUM_OBJECTS
 	sub c
 	jr z, .skip
-	; jr c, .skip
 
 	; could have done "inc hl" instead
 	ld bc, 1
 	add hl, bc
-; Fill the remaining sprite IDs and y coords with 0 and -1, respectively.
-; Bleeds into wObjectMasks due to a bug.  Uncomment the above code to fix.
 	ld bc, MAPOBJECT_LENGTH
 .loop
 	ld [hl],  0
@@ -1125,27 +1122,27 @@ CoordinatesEventText::
 	text_end
 
 CheckObjectMask::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld a, [hl]
 	ret
 
 MaskObject::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld [hl], -1 ; masked
 	ret
 
 UnmaskObject::
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wObjectMasks
 	add hl, de
 	ld [hl], 0 ; unmasked
@@ -1279,7 +1276,7 @@ BackupBGMapColumn::
 	ret
 
 UpdateBGMapRow::
-	ld hl, wBGMapBufferPtrs
+	ld hl, wBGMapBufferPointers
 	push de
 	call .iteration
 	pop de
@@ -1310,7 +1307,7 @@ UpdateBGMapRow::
 	ret
 
 UpdateBGMapColumn::
-	ld hl, wBGMapBufferPtrs
+	ld hl, wBGMapBufferPointers
 	ld c, SCREEN_HEIGHT
 .loop
 	ld a, e
@@ -1434,7 +1431,7 @@ SaveScreen::
 	ld de, wScreenSave
 	ld a, [wMapWidth]
 	add 6
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ld a, [wPlayerStepDirection]
 	and a
 	jr z, .down
@@ -1448,7 +1445,7 @@ SaveScreen::
 
 .up
 	ld de, wScreenSave + SCREEN_META_WIDTH
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld c, a
 	ld b, 0
 	add hl, bc
@@ -1519,16 +1516,16 @@ GetMovementPermissions::
 	call .LeftRight
 	call .UpDown
 ; get coords of current tile
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	ld e, a
 	call GetCoordTile
-	ld [wPlayerStandingTile], a
+	ld [wPlayerTile], a
 	call .CheckHiNybble
 	ret nz
 
-	ld a, [wPlayerStandingTile]
+	ld a, [wPlayerTile]
 	and 7
 	ld hl, .MovementPermissionsData
 	add l
@@ -1553,9 +1550,9 @@ GetMovementPermissions::
 	db UP_MASK | LEFT_MASK
 
 .UpDown:
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	ld e, a
 
 	push de
@@ -1572,9 +1569,9 @@ GetMovementPermissions::
 	ret
 
 .LeftRight:
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	ld e, a
 
 	push de
@@ -1693,10 +1690,10 @@ GetFacingTileCoord::
 	ld h, [hl]
 	ld l, a
 
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	add d
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	add e
 	ld e, a
 	ld a, [hl]
@@ -1720,7 +1717,7 @@ GetCoordTile::
 	and a
 	jr z, .nope
 	ld l, a
-	ld h, $0
+	ld h, 0
 	add hl, hl
 	add hl, hl
 	ld a, [wTilesetCollisionAddress]
@@ -1866,10 +1863,10 @@ CheckCurrentMapCoordEvents::
 	call CheckScenes
 	ld b, a
 ; Load your current coordinates into de.  This will be used to check if your position is in the coord event table for the current map.
-	ld a, [wPlayerStandingMapX]
+	ld a, [wPlayerMapX]
 	sub 4
 	ld d, a
-	ld a, [wPlayerStandingMapY]
+	ld a, [wPlayerMapY]
 	sub 4
 	ld e, a
 
@@ -2024,7 +2021,7 @@ GetAnyMapPointer::
 	; find the cth map within the group
 	dec c
 	ld b, 0
-	ld a, 9
+	ld a, MAP_LENGTH
 	call AddNTimes
 	ret
 
@@ -2164,7 +2161,8 @@ GetMapEnvironment::
 	pop hl
 	ret
 
-	ret ; unused
+Map_DummyFunction:: ; unreferenced
+	ret
 
 GetAnyMapEnvironment::
 	push hl
@@ -2285,12 +2283,12 @@ LoadMapTileset::
 	push bc
 
 	ld hl, Tilesets
-	ld bc, wTilesetEnd - wTileset
+	ld bc, TILESET_LENGTH
 	ld a, [wMapTileset]
 	call AddNTimes
 
 	ld de, wTilesetBank
-	ld bc, wTilesetEnd - wTileset
+	ld bc, TILESET_LENGTH
 
 	ld a, BANK(Tilesets)
 	call FarCopyBytes
@@ -2299,10 +2297,8 @@ LoadMapTileset::
 	pop hl
 	ret
 
-InexplicablyEmptyFunction::
-; unused
-; Inexplicably empty.
-; Seen in PredefPointers.
+DummyEndPredef::
+; Unused function at the end of PredefPointers.
 rept 16
 	nop
 endr

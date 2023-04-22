@@ -20,7 +20,7 @@ GetSpriteVTile::
 	ld hl, wUsedSprites + 2
 	ld c, SPRITE_GFX_LIST_CAPACITY - 1
 	ld b, a
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	cp 0
 	jr z, .nope
 	ld a, b
@@ -71,14 +71,14 @@ DoesSpriteHaveFacings::
 	pop de
 	ret
 
-GetPlayerStandingTile::
-	ld a, [wPlayerStandingTile]
+GetPlayerTile::
+	ld a, [wPlayerTile]
 	call GetTileCollision
 	ld b, a
 	ret
 
 CheckOnWater::
-	ld a, [wPlayerStandingTile]
+	ld a, [wPlayerTile]
 	call GetTileCollision
 	sub WATER_TILE
 	ret z
@@ -189,7 +189,7 @@ CheckWaterfallTile::
 	ret
 
 CheckStandingOnEntrance::
-	ld a, [wPlayerStandingTile]
+	ld a, [wPlayerTile]
 	cp COLL_DOOR
 	ret z
 	cp COLL_DOOR_79
@@ -210,14 +210,14 @@ GetMapObject::
 
 CheckObjectVisibility::
 ; Sets carry if the object is not visible on the screen.
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	call GetMapObject
 	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld a, [hl]
 	cp -1
 	jr z, .not_visible
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	call GetObjectStruct
 	and a
 	ret
@@ -227,7 +227,7 @@ CheckObjectVisibility::
 	ret
 
 CheckObjectTime::
-	ld hl, MAPOBJECT_HOUR
+	ld hl, MAPOBJECT_HOUR_1
 	add hl, bc
 	ld a, [hl]
 	cp -1
@@ -264,10 +264,10 @@ CheckObjectTime::
 	db NITE
 
 .check_hour
-	ld hl, MAPOBJECT_HOUR
+	ld hl, MAPOBJECT_HOUR_1
 	add hl, bc
 	ld d, [hl]
-	ld hl, MAPOBJECT_TIMEOFDAY
+	ld hl, MAPOBJECT_HOUR_2
 	add hl, bc
 	ld e, [hl]
 	ld hl, hHours
@@ -301,21 +301,21 @@ CheckObjectTime::
 	ret
 
 CopyMapObjectStruct:: ; unreferenced
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	call GetMapObject
 	call CopyObjectStruct
 	ret
 
 UnmaskCopyMapObjectStruct::
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	call UnmaskObject
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	call GetMapObject
 	farcall CopyObjectStruct
 	ret
 
 ApplyDeletionToMapObject::
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	call GetMapObject
 	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
@@ -404,7 +404,7 @@ LoadMovementDataPointer::
 	call CheckObjectVisibility
 	ret c
 
-	ld hl, OBJECT_MOVEMENTTYPE
+	ld hl, OBJECT_MOVEMENT_TYPE
 	add hl, bc
 	ld [hl], SPRITEMOVEDATA_SCRIPTED
 
@@ -447,7 +447,7 @@ FindFirstEmptyObjectStruct::
 	ret
 
 GetSpriteMovementFunction::
-	ld hl, OBJECT_MOVEMENTTYPE
+	ld hl, OBJECT_MOVEMENT_TYPE
 	add hl, bc
 	ld a, [hl]
 	cp NUM_SPRITEMOVEDATA
@@ -500,7 +500,7 @@ CopySpriteMovementData::
 	ret
 
 .CopyData:
-	ld hl, OBJECT_MOVEMENTTYPE
+	ld hl, OBJECT_MOVEMENT_TYPE
 	add hl, de
 	ld [hl], a
 
@@ -520,7 +520,7 @@ endr
 	rlca
 	rlca
 	maskbits NUM_DIRECTIONS, 2
-	ld hl, OBJECT_FACING
+	ld hl, OBJECT_DIRECTION
 	add hl, de
 	ld [hl], a
 
@@ -549,16 +549,16 @@ endr
 	ld [hl], a
 	ret
 
-_GetMovementByte::
+_GetMovementIndex::
 ; Switch to the movement data bank
 	ldh a, [hROMBank]
 	push af
 	ld a, [hli]
 	rst Bankswitch
-; Load the current script byte as given by OBJECT_MOVEMENT_BYTE_INDEX, and increment OBJECT_MOVEMENT_BYTE_INDEX
+; Load the current script byte as given by OBJECT_MOVEMENT_INDEX, and increment OBJECT_MOVEMENT_INDEX
 	ld a, [hli]
 	ld d, [hl]
-	ld hl, OBJECT_MOVEMENT_BYTE_INDEX
+	ld hl, OBJECT_MOVEMENT_INDEX
 	add hl, bc
 	add [hl]
 	ld e, a
@@ -611,7 +611,7 @@ DoesObjectHaveASprite::
 SetSpriteDirection::
 	; preserves other flags
 	push af
-	ld hl, OBJECT_FACING
+	ld hl, OBJECT_DIRECTION
 	add hl, bc
 	ld a, [hl]
 	and %11110011
@@ -623,7 +623,7 @@ SetSpriteDirection::
 	ret
 
 GetSpriteDirection::
-	ld hl, OBJECT_FACING
+	ld hl, OBJECT_DIRECTION
 	add hl, bc
 	ld a, [hl]
 	maskbits NUM_DIRECTIONS, 2

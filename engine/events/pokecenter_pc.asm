@@ -4,7 +4,7 @@
 	const PCPC_BEFORE_HOF     ; 1
 	const PCPC_POSTGAME       ; 2
 
-	; PokemonCenterPC.JumpTable indexes
+	; PokemonCenterPC.Jumptable indexes
 	const_def
 	const PCPCITEM_PLAYERS_PC   ; 0
 	const PCPCITEM_BILLS_PC     ; 1
@@ -30,7 +30,7 @@ PokemonCenterPC:
 	call DoNthMenu
 	jr c, .shutdown
 	ld a, [wMenuSelection]
-	ld hl, .JumpTable
+	ld hl, .Jumptable
 	call MenuJumptable
 	jr nc, .loop
 
@@ -51,9 +51,9 @@ PokemonCenterPC:
 	db 0 ; items
 	dw .WhichPC
 	dw PlaceNthMenuStrings
-	dw .JumpTable
+	dw .Jumptable
 
-.JumpTable:
+.Jumptable:
 ; entries correspond to PCPCITEM_* constants
 	dw PlayersPC,    .String_PlayersPC
 	dw BillsPC,      .String_BillsPC
@@ -136,8 +136,8 @@ PC_CheckPartyForPokemon:
 	const PLAYERSPCITEM_TOSS_ITEM     ; 2
 	const PLAYERSPCITEM_MAIL_BOX      ; 3
 	const PLAYERSPCITEM_DECORATION    ; 4
-	const PLAYERSPCITEM_TURN_OFF      ; 5
-	const PLAYERSPCITEM_LOG_OFF       ; 6
+	const PLAYERSPCITEM_LOG_OFF       ; 5
+	const PLAYERSPCITEM_TURN_OFF      ; 6
 
 BillsPC:
 	call PC_PlayChoosePCSound
@@ -298,7 +298,7 @@ PlayersPCMenuData:
 	db PLAYERSPCITEM_DEPOSIT_ITEM
 	db PLAYERSPCITEM_TOSS_ITEM
 	db PLAYERSPCITEM_MAIL_BOX
-	db PLAYERSPCITEM_TURN_OFF
+	db PLAYERSPCITEM_LOG_OFF
 	db -1 ; end
 
 	; PLAYERSPC_HOUSE
@@ -308,7 +308,7 @@ PlayersPCMenuData:
 	db PLAYERSPCITEM_TOSS_ITEM
 	db PLAYERSPCITEM_MAIL_BOX
 	db PLAYERSPCITEM_DECORATION
-	db PLAYERSPCITEM_LOG_OFF
+	db PLAYERSPCITEM_TURN_OFF
 	db -1 ; end
 
 PC_DisplayTextWaitMenu:
@@ -342,13 +342,13 @@ PlayerWithdrawItemMenu:
 .Submenu:
 	; check if the item has a quantity
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr z, .askquantity
 
 	; items without quantity are always ×1
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jr .withdraw
 
 .askquantity
@@ -360,16 +360,16 @@ PlayerWithdrawItemMenu:
 	jr c, .done
 
 .withdraw
-	ld a, [wItemQuantityChangeBuffer]
-	ld [wBuffer1], a ; quantity
+	ld a, [wItemQuantityChange]
+	ld [wPCItemQuantityChange], a
 	ld a, [wCurItemQuantity]
-	ld [wBuffer2], a
+	ld [wPCItemQuantity], a
 	ld hl, wNumItems
 	call ReceiveItem
 	jr nc, .PackFull
-	ld a, [wBuffer1]
-	ld [wItemQuantityChangeBuffer], a
-	ld a, [wBuffer2]
+	ld a, [wPCItemQuantityChange]
+	ld [wItemQuantityChange], a
+	ld a, [wPCItemQuantity]
 	ld [wCurItemQuantity], a
 	ld hl, wNumPCItems
 	call TossItem
@@ -469,7 +469,7 @@ PlayerDepositItemMenu:
 	ld a, FALSE
 	ld [wSpriteUpdatesEnabled], a
 	farcall CheckItemMenu
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	ld hl, .dw
 	rst JumpTable
 	pop af
@@ -490,24 +490,24 @@ PlayerDepositItemMenu:
 	ret
 
 .tossable
-	ld a, [wBuffer1]
+	ld a, [wPCItemQuantityChange]
 	push af
-	ld a, [wBuffer2]
+	ld a, [wPCItemQuantity]
 	push af
 	call .DepositItem
 	pop af
-	ld [wBuffer2], a
+	ld [wPCItemQuantity], a
 	pop af
-	ld [wBuffer1], a
+	ld [wPCItemQuantityChange], a
 	ret
 
 .DepositItem:
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr z, .AskQuantity
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jr .ContinueDeposit
 
 .AskQuantity:
@@ -521,16 +521,16 @@ PlayerDepositItemMenu:
 	jr c, .DeclinedToDeposit
 
 .ContinueDeposit:
-	ld a, [wItemQuantityChangeBuffer]
-	ld [wBuffer1], a
+	ld a, [wItemQuantityChange]
+	ld [wPCItemQuantityChange], a
 	ld a, [wCurItemQuantity]
-	ld [wBuffer2], a
+	ld [wPCItemQuantity], a
 	ld hl, wNumPCItems
 	call ReceiveItem
 	jr nc, .NoRoomInPC
-	ld a, [wBuffer1]
-	ld [wItemQuantityChangeBuffer], a
-	ld a, [wBuffer2]
+	ld a, [wPCItemQuantityChange]
+	ld [wItemQuantityChange], a
+	ld a, [wPCItemQuantity]
 	ld [wCurItemQuantity], a
 	ld hl, wNumItems
 	call TossItem
@@ -580,7 +580,7 @@ PCItemsJoypad:
 	ld c, 18
 	call Textbox
 	ld a, [wPCItemsCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wPCItemsScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu

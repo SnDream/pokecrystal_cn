@@ -13,9 +13,9 @@ CeladonCity_MapScripts:
 	def_scene_scripts
 
 	def_callbacks
-	callback MAPCALLBACK_NEWMAP, .FlyPoint
+	callback MAPCALLBACK_NEWMAP, CeladonCityFlypointCallback
 
-.FlyPoint:
+CeladonCityFlypointCallback:
 	setflag ENGINE_FLYPOINT_CELADON
 	endcallback
 
@@ -164,8 +164,7 @@ CeladonCityTeacher2Text:
 	line "a sales clerk."
 	done
 
-CeladonCityLassText_Mobile:
-; unused
+CeladonCityLassText_Mobile: ; unreferenced
 	text "I love being"
 	line "surrounded by tall"
 	cont "buildings!"

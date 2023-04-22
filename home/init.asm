@@ -10,8 +10,8 @@ Reset::
 	ldh [rIE], a
 	ei
 
-	ld hl, wcfbe
-	set 7, [hl]
+	ld hl, wJoypadDisable
+	set JOYPAD_DISABLE_SGB_TRANSFER_F, [hl]
 
 	ld c, 32
 	call DelayFrames
@@ -50,7 +50,7 @@ Init::
 	ldh [rOBP1], a
 	ldh [rTMA], a
 	ldh [rTAC], a
-	ld [wd000], a
+	ld [wBetaTitleSequenceOpeningType], a
 
 	ld a, %100 ; Start timer at 4096Hz
 	ldh [rTAC], a
@@ -186,6 +186,7 @@ ClearVRAM::
 ClearWRAM::
 ; Wipe swappable WRAM banks (1-7)
 ; Assumes CGB or AGB
+; BUG: ClearWRAM only clears WRAM bank 1 (see docs/bugs_and_glitches.md)
 
 	ld a, 1
 .bank_loop
@@ -198,7 +199,7 @@ ClearWRAM::
 	pop af
 	inc a
 	cp 8
-	jr nc, .bank_loop ; Should be jr c
+	jr nc, .bank_loop
 	ret
 
 ClearsScratch::

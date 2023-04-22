@@ -1,5 +1,5 @@
-NUM_MOM_ITEMS_1 EQUS "((MomItems_1.End - MomItems_1) / 8)"
-NUM_MOM_ITEMS_2 EQUS "((MomItems_2.End - MomItems_2) / 8)"
+DEF NUM_MOM_ITEMS_1 EQUS "((MomItems_1.End - MomItems_1) / 8)"
+DEF NUM_MOM_ITEMS_2 EQUS "((MomItems_2.End - MomItems_2) / 8)"
 
 	const_def 1
 	const MOM_ITEM
@@ -146,7 +146,7 @@ Mom_GiveItemOrDoll:
 	ld a, [hl]
 	ld [wCurItem], a
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumPCItems
 	call ReceiveItem
 	ret
@@ -228,9 +228,12 @@ MomItsInYourRoomText:
 	text_far _MomItsInYourRoomText
 	text_end
 
-	db 0 ; unused
+
+DummyPredef3A_DummyData: ; unreferenced
+	db 0
 
 DummyPredef3A:
 	ret
 
-	ret ; unused
+DummyPredef3A_DummyFunction: ; unreferenced
+	ret

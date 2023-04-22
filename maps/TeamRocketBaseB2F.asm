@@ -16,27 +16,27 @@
 
 TeamRocketBaseB2F_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_DEFAULT
-	scene_script .DummyScene1 ; SCENE_TEAMROCKETBASEB2F_ROCKET_BOSS
-	scene_script .DummyScene2 ; SCENE_TEAMROCKETBASEB2F_ELECTRODES
-	scene_script .DummyScene3 ; SCENE_TEAMROCKETBASEB2F_NOTHING
+	scene_script TeamRocketBaseB2FNoop1Scene, SCENE_TEAMROCKETBASEB2F_LANCE_HEALS
+	scene_script TeamRocketBaseB2FNoop2Scene, SCENE_TEAMROCKETBASEB2F_ROCKET_BOSS
+	scene_script TeamRocketBaseB2FNoop3Scene, SCENE_TEAMROCKETBASEB2F_ELECTRODES
+	scene_script TeamRocketBaseB2FNoop4Scene, SCENE_TEAMROCKETBASEB2F_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .TransmitterDoorCallback
+	callback MAPCALLBACK_TILES, TeamRocketBaseB2FTransmitterDoorCallback
 
-.DummyScene0:
+TeamRocketBaseB2FNoop1Scene:
 	end
 
-.DummyScene1:
+TeamRocketBaseB2FNoop2Scene:
 	end
 
-.DummyScene2:
+TeamRocketBaseB2FNoop3Scene:
 	end
 
-.DummyScene3:
+TeamRocketBaseB2FNoop4Scene:
 	end
 
-.TransmitterDoorCallback:
+TeamRocketBaseB2FTransmitterDoorCallback:
 	checkevent EVENT_OPENED_DOOR_TO_ROCKET_HIDEOUT_TRANSMITTER
 	iftrue .OpenDoor
 	endcallback
@@ -302,7 +302,7 @@ RocketBaseElectrodeScript:
 	clearflag ENGINE_ROCKET_SIGNAL_ON_CH20
 	setevent EVENT_ROUTE_43_GATE_ROCKETS
 	setevent EVENT_MAHOGANY_TOWN_POKEFAN_M_BLOCKS_GYM
-	setscene SCENE_TEAMROCKETBASEB2F_NOTHING
+	setscene SCENE_TEAMROCKETBASEB2F_NOOP
 	clearevent EVENT_LAKE_OF_RAGE_CIVILIANS
 	setevent EVENT_TURNED_OFF_SECURITY_CAMERAS
 	setevent EVENT_SECURITY_CAMERA_1
@@ -731,7 +731,7 @@ RocketBaseLanceElectrodeDoneText:
 	cont "any need for it."
 	done
 
-RocketBaseReceivedHM06Text: ; unused
+RocketBaseReceivedHM06Text: ; unreferenced
 	text "<PLAYER> received"
 	line "HM06."
 	done
@@ -917,8 +917,8 @@ TeamRocketBaseB2F_MapEvents:
 	warp_event 27, 14, TEAM_ROCKET_BASE_B3F, 4
 
 	def_coord_events
-	coord_event  5, 14, SCENE_DEFAULT, LanceHealsScript1
-	coord_event  4, 13, SCENE_DEFAULT, LanceHealsScript2
+	coord_event  5, 14, SCENE_TEAMROCKETBASEB2F_LANCE_HEALS, LanceHealsScript1
+	coord_event  4, 13, SCENE_TEAMROCKETBASEB2F_LANCE_HEALS, LanceHealsScript2
 	coord_event 14, 11, SCENE_TEAMROCKETBASEB2F_ROCKET_BOSS, RocketBaseBossFLeft
 	coord_event 15, 11, SCENE_TEAMROCKETBASEB2F_ROCKET_BOSS, RocketBaseBossFRight
 	coord_event 14, 12, SCENE_TEAMROCKETBASEB2F_ELECTRODES, RocketBaseCantLeaveScript

@@ -12,16 +12,17 @@ LoadSGBLayout:
 	ld l, a
 	ld h, 0
 	add hl, hl
-	ld de, .Jumptable
+	ld de, SGBLayoutJumptable
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, _LoadSGBLayout_ReturnFromJumpTable
+	ld de, _LoadSGBLayout_ReturnFromJumptable
 	push de
 	jp hl
 
-.Jumptable:
+SGBLayoutJumptable:
+	table_width 2, SGBLayoutJumptable
 	dw .SGB_BattleGrayscale
 	dw .SGB_BattleColors
 	dw .SGB_PokegearPals
@@ -35,7 +36,7 @@ LoadSGBLayout:
 	dw .SGB_PartyMenu
 	dw .SGB_Evolution
 	dw .SGB_GSTitleScreen
-	dw .SGB0d
+	dw .SGB_Unused0D
 	dw .SGB_MoveList
 	dw .SGB_BetaPikachuMinigame
 	dw .SGB_PokedexSearchOption
@@ -52,7 +53,8 @@ LoadSGBLayout:
 	dw .SGB_TradeTube
 	dw .SGB_TrainerOrMonFrontpicPals
 	dw .SGB_MysteryGift
-	dw .SGB1e
+	dw .SGB_Unused1E
+	assert_table_length NUM_SCGB_LAYOUTS
 
 .SGB_BattleGrayscale:
 	ld hl, PalPacket_BattleGrayscale
@@ -397,7 +399,7 @@ endr
 	ld de, BlkPacket_AllPal0
 	ret
 
-.SGB0d:
+.SGB_Unused0D:
 .SGB_TrainerCard:
 	ld hl, PalPacket_Diploma
 	ld de, BlkPacket_AllPal0
@@ -437,7 +439,7 @@ endr
 	ld de, wSGBPals + PALPACKET_LENGTH
 	ret
 
-.SGB1e:
+.SGB_Unused1E:
 	ld hl, PalPacket_Pal01
 	ld de, wSGBPals
 	ld bc, PALPACKET_LENGTH
@@ -450,7 +452,7 @@ endr
 	add hl, hl
 	ld de, PokemonPalettes
 	add hl, de
-	ld a, [wcf65]
+	ld a, [wUnusedSGB1eColorOffset]
 	and 3
 	sla a
 	sla a
@@ -564,7 +566,7 @@ endr
 
 INCLUDE "data/maps/sgb_roof_pal_inds.asm"
 
-_LoadSGBLayout_ReturnFromJumpTable:
+_LoadSGBLayout_ReturnFromJumptable:
 	push de
 	call PushSGBPals
 	pop hl

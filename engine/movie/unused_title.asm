@@ -1,4 +1,4 @@
-UnusedTitleScreen:
+UnusedTitleScreen: ; unreferenced
 	call ClearBGPalettes
 	call ClearTilemap
 	call DisableLCD
@@ -48,7 +48,7 @@ UnusedTitleScreen:
 	jr nz, .copy
 
 	ld hl, UnusedTitleFG_OAM
-	ld de, wVirtualOAMSprite00
+	ld de, wShadowOAMSprite00
 	ld bc, SPRITEOAMSTRUCT_LENGTH * NUM_SPRITE_OAM_STRUCTS
 	call CopyBytes
 
@@ -154,13 +154,15 @@ UnusedTitleFG_OAM:
 	dbsprite 13, 11,  0,  0, $4c, 1
 	dbsprite 14, 11,  0,  0, $4e, 1
 
-Function10ed51:
+TestCrystalTitleScreen: ; unreferenced
+; Runs the title screen until A is pressed.
+; Possibly used for testing.
 	call _TitleScreen
 .loop
 	call JoyTextDelay
 	ldh a, [hJoyLast]
 	ld b, a
-	and 1
+	and A_BUTTON
 	jr nz, .done
 	call SuicuneFrameIterator
 	call DelayFrame

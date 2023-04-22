@@ -8,14 +8,14 @@ BattleTowerOutside_MapScripts:
 	def_scene_scripts
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .Callback1
-	callback MAPCALLBACK_OBJECTS, .Callback2
+	callback MAPCALLBACK_TILES, BattleTowerOutsideNoopCallback
+	callback MAPCALLBACK_OBJECTS, BattleTowerOutsideShowCiviliansCallback
 
-.Callback1:
+BattleTowerOutsideNoopCallback:
 	endcallback
 
-.Callback2:
-	clearevent EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
+BattleTowerOutsideShowCiviliansCallback:
+	clearevent EVENT_BATTLE_TOWER_OPEN_CIVILIANS
 	endcallback
 
 BattleTowerOutsideYoungsterScript:
@@ -30,8 +30,7 @@ BattleTowerOutsideSailorScript:
 BattleTowerOutsideSign:
 	jumptext BattleTowerOutsideSignText
 
-BattleTowerOutsideYoungsterText_NotYetOpen:
-; unreferenced
+BattleTowerOutsideYoungsterText_NotYetOpen: ; unreferenced
 	text "Wow, the BATTLE"
 	line "TOWER is huge! My"
 
@@ -39,8 +38,7 @@ BattleTowerOutsideYoungsterText_NotYetOpen:
 	line "looking up at it."
 	done
 
-BattleTowerOutsideYoungsterText_Mobile:
-; unreferenced
+BattleTowerOutsideYoungsterText_Mobile: ; unreferenced
 	text "Wow, the BATTLE"
 	line "TOWER is huge!"
 
@@ -63,8 +61,7 @@ BattleTowerOutsideYoungsterText:
 	cont "in there!"
 	done
 
-BattleTowerOutsideBeautyText_NotYetOpen:
-; unreferenced
+BattleTowerOutsideBeautyText_NotYetOpen: ; unreferenced
 	text "What on earth do"
 	line "they do here?"
 
@@ -86,8 +83,7 @@ BattleTowerOutsideBeautyText:
 	line "battle…"
 	done
 
-BattleTowerOutsideSailorText_Mobile:
-; unreferenced
+BattleTowerOutsideSailorText_Mobile: ; unreferenced
 	text "Ehehehe…"
 	line "I sneaked out of"
 	cont "work to come here."
@@ -108,8 +104,8 @@ BattleTowerOutsideSailorText:
 	line "all. That I must!"
 	done
 
-BattleTowerOutsideSignText_NotYetOpen:
-; unused; originally shown when the Battle Tower was closed
+BattleTowerOutsideSignText_NotYetOpen: ; unreferenced
+; originally shown when the Battle Tower was closed
 	text "BATTLE TOWER"
 	done
 
@@ -120,14 +116,14 @@ BattleTowerOutsideSignText:
 	line "Trainer Challenge!"
 	done
 
-BattleTowerOutsideText_DoorsClosed:
-; unused; originally shown when the Battle Tower was closed
+BattleTowerOutsideText_DoorsClosed: ; unreferenced
+; originally shown when the Battle Tower was closed
 	text "The BATTLE TOWER's"
 	line "doors are closed…"
 	done
 
-BattleTowerOutsideText_DoorsOpen:
-; unused; originally shown after the Battle Tower opened
+BattleTowerOutsideText_DoorsOpen: ; unreferenced
+; originally shown after the Battle Tower opened
 	text "It's open!"
 	done
 
@@ -148,5 +144,5 @@ BattleTowerOutside_MapEvents:
 	def_object_events
 	object_event  6, 12, SPRITE_STANDING_YOUNGSTER, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, PAL_NPC_RED, OBJECTTYPE_SCRIPT, 0, BattleTowerOutsideYoungsterScript, -1
 	object_event 13, 11, SPRITE_BEAUTY, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, BattleTowerOutsideBeautyScript, -1
-	object_event 12, 18, SPRITE_SAILOR, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, BattleTowerOutsideSailorScript, EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
+	object_event 12, 18, SPRITE_SAILOR, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 1, 0, -1, -1, 0, OBJECTTYPE_SCRIPT, 0, BattleTowerOutsideSailorScript, EVENT_BATTLE_TOWER_OPEN_CIVILIANS
 	object_event 12, 24, SPRITE_LASS, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, PAL_NPC_GREEN, OBJECTTYPE_SCRIPT, 0, ObjectEvent, -1

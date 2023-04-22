@@ -1,3 +1,12 @@
+; decoration attributes
+rsreset
+DEF DECOATTR_TYPE       rb
+DEF DECOATTR_NAME       rb
+DEF DECOATTR_ACTION     rb
+DEF DECOATTR_EVENT_FLAG rw
+DEF DECOATTR_SPRITE     rb
+DEF DECOATTR_STRUCT_LENGTH EQU _RS
+
 ; decoration types
 	const_def 1
 	const DECO_PLANT
@@ -6,9 +15,11 @@
 	const DECO_POSTER
 	const DECO_DOLL
 	const DECO_BIGDOLL
+DEF NUM_DECO_TYPES EQU const_value - 1
 
 ; DecorationNames indexes (see data/decorations/names.asm)
-	const_def 1
+	const_def
+	const CANCEL_DECO
 	const PUT_IT_AWAY
 	const MAGNAPLANT
 	const TROPICPLANT
@@ -34,6 +45,7 @@
 	const BLUE_CARPET
 	const YELLOW_CARPET
 	const GREEN_CARPET
+DEF NUM_DECO_NAMES EQU const_value
 
 ; DoDecorationAction2.DecoActions indexes (see engine/overworld/decorations.asm)
 	const_def 1
@@ -51,15 +63,14 @@
 	const PUT_AWAY_BIG_DOLL
 	const SET_UP_DOLL
 	const PUT_AWAY_DOLL
-	const SET_UP_ORNAMENT
-	const PUT_AWAY_ORNAMENT
+DEF NUM_DECO_ACTIONS EQU const_value - 1
 
-__deco_value__ = 0
+DEF __deco_value__ = 0
 
-deco: MACRO
+MACRO deco
 	const DECO_\1
-DECOFLAG_\1 EQU __deco_value__
-__deco_value__ = __deco_value__ + 1
+	DEF DECOFLAG_\1 EQU __deco_value__
+	DEF __deco_value__ += 1
 ENDM
 
 ; decorations:
@@ -123,7 +134,8 @@ ENDM
 	deco  GEODUDE_DOLL
 	deco  MACHOP_DOLL
 	deco  TENTACOOL_DOLL
-NUM_NON_TROPHY_DECOS EQU __deco_value__
+DEF NUM_NON_TROPHY_DECOS EQU __deco_value__
 	deco  GOLD_TROPHY_DOLL
 	deco  SILVER_TROPHY_DOLL
-NUM_DECOS EQU __deco_value__
+DEF NUM_DECOS EQU __deco_value__
+DEF NUM_DECO_CATEGORIES EQU const_value - 1 - NUM_DECOS

@@ -1,7 +1,6 @@
 ; song ids
 ; Music indexes (see audio/music_pointers.asm)
 	const_def
-
 	const MUSIC_NONE                         ; 00
 	const MUSIC_TITLE                        ; 01
 	const MUSIC_ROUTE_1                      ; 02
@@ -95,7 +94,6 @@
 	const MUSIC_LAKE_OF_RAGE_ROCKET_RADIO    ; 5a
 	const MUSIC_PRINTER                      ; 5b
 	const MUSIC_POST_CREDITS                 ; 5c
-
 ; new to Crystal
 	const MUSIC_CLAIR                        ; 5d
 	const MUSIC_MOBILE_ADAPTER_MENU          ; 5e
@@ -107,14 +105,15 @@
 	const MUSIC_SUICUNE_BATTLE               ; 64
 	const MUSIC_BATTLE_TOWER_LOBBY           ; 65
 	const MUSIC_MOBILE_CENTER                ; 66
+DEF NUM_MUSIC_SONGS EQU const_value
 
 ; GetMapMusic picks music for this value (see home/map.asm)
-MUSIC_MAHOGANY_MART EQU $64
+DEF MUSIC_MAHOGANY_MART EQU $64
 
 ; ExitPokegearRadio_HandleMusic uses these values
-RESTART_MAP_MUSIC EQU $fe
-ENTER_MAP_MUSIC   EQU $ff
+DEF RESTART_MAP_MUSIC EQU $fe
+DEF ENTER_MAP_MUSIC   EQU $ff
 
 ; GetMapMusic picks music for this bit flag
-RADIO_TOWER_MUSIC_F EQU 7
-RADIO_TOWER_MUSIC EQU 1 << RADIO_TOWER_MUSIC_F
+DEF RADIO_TOWER_MUSIC_F EQU 7
+DEF RADIO_TOWER_MUSIC EQU 1 << RADIO_TOWER_MUSIC_F

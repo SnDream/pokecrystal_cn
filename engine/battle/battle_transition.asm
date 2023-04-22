@@ -1,13 +1,13 @@
 ; BattleTransitionJumptable.Jumptable indexes
-BATTLETRANSITION_CAVE             EQU $01
-BATTLETRANSITION_CAVE_STRONGER    EQU $09
-BATTLETRANSITION_NO_CAVE          EQU $10
-BATTLETRANSITION_NO_CAVE_STRONGER EQU $18
-BATTLETRANSITION_FINISH           EQU $20
-BATTLETRANSITION_END              EQU $80
+DEF BATTLETRANSITION_CAVE             EQU $01
+DEF BATTLETRANSITION_CAVE_STRONGER    EQU $09
+DEF BATTLETRANSITION_NO_CAVE          EQU $10
+DEF BATTLETRANSITION_NO_CAVE_STRONGER EQU $18
+DEF BATTLETRANSITION_FINISH           EQU $20
+DEF BATTLETRANSITION_END              EQU $80
 
-BATTLETRANSITION_SQUARE EQU "8" ; $fe
-BATTLETRANSITION_BLACK  EQU "9" ; $ff
+DEF BATTLETRANSITION_SQUARE EQU "8" ; $fe
+DEF BATTLETRANSITION_BLACK  EQU "9" ; $ff
 
 DoBattleTransition:
 	call .InitGFX
@@ -21,6 +21,7 @@ DoBattleTransition:
 	ld hl, hVBlank
 	ld a, [hl]
 	push af
+	vc_hook Reduce_battle_transition_flashing
 	ld [hl], $1
 
 .loop
@@ -58,6 +59,7 @@ DoBattleTransition:
 	ld a, $1 ; unnecessary bankswitch?
 	ldh [rSVBK], a
 	pop af
+	vc_hook Stop_reducing_battle_transition_flashing
 	ldh [hVBlank], a
 	call DelayFrame
 	ret
@@ -206,14 +208,13 @@ BattleTransitionJumptable:
 	const TRANS_NO_CAVE_STRONGER
 
 ; transition animation bits
-TRANS_STRONGER_F EQU 0 ; bit set in TRANS_CAVE_STRONGER and TRANS_NO_CAVE_STRONGER
-TRANS_NO_CAVE_F EQU 1 ; bit set in TRANS_NO_CAVE and TRANS_NO_CAVE_STRONGER
+DEF TRANS_STRONGER_F EQU 0 ; bit set in TRANS_CAVE_STRONGER and TRANS_NO_CAVE_STRONGER
+DEF TRANS_NO_CAVE_F  EQU 1 ; bit set in TRANS_NO_CAVE and TRANS_NO_CAVE_STRONGER
 
 StartTrainerBattle_DetermineWhichAnimation:
 ; The screen flashes a different number of times depending on the level of
 ; your lead Pokemon relative to the opponent's.
-; BUG: wBattleMonLevel and wEnemyMonLevel are not set at this point, so whatever
-; values happen to be there will determine the animation.
+; BUG: Battle transitions fail to account for enemy's level (see docs/bugs_and_glitches.md)
 	ld de, 0
 	ld a, [wBattleMonLevel]
 	add 3
@@ -258,7 +259,7 @@ StartTrainerBattle_NextScene:
 StartTrainerBattle_SetUpBGMap:
 	call StartTrainerBattle_NextScene
 	xor a
-	ld [wcf64], a
+	ld [wBattleTransitionCounter], a
 	ldh [hBGMapMode], a
 	ret
 
@@ -272,7 +273,7 @@ StartTrainerBattle_Flash:
 	ld a, [wTimeOfDayPalset]
 	cp DARKNESS_PALSET
 	jr z, .done
-	ld hl, wcf64
+	ld hl, wBattleTransitionCounter
 	ld a, [hl]
 	inc [hl]
 	srl a
@@ -290,7 +291,7 @@ StartTrainerBattle_Flash:
 
 .done
 	xor a
-	ld [wcf64], a
+	ld [wBattleTransitionCounter], a
 	scf
 	ret
 
@@ -310,6 +311,7 @@ StartTrainerBattle_Flash:
 	dc 0, 0, 0, 1
 
 StartTrainerBattle_SetUpForWavyOutro:
+	vc_hook Stop_reducing_battle_transition_flashing_WavyOutro
 	farcall RespawnPlayerAndOpponent
 	ld a, BANK(wLYOverrides)
 	ldh [rSVBK], a
@@ -322,12 +324,12 @@ StartTrainerBattle_SetUpForWavyOutro:
 	ld a, $90
 	ldh [hLYOverrideEnd], a
 	xor a
-	ld [wcf64], a
-	ld [wcf65], a
+	ld [wBattleTransitionCounter], a
+	ld [wBattleTransitionSineWaveOffset], a
 	ret
 
 StartTrainerBattle_SineWave:
-	ld a, [wcf64]
+	ld a, [wBattleTransitionCounter]
 	cp $60
 	jr nc, .end
 	call .DoSineWave
@@ -339,10 +341,10 @@ StartTrainerBattle_SineWave:
 	ret
 
 .DoSineWave:
-	ld hl, wcf65
+	ld hl, wBattleTransitionSineWaveOffset
 	ld a, [hl]
 	inc [hl]
-	ld hl, wcf64
+	ld hl, wBattleTransitionCounter
 	ld d, [hl]
 	add [hl]
 	ld [hl], a
@@ -367,18 +369,19 @@ StartTrainerBattle_SineWave:
 	ret
 
 StartTrainerBattle_SetUpForSpinOutro:
+	vc_hook Stop_reducing_battle_transition_flashing_SpinOutro
 	farcall RespawnPlayerAndOpponent
 	ld a, BANK(wLYOverrides)
 	ldh [rSVBK], a
 	call StartTrainerBattle_NextScene
 	xor a
-	ld [wcf64], a
+	ld [wBattleTransitionCounter], a
 	ret
 
 StartTrainerBattle_SpinToBlack:
 	xor a
 	ldh [hBGMapMode], a
-	ld a, [wcf64]
+	ld a, [wBattleTransitionCounter]
 	ld e, a
 	ld d, 0
 	ld hl, .spin_quadrants
@@ -388,13 +391,13 @@ endr
 	ld a, [hli]
 	cp -1
 	jr z, .end
-	ld [wcf65], a
+	ld [wBattleTransitionSineWaveOffset], a
 	call .load
 	ld a, 1
 	ldh [hBGMapMode], a
 	call DelayFrame
 	call DelayFrame
-	ld hl, wcf64
+	ld hl, wBattleTransitionCounter
 	inc [hl]
 	ret
 
@@ -418,11 +421,11 @@ endr
 	const LOWER_RIGHT
 
 ; quadrant bits
-RIGHT_QUADRANT_F EQU 0 ; bit set in UPPER_RIGHT and LOWER_RIGHT
-LOWER_QUADRANT_F EQU 1 ; bit set in LOWER_LEFT and LOWER_RIGHT
+DEF RIGHT_QUADRANT_F EQU 0 ; bit set in UPPER_RIGHT and LOWER_RIGHT
+DEF LOWER_QUADRANT_F EQU 1 ; bit set in LOWER_LEFT and LOWER_RIGHT
 
 .spin_quadrants:
-spin_quadrant: MACRO
+MACRO spin_quadrant
 	db \1
 	dw \2
 	dwcoord \3, \4
@@ -449,7 +452,7 @@ ENDM
 	spin_quadrant LOWER_LEFT,  .wedge1,  1, 11
 	db -1
 
-.load
+.load:
 	ld a, [hli]
 	ld e, a
 	ld a, [hli]
@@ -464,7 +467,7 @@ ENDM
 	inc de
 .loop1
 	ld [hl], BATTLETRANSITION_BLACK
-	ld a, [wcf65]
+	ld a, [wBattleTransitionSineWaveOffset]
 	bit RIGHT_QUADRANT_F, a
 	jr z, .leftside
 	inc hl
@@ -475,7 +478,7 @@ ENDM
 	dec c
 	jr nz, .loop1
 	pop hl
-	ld a, [wcf65]
+	ld a, [wBattleTransitionSineWaveOffset]
 	bit LOWER_QUADRANT_F, a
 	ld bc, SCREEN_WIDTH
 	jr z, .upper
@@ -490,7 +493,7 @@ ENDM
 	jr z, .loop
 	ld c, a
 .loop2
-	ld a, [wcf65]
+	ld a, [wBattleTransitionSineWaveOffset]
 	bit RIGHT_QUADRANT_F, a
 	jr z, .leftside2
 	dec hl
@@ -509,18 +512,19 @@ ENDM
 .wedge5: db 4, 0, 3, 0, 3, 0, 2, 0, 2, 0, 1, 0, 1, 0, 1, -1
 
 StartTrainerBattle_SetUpForRandomScatterOutro:
+	vc_hook Stop_reducing_battle_transition_flashing_ScatterOutro
 	farcall RespawnPlayerAndOpponent
 	ld a, BANK(wLYOverrides)
 	ldh [rSVBK], a
 	call StartTrainerBattle_NextScene
 	ld a, $10
-	ld [wcf64], a
+	ld [wBattleTransitionCounter], a
 	ld a, 1
 	ldh [hBGMapMode], a
 	ret
 
 StartTrainerBattle_SpeckleToBlack:
-	ld hl, wcf64
+	ld hl, wBattleTransitionCounter
 	ld a, [hl]
 	and a
 	jr z, .done
@@ -763,6 +767,7 @@ StartTrainerBattle_DrawSineWave:
 	calc_sine_wave
 
 StartTrainerBattle_ZoomToBlack:
+	vc_hook Stop_reducing_battle_transition_flashing_ZoomToBlack
 	farcall RespawnPlayerAndOpponent
 	ld de, .boxes
 
@@ -793,7 +798,7 @@ StartTrainerBattle_ZoomToBlack:
 	ret
 
 .boxes
-zoombox: MACRO
+MACRO zoombox
 ; width, height, start y, start x
 	db \1, \2
 	dwcoord \3, \4

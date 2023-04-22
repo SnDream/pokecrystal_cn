@@ -17,19 +17,19 @@ HealMachineAnim:
 	; 1: Left (Elm's Lab)
 	; 2: Up (Hall of Fame)
 	ld a, [wScriptVar]
-	ld [wBuffer1], a
+	ld [wHealMachineAnimType], a
 	ldh a, [rOBP1]
-	ld [wBuffer2], a
+	ld [wHealMachineTempOBP1], a
 	call .DoJumptableFunctions
-	ld a, [wBuffer2]
+	ld a, [wHealMachineTempOBP1]
 	call DmgToCgbObjPal1
 	ret
 
 .DoJumptableFunctions:
 	xor a
-	ld [wBuffer3], a
-.jumpable_loop
-	ld a, [wBuffer1]
+	ld [wHealMachineAnimState], a
+.jumptable_loop
+	ld a, [wHealMachineAnimType]
 	ld e, a
 	ld d, 0
 	ld hl, .Pointers
@@ -38,17 +38,17 @@ HealMachineAnim:
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld a, [wBuffer3]
+	ld a, [wHealMachineAnimState]
 	ld e, a
 	inc a
-	ld [wBuffer3], a
+	ld [wHealMachineAnimState], a
 	add hl, de
 	ld a, [hl]
 	cp HEALMACHINESTATE_FINISH
 	jr z, .finish
 	ld hl, .Jumptable
 	rst JumpTable
-	jr .jumpable_loop
+	jr .jumptable_loop
 
 .finish
 	ret
@@ -56,19 +56,19 @@ HealMachineAnim:
 .Pointers:
 ; entries correspond to HEALMACHINE_* constants
 	dw .Pokecenter
-	dw .ElmLab
+	dw .ElmsLab
 	dw .HallOfFame
 
-healmachineanimseq: MACRO
-rept _NARG
-	db HEALMACHINESTATE_\1
-	shift
-endr
+MACRO healmachineanimseq
+	rept _NARG
+		db HEALMACHINESTATE_\1
+		shift
+	endr
 ENDM
 
 .Pokecenter:
 	healmachineanimseq LOADGFX, PCLOADBALLS, PLAYMUSIC, FINISH
-.ElmLab:
+.ElmsLab:
 	healmachineanimseq LOADGFX, PCLOADBALLS, PLAYMUSIC, FINISH
 .HallOfFame:
 	healmachineanimseq LOADGFX, HOFLOADBALLS, HOFPLAYSFX, FINISH
@@ -91,14 +91,14 @@ ENDM
 	ret
 
 .PC_LoadBallsOntoMachine:
-	ld hl, wVirtualOAMSprite32
+	ld hl, wShadowOAMSprite32
 	ld de, .PC_ElmsLab_OAM
 	call .PlaceHealingMachineTile
 	call .PlaceHealingMachineTile
 	jr .LoadBallsOntoMachine
 
 .HOF_LoadBallsOntoMachine:
-	ld hl, wVirtualOAMSprite32
+	ld hl, wShadowOAMSprite32
 	ld de, .HOF_OAM
 
 .LoadBallsOntoMachine:
@@ -237,7 +237,7 @@ INCLUDE "gfx/overworld/heal_machine.pal"
 
 .PlaceHealingMachineTile:
 	push bc
-	ld a, [wBuffer1]
+	ld a, [wHealMachineAnimType]
 	bcpixel 2, 4
 	cp HEALMACHINE_ELMS_LAB
 	jr z, .okay

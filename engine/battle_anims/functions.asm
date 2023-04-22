@@ -13,6 +13,7 @@ DoBattleAnimFrame:
 
 .Jumptable:
 ; entries correspond to BATTLEANIMFUNC_* constants
+	table_width 2, DoBattleAnimFrame.Jumptable
 	dw BattleAnimFunction_Null
 	dw BattleAnimFunction_MoveFromUserToTarget
 	dw BattleAnimFunction_MoveFromUserToTargetAndDisappear
@@ -93,6 +94,7 @@ DoBattleAnimFrame:
 	dw BattleAnimFunction_AncientPower
 	dw BattleAnimFunction_RockSmash
 	dw BattleAnimFunction_Cotton
+	assert_table_length NUM_BATTLEANIMFUNCS
 
 BattleAnimFunction_Null:
 	call BattleAnim_AnonJumptable
@@ -124,17 +126,17 @@ BattleAnimFunction_ThrowFromUserToTarget:
 	ld hl, BATTLEANIMSTRUCT_YCOORD
 	add hl, bc
 	dec [hl]
-	; Decrease ??? and hold onto its previous value (argument of the sine function)
+	; Decrease var1 and hold onto its previous value (argument of the sine function)
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	ld a, [hl]
 	dec [hl]
-	; Get ???, which is the amplitude of the sine function
+	; Get param (amplitude of the sine function)
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
 	ld d, [hl]
 	call BattleAnim_Sine
-	; Store the result in the Y offset
+	; Store the sine result in the Y offset
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
 	ld [hl], a
@@ -778,7 +780,7 @@ BattleAnimFunction_FireBlast:
 	call DeinitBattleAnimation
 	ret
 
-.one 
+.one
 	; Flame that moves upward
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
@@ -1831,7 +1833,7 @@ BattleAnimFunction_Absorb:
 	ret
 
 BattleAnimFunction_Wrap:
-; Plays out object Frameset. Use anim_incobj to move to next frameset
+; Plays out object frameset. Use anim_incobj to move to next frameset
 	call BattleAnim_AnonJumptable
 .anon_dw
 	dw .zero
@@ -2145,13 +2147,13 @@ BattleAnimFunction_Egg:
 	call BattleAnim_IncAnonJumptableIndex ; jumps to three
 	ret
 
-.egg_bomb_done 
+.egg_bomb_done
 	; Increases jumptable index twice to four
 	call BattleAnim_IncAnonJumptableIndex
 	inc [hl]
 	ret
 
-.three 
+.three
 	; Waits in place
 	ld hl, BATTLEANIMSTRUCT_VAR2
 	add hl, bc
@@ -3387,7 +3389,7 @@ BattleAnimFunction_SkyAttack:
 	call DeinitBattleAnimation
 	ret
 
-.SkyAttack_CyclePalette: 
+.SkyAttack_CyclePalette:
 ; Cycles wOBP0 pallete
 	ld hl, BATTLEANIMSTRUCT_VAR2
 	add hl, bc
@@ -3396,7 +3398,7 @@ BattleAnimFunction_SkyAttack:
 	inc [hl]
 	srl a
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ldh a, [hSGB]
 	and a
 	jr nz, .sgb
@@ -3614,7 +3616,7 @@ BattleAnimFunction_MetronomeHand:
 
 BattleAnimFunction_MetronomeSparkleSketch:
 ; Sideways wave motion while also moving downward until it disappears at y coord $20
-; Obj Param: Is used internally only
+; Obj Param: Only used internally
 	ld hl, BATTLEANIMSTRUCT_YOFFSET
 	add hl, bc
 	ld a, [hl]
@@ -3805,7 +3807,7 @@ BattleAnimFunction_HealBellNotes:
 	ret
 
 BattleAnimFunction_BatonPass:
-; Object falls vertially and bounces on the ground
+; Object falls vertically and bounces on the ground
 ; Obj Param: Defines speed and duration
 	ld hl, BATTLEANIMSTRUCT_PARAM
 	add hl, bc
@@ -3838,7 +3840,7 @@ BattleAnimFunction_BatonPass:
 
 BattleAnimFunction_EncoreBellyDrum:
 ; Object moves at an arc for 8 frames and disappears
-; Obj Param: Defines startging position in the arc
+; Obj Param: Defines starting position in the arc
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
 	ld a, [hl]
@@ -3900,7 +3902,7 @@ BattleAnimFunction_SwaggerMorningSun:
 	ret
 
 BattleAnimFunction_HiddenPower:
-; Moves object in a ring around position. Uses anim_incobj to move to second phase,  where it expands the radius 8 pixels at a time for 13 frames and then disappears
+; Moves object in a ring around position. Uses anim_incobj to move to second phase, where it expands the radius 8 pixels at a time for 13 frames and then disappears
 ; Obj Param: Defines starting position in circle
 	call BattleAnim_AnonJumptable
 .anon_dw
@@ -4202,7 +4204,7 @@ BattleAnimFunction_Cotton:
 	ret
 
 BattleAnimFunction_AncientPower:
-; Object moves up and down in an arc for $20 frames and then disappear
+; Object moves up and down in an arc for $20 frames and then disappears
 ; Obj Param: Defines range of arc motion
 	ld hl, BATTLEANIMSTRUCT_VAR1
 	add hl, bc
@@ -4299,14 +4301,14 @@ BattleAnim_Cosine_e:
 	ld e, a
 	ret
 
-BattleAnim_AbsSinePrecise:
+BattleAnim_AbsSinePrecise: ; unreferenced
 	ld a, e
 	call BattleAnim_Sine
 	ld e, l
 	ld d, h
 	ret
 
-BattleAnim_AbsCosinePrecise:
+BattleAnim_AbsCosinePrecise: ; unreferenced
 	ld a, e
 	call BattleAnim_Cosine
 	ld e, l

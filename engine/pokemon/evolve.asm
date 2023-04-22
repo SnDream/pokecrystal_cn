@@ -202,7 +202,7 @@ EvolveAfterBattle_MasterLoop:
 	ld [wEvolutionNewSpecies], a
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	call CopyName1
 	ld hl, EvolvingText
 	call PrintText
@@ -236,7 +236,7 @@ EvolveAfterBattle_MasterLoop:
 	ld [wCurSpecies], a
 	ld [wTempMonSpecies], a
 	ld [wEvolutionNewSpecies], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	push hl
@@ -327,7 +327,7 @@ EvolveAfterBattle_MasterLoop:
 	inc hl
 	jp .loop
 
-; unused
+.UnusedReturnToMap: ; unreferenced
 	pop hl
 .ReturnToMap:
 	pop de
@@ -348,7 +348,7 @@ UpdateSpeciesNameIfNotNicknamed:
 	ld a, [wCurSpecies]
 	push af
 	ld a, [wBaseDexNo]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	pop af
 	ld [wCurSpecies], a
@@ -369,7 +369,7 @@ UpdateSpeciesNameIfNotNicknamed:
 	call AddNTimes
 	push hl
 	ld a, [wCurSpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	pop de
@@ -462,7 +462,7 @@ LearnLevelMoves:
 .learn
 	ld a, d
 	ld [wPutativeTMHMMove], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetMoveName
 	call CopyName1
 	predef LearnMove
@@ -509,10 +509,10 @@ FillMoves:
 	ld a, [wCurPartyLevel]
 	cp b
 	jp c, .done
-	ld a, [wEvolutionOldSpecies]
+	ld a, [wSkipMovesBeforeLevelUp]
 	and a
 	jr z, .CheckMove
-	ld a, [wd002]
+	ld a, [wPrevPartyLevel]
 	cp b
 	jr nc, .GetMove
 

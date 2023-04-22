@@ -93,6 +93,6 @@ SafeUpdateSprites::
 	ldh [hOAMUpdate], a
 	ret
 
-; unused
+SetCarryFlag:: ; unreferenced
 	scf
 	ret

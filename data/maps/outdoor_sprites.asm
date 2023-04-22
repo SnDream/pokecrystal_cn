@@ -2,7 +2,8 @@
 ; Maps with environment ROUTE or TOWN can only use these sprites.
 
 OutdoorSprites:
-; entries correspond to map groups
+; entries correspond to MAPGROUP_* constants
+	table_width 2, OutdoorSprites
 	dw OlivineGroupSprites
 	dw MahoganyGroupSprites
 	dw DungeonsGroupSprites
@@ -29,6 +30,7 @@ OutdoorSprites:
 	dw NewBarkGroupSprites
 	dw SaffronGroupSprites
 	dw CherrygroveGroupSprites
+	assert_table_length NUM_MAP_GROUPS
 
 PalletGroupSprites:
 	db SPRITE_SUICUNE
@@ -200,7 +202,7 @@ CeladonGroupSprites:
 	db SPRITE_YOUNGSTER
 	db SPRITE_LASS
 	db SPRITE_BIKER
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_BLUE
 	db SPRITE_POKE_BALL
 	db SPRITE_FRUIT_TREE
@@ -318,7 +320,7 @@ NewBarkGroupSprites:
 	db SPRITE_BIG_ONIX
 	db SPRITE_SUDOWOODO
 	db SPRITE_BIG_SNORLAX
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_TEACHER
 	db SPRITE_FISHER
 	db SPRITE_COOLTRAINER_M
@@ -343,7 +345,7 @@ CherrygroveGroupSprites:
 	db SPRITE_BIG_ONIX
 	db SPRITE_SUDOWOODO
 	db SPRITE_BIG_SNORLAX
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_TEACHER
 	db SPRITE_FISHER
 	db SPRITE_COOLTRAINER_M
@@ -368,7 +370,7 @@ SilverGroupSprites:
 	db SPRITE_BIG_ONIX
 	db SPRITE_SUDOWOODO
 	db SPRITE_BIG_SNORLAX
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_TEACHER
 	db SPRITE_FISHER
 	db SPRITE_COOLTRAINER_M
@@ -451,7 +453,7 @@ AzaleaGroupSprites:
 	db SPRITE_TEACHER
 	db SPRITE_AZALEA_ROCKET
 	db SPRITE_LASS
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_FRUIT_TREE
 	db SPRITE_SLOWPOKE
 
@@ -663,7 +665,7 @@ CableClubGroupSprites:
 	db SPRITE_POKEFAN_M
 	db SPRITE_GRAMPS
 	db SPRITE_FAIRY
-	db SPRITE_SILVER
+	db SPRITE_RIVAL
 	db SPRITE_FISHING_GURU
 	db SPRITE_POKE_BALL
 	db SPRITE_POKEDEX

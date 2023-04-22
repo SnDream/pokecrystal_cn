@@ -1,6 +1,6 @@
-FIELDMOVE_GRASS EQU $80
-FIELDMOVE_TREE EQU $84
-FIELDMOVE_FLY EQU $84
+DEF FIELDMOVE_GRASS EQU $80
+DEF FIELDMOVE_TREE  EQU $84
+DEF FIELDMOVE_FLY   EQU $84
 
 PlayWhirlpoolSound:
 	call WaitSFX
@@ -64,8 +64,8 @@ ShakeHeadbuttTree:
 	xor a
 	ldh [hBGMapMode], a
 	farcall ClearSpriteAnims
-	ld hl, wVirtualOAMSprite36
-	ld bc, wVirtualOAMEnd - wVirtualOAMSprite36
+	ld hl, wShadowOAMSprite36
+	ld bc, wShadowOAMEnd - wShadowOAMSprite36
 	xor a
 	call ByteFill
 	ld de, Font
@@ -234,12 +234,12 @@ Cut_SpawnLeaf:
 
 Cut_GetLeafSpawnCoords:
 	ld de, 0
-	ld a, [wMetatileStandingX]
+	ld a, [wPlayerMetatileX]
 	bit 0, a
 	jr z, .left_side
 	set 0, e
 .left_side
-	ld a, [wMetatileStandingY]
+	ld a, [wPlayerMetatileY]
 	bit 0, a
 	jr z, .top_side
 	set 1, e
@@ -369,7 +369,7 @@ FlyToAnim:
 	ret
 
 .RestorePlayerSprite_DespawnLeaves:
-	ld hl, wVirtualOAMSprite00TileID
+	ld hl, wShadowOAMSprite00TileID
 	xor a
 	ld c, 4
 .OAMloop
@@ -380,8 +380,8 @@ endr
 	inc a
 	dec c
 	jr nz, .OAMloop
-	ld hl, wVirtualOAMSprite04
-	ld bc, wVirtualOAMEnd - wVirtualOAMSprite04
+	ld hl, wShadowOAMSprite04
+	ld bc, wShadowOAMEnd - wShadowOAMSprite04
 	xor a
 	call ByteFill
 	ret
@@ -426,7 +426,7 @@ FlyFunction_FrameTimer:
 	ret
 
 .SpawnLeaf:
-	ld hl, wcf65
+	ld hl, wFrameCounter2
 	ld a, [hl]
 	inc [hl]
 	and $7

@@ -45,8 +45,8 @@ InitMobileProfile:
 	ld [wMusicFadeID + 1], a
 	ld c, 20
 	call DelayFrames
-	ld b, $1
-	call GetMysteryGift_MobileAdapterLayout
+	ld b, CRYSTAL_CGB_MOBILE_1
+	call GetCrystalCGBLayout
 	call ClearBGPalettes
 	hlcoord 0, 0
 	ld b,  2
@@ -295,7 +295,7 @@ asm_4828d:
 	call WaitBGMap
 	ld a, [wPlayerGender]
 	inc a
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	call StaticMenuJoypad
 	call PlayClickSFX
 	call ExitMenu
@@ -339,7 +339,7 @@ Function48304:
 	ld b, $c
 	ld c, $8
 	call Function48cdc
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	ld b, a
 	ld a, [wMenuScrollPosition]
 	ld c, a
@@ -350,7 +350,7 @@ Function48304:
 	jr c, .asm_4833f
 	sub $29
 	inc a
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, $29
 .asm_4833f
 	ld [wMenuScrollPosition], a
@@ -363,7 +363,7 @@ Function48304:
 	ld d, a
 	pop bc
 	ld a, b
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, c
 	ld [wMenuScrollPosition], a
 	ld a, d
@@ -412,7 +412,7 @@ Function48383:
 .asm_483af
 	ld hl, wMenuCursorY
 	ld a, [hl]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	scf
 .asm_483b7
 	pop bc
@@ -593,10 +593,8 @@ MenuData_0x4851b:
 
 .Items:
 	db 46
-x = 0
-rept 46
+for x, 46
 	db x
-x = x + 1
 endr
 	db -1
 
@@ -652,8 +650,8 @@ Wakayama:  db "わかやまけん@" ; Wakayama
 Function48689:
 	ld c, 7
 	call DelayFrames
-	ld b, $1
-	call GetMysteryGift_MobileAdapterLayout
+	ld b, CRYSTAL_CGB_MOBILE_1
+	call GetCrystalCGBLayout
 	call ClearBGPalettes
 	hlcoord 0, 0
 	ld b, 4
@@ -1080,7 +1078,7 @@ asm_48922:
 	call DelayFrames
 	jr asm_48972
 
-Function4895a:
+Function4895a: ; unreferenced
 	ldh a, [hJoyPressed]
 	and a
 	jr z, .asm_48965
@@ -1608,7 +1606,7 @@ Function48c8e: ; unreferenced
 	call WaitBGMap
 	ret
 
-Function48ca3:
+Function48ca3: ; unreferenced
 	push af
 	push bc
 	push de

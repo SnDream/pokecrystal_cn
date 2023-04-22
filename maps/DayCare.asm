@@ -6,9 +6,9 @@ DayCare_MapScripts:
 	def_scene_scripts
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .EggCheckCallback
+	callback MAPCALLBACK_OBJECTS, DayCareEggCheckCallback
 
-.EggCheckCallback:
+DayCareEggCheckCallback:
 	checkflag ENGINE_DAY_CARE_MAN_HAS_EGG
 	iftrue .PutDayCareManOutside
 	clearevent EVENT_DAY_CARE_MAN_IN_DAY_CARE
@@ -78,7 +78,7 @@ Text_GrampsLookingForYou:
 	line "for you."
 	done
 
-Text_DayCareManTalksAboutEggTicket:
+Text_DayCareManTalksAboutEggTicket: ; unreferenced
 	text "I'm the DAY-CARE"
 	line "MAN."
 
@@ -125,7 +125,7 @@ DayCareManText_GiveOddEgg:
 	line "yours to keep!"
 	done
 
-DayCareText_ComeAgain:
+DayCareText_ComeAgain: ; unreferenced
 	text "Come again."
 	done
 

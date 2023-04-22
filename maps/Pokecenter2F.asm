@@ -6,44 +6,43 @@
 
 Pokecenter2F_MapScripts:
 	def_scene_scripts
-	scene_script .Scene0 ; SCENE_DEFAULT
-	scene_script .Scene1 ; SCENE_POKECENTER2F_LEAVE_TRADE_CENTER
-	scene_script .Scene2 ; SCENE_POKECENTER2F_LEAVE_COLOSSEUM
-	scene_script .Scene3 ; SCENE_POKECENTER2F_LEAVE_TIME_CAPSULE
-	scene_script .Scene4 ; SCENE_POKECENTER2F_LEAVE_MOBILE_TRADE_ROOM
-	scene_script .Scene5 ; SCENE_POKECENTER2F_LEAVE_MOBILE_BATTLE_ROOM
+	scene_script Pokecenter2FCheckMysteryGiftScene,      SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	scene_script Pokecenter2FLeaveTradeCenterScene,      SCENE_POKECENTER2F_LEAVE_TRADE_CENTER
+	scene_script Pokecenter2FLeaveColosseumScene,        SCENE_POKECENTER2F_LEAVE_COLOSSEUM
+	scene_script Pokecenter2FLeaveTimeCapsuleScene,      SCENE_POKECENTER2F_LEAVE_TIME_CAPSULE
+	scene_script Pokecenter2FLeaveMobileTradeRoomScene,  SCENE_POKECENTER2F_LEAVE_MOBILE_TRADE_ROOM
+	scene_script Pokecenter2FLeaveMobileBattleRoomScene, SCENE_POKECENTER2F_LEAVE_MOBILE_BATTLE_ROOM
 
 	def_callbacks
 
-.Scene0:
+Pokecenter2FCheckMysteryGiftScene:
 	special CheckMysteryGift
-	ifequal $0, .Scene0Done
+	ifequal $0, .done
 	clearevent EVENT_MYSTERY_GIFT_DELIVERY_GUY
 	checkevent EVENT_TEMPORARY_UNTIL_MAP_RELOAD_2
-	iftrue .Scene0Done
-	prioritysjump Pokecenter2F_AppearMysteryGiftDeliveryGuy
-
-.Scene0Done:
+	iftrue .done
+	sdefer Pokecenter2F_AppearMysteryGiftDeliveryGuy
+.done
 	end
 
-.Scene1:
-	prioritysjump Script_LeftCableTradeCenter
+Pokecenter2FLeaveTradeCenterScene:
+	sdefer Script_LeftCableTradeCenter
 	end
 
-.Scene2:
-	prioritysjump Script_LeftCableColosseum
+Pokecenter2FLeaveColosseumScene:
+	sdefer Script_LeftCableColosseum
 	end
 
-.Scene3:
-	prioritysjump Script_LeftTimeCapsule
+Pokecenter2FLeaveTimeCapsuleScene:
+	sdefer Script_LeftTimeCapsule
 	end
 
-.Scene4:
-	prioritysjump Script_LeftMobileTradeRoom
+Pokecenter2FLeaveMobileTradeRoomScene:
+	sdefer Script_LeftMobileTradeRoom
 	end
 
-.Scene5:
-	prioritysjump Script_LeftMobileBattleRoom
+Pokecenter2FLeaveMobileBattleRoomScene:
+	sdefer Script_LeftMobileBattleRoom
 	end
 
 Pokecenter2F_AppearMysteryGiftDeliveryGuy:
@@ -97,7 +96,7 @@ LinkReceptionistScript_Trade:
 	iffalse .LinkedToFirstGen
 	special CheckBothSelectedSameRoom
 	iffalse .IncompatibleRooms
-	writetext Text_PleaseComeIn2
+	writetext Text_PleaseComeIn
 	waitbutton
 	closetext
 	scall Pokecenter2F_CheckGender
@@ -152,7 +151,7 @@ LinkReceptionistScript_Trade:
 	special TryQuickSave
 	iffalse .Mobile_DidNotSave
 	special Function1011f1
-	writetext Text_PleaseComeIn2
+	writetext Text_PleaseComeIn
 	waitbutton
 	closetext
 	setval FALSE
@@ -199,7 +198,7 @@ LinkReceptionistScript_Battle:
 	iffalse .LinkedToFirstGen
 	special CheckBothSelectedSameRoom
 	iffalse .IncompatibleRooms
-	writetext Text_PleaseComeIn2
+	writetext Text_PleaseComeIn
 	waitbutton
 	closetext
 	scall Pokecenter2F_CheckGender
@@ -256,7 +255,7 @@ LinkReceptionistScript_Battle:
 	special Function103780
 	iffalse .Mobile_DidNotSave
 	special Function1011f1
-	writetext Text_PleaseComeIn2
+	writetext Text_PleaseComeIn
 	waitbutton
 	closetext
 	setval FALSE
@@ -332,7 +331,7 @@ LinkReceptionistScript_TimeCapsule:
 
 .OK:
 	special EnterTimeCapsule
-	writetext Text_PleaseComeIn2
+	writetext Text_PleaseComeIn
 	waitbutton
 	closetext
 	scall TimeCapsuleScript_CheckPlayerGender
@@ -374,15 +373,15 @@ LinkReceptionistScript_TimeCapsule:
 Script_LeftCableTradeCenter:
 	special WaitForOtherPlayerToExit
 	scall Script_WalkOutOfLinkTradeRoom
-	setscene SCENE_DEFAULT
-	setmapscene TRADE_CENTER, SCENE_DEFAULT
+	setscene SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	setmapscene TRADE_CENTER, SCENE_TRADECENTER_INITIALIZE
 	end
 
 Script_LeftMobileTradeRoom:
 	special Function101220
 	scall Script_WalkOutOfMobileTradeRoom
-	setscene SCENE_DEFAULT
-	setmapscene MOBILE_TRADE_ROOM, SCENE_DEFAULT
+	setscene SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	setmapscene MOBILE_TRADE_ROOM, SCENE_MOBILETRADEROOM_INITIALIZE
 	end
 
 Script_WalkOutOfMobileTradeRoom:
@@ -394,15 +393,15 @@ Script_WalkOutOfMobileTradeRoom:
 Script_LeftCableColosseum:
 	special WaitForOtherPlayerToExit
 	scall Script_WalkOutOfLinkBattleRoom
-	setscene SCENE_DEFAULT
-	setmapscene COLOSSEUM, SCENE_DEFAULT
+	setscene SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	setmapscene COLOSSEUM, SCENE_COLOSSEUM_INITIALIZE
 	end
 
 Script_LeftMobileBattleRoom:
 	special Function101220
 	scall Script_WalkOutOfMobileBattleRoom
-	setscene SCENE_DEFAULT
-	setmapscene MOBILE_BATTLE_ROOM, SCENE_DEFAULT
+	setscene SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	setmapscene MOBILE_BATTLE_ROOM, SCENE_MOBILEBATTLEROOM_INITIALIZE
 	end
 
 Script_WalkOutOfMobileBattleRoom:
@@ -577,8 +576,8 @@ Script_LeftTimeCapsule:
 	applymovement PLAYER, Pokecenter2FMovementData_PlayerTakesOneStepDown
 	applymovement POKECENTER2F_TIME_CAPSULE_RECEPTIONIST, Pokecenter2FMovementData_ReceptionistStepsRightLooksDown_2
 .Done:
-	setscene SCENE_DEFAULT
-	setmapscene TIME_CAPSULE, SCENE_DEFAULT
+	setscene SCENE_POKECENTER2F_CHECK_MYSTERY_GIFT
+	setmapscene TIME_CAPSULE, SCENE_TIMECAPSULE_INITIALIZE
 	end
 
 Pokecenter2FLinkRecordSign:
@@ -813,7 +812,7 @@ Text_TradeReceptionistMobile:
 	line "mobile phone?"
 	done
 
-Text_ThisWayToMobileRoom:
+Text_ThisWayToMobileRoom: ; unreferenced
 	text "This way to the"
 	line "MOBILE ROOM."
 	done
@@ -882,11 +881,11 @@ Text_PleaseComeAgain:
 	text "Please come again."
 	prompt
 
-Text_PleaseComeIn:
+Text_PleaseComeInDuplicate: ; unreferenced
 	text "Please come in."
 	prompt
 
-Text_TemporaryStagingInLinkRoom:
+Text_TemporaryStagingInLinkRoom: ; unreferenced
 	text "We'll put you in"
 	line "the link room for"
 	cont "the time being."
@@ -902,11 +901,11 @@ Text_IncompatibleRooms:
 	line "were chosen."
 	prompt
 
-Text_PleaseComeIn2:
+Text_PleaseComeIn:
 	text "Please come in."
 	done
 
-Text_PleaseEnter:
+Text_PleaseEnter: ; unreferenced
 	text "Please enter."
 	prompt
 

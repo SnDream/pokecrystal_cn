@@ -1,6 +1,7 @@
 ; Every Pokémon sorted alphabetically by name.
 
 AlphabeticalPokedexOrder:
+	table_width 1, AlphabeticalPokedexOrder
 	db ARBOK
 	db EKANS
 	db ARIADOS
@@ -252,3 +253,4 @@ AlphabeticalPokedexOrder:
 	db PINECO
 	db ODDISH
 	db RHYDON
+	assert_table_length NUM_POKEMON

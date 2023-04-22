@@ -1,9 +1,9 @@
-add_mobiletradeanim: MACRO
+MACRO add_mobiletradeanim
 \1_MobileTradeCmd:
 	dw \1
 ENDM
 
-mobiletradeanim: MACRO
+MACRO mobiletradeanim
 	db (\1_MobileTradeCmd - MobileTradeAnim_JumptableLoop.Jumptable) / 2
 ENDM
 
@@ -191,10 +191,10 @@ Function1080b7:
 	lb bc, BANK(TradePoofGFX), 12
 	call Request2bpp
 
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld hl, wSpriteAnimDict
 	ld [hli], a
-	ld [hl], $0
+	ld [hl], $00
 
 	ld a, [wPlayerTrademonSpecies]
 	ld hl, wPlayerTrademonDVs
@@ -239,10 +239,10 @@ Function108157:
 	ld a, $90
 	ldh [hWY], a
 	farcall ClearSpriteAnims
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld hl, wSpriteAnimDict
 	ld [hli], a
-	ld [hl], $0
+	ld [hl], $00
 	call DelayFrame
 	ld a, [wPlayerTrademonSpecies]
 	ld de, wPlayerTrademonSpeciesName
@@ -309,7 +309,7 @@ Function108201:
 	predef GetAnimatedFrontpic
 	ret
 
-Function108219:
+Function108219: ; unreferenced
 	ld [wCurPartySpecies], a
 	hlcoord 7, 2
 	ld d, $0
@@ -327,7 +327,7 @@ Function108229:
 
 MobileTradeAnim_InitSpeciesName:
 	push de
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	pop de
@@ -1474,7 +1474,7 @@ Function108b78:
 	ld [hld], a
 	pop af
 	ldh [rSVBK], a
-	ld a, TRUE 
+	ld a, TRUE
 	ldh [hCGBPalUpdate], a
 	ret
 
@@ -1557,7 +1557,7 @@ Function108bec:
 	text_far _MobileForPartnersMonText
 	text_end
 
-.MobilePlayersMonTradeText:
+.MobilePlayersMonTradeText: ; unreferenced
 	text_far _MobilePlayersMonTradeText
 	text_end
 
@@ -1636,7 +1636,7 @@ Function108c80:
 	ldh [rVBK], a
 	ret
 
-DebugMobileTrade:
+DebugMobileTrade: ; unreferenced
 ; localization error: NAME_LENGTH (11) should be NAME_LENGTH_JAPANESE (6) here
 
 	ld hl, .DebugTradeData
@@ -1741,7 +1741,7 @@ INCBIN "gfx/mobile/mobile_trade.tilemap.lz"
 MobileTradeAttrmapLZ:
 INCBIN "gfx/mobile/mobile_trade.attrmap.lz"
 
-UnusedMobilePulsePalettes:
+UnusedMobilePulsePalettes: ; unreferenced
 INCLUDE "gfx/mobile/unused_mobile_pulses.pal"
 
 MobileTradeBGPalettes:

@@ -1,6 +1,4 @@
 BattleCommand_BeatUp:
-; beatup
-
 	call ResetDamage
 	ldh a, [hBattleTurn]
 	and a
@@ -14,7 +12,7 @@ BattleCommand_BeatUp:
 	call DelayFrames
 	xor a
 	ld [wPlayerRolloutCount], a
-	ld [wd002], a
+	ld [wCurBeatUpPartyMon], a
 	ld [wBeatUpHitAtLeastOnce], a
 	jr .got_mon
 
@@ -23,22 +21,21 @@ BattleCommand_BeatUp:
 	ld b, a
 	ld a, [wPartyCount]
 	sub b
-	ld [wd002], a
+	ld [wCurBeatUpPartyMon], a
 
 .got_mon
-	ld a, [wd002]
+; BUG: Beat Up can desynchronize link battles (see docs/bugs_and_glitches.md)
+	ld a, [wCurBeatUpPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	ld a, MON_HP
 	call GetBeatupMonLocation
 	ld a, [hli]
 	or [hl]
 	jp z, .beatup_fail ; fainted
-	ld a, [wd002]
+	ld a, [wCurBeatUpPartyMon]
 	ld c, a
 	ld a, [wCurBattleMon]
-	; BUG: this can desynchronize link battles
-	; Change "cp [hl]" to "cp c" to fix
 	cp [hl]
 	ld hl, wBattleMonStatus
 	jr z, .active_mon
@@ -88,7 +85,7 @@ BattleCommand_BeatUp:
 
 	xor a
 	ld [wEnemyRolloutCount], a
-	ld [wd002], a
+	ld [wCurBeatUpPartyMon], a
 	ld [wBeatUpHitAtLeastOnce], a
 	jr .enemy_got_mon
 
@@ -97,7 +94,7 @@ BattleCommand_BeatUp:
 	ld b, a
 	ld a, [wOTPartyCount]
 	sub b
-	ld [wd002], a
+	ld [wCurBeatUpPartyMon], a
 
 .enemy_got_mon
 	ld a, [wBattleMode]
@@ -112,18 +109,18 @@ BattleCommand_BeatUp:
 	and a
 	jr nz, .link_or_tower
 
-	ld a, [wd002]
+	ld a, [wCurBeatUpPartyMon]
 	ld c, a
 	ld b, 0
 	ld hl, wOTPartySpecies
 	add hl, bc
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	jr .got_enemy_nick
 
 .link_or_tower
-	ld a, [wd002]
+	ld a, [wCurBeatUpPartyMon]
 	ld hl, wOTPartyMonNicknames
 	ld bc, NAME_LENGTH
 	call AddNTimes
@@ -137,7 +134,7 @@ BattleCommand_BeatUp:
 	or [hl]
 	jp z, .beatup_fail
 
-	ld a, [wd002]
+	ld a, [wCurBeatUpPartyMon]
 	ld b, a
 	ld a, [wCurOTMon]
 	cp b
@@ -156,7 +153,7 @@ BattleCommand_BeatUp:
 
 .wild
 	ld a, [wEnemyMonSpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, BeatUpAttackText
 	call StdBattleTextbox
@@ -198,8 +195,7 @@ BattleCommand_BeatUp:
 	jp SkipToBattleCommand
 
 BattleCommand_BeatUpFailText:
-; beatupfailtext
-
+; BUG: Beat Up may trigger King's Rock even if it failed (see docs/bugs_and_glitches.md)
 	ld a, [wBeatUpHitAtLeastOnce]
 	and a
 	ret nz
@@ -217,7 +213,7 @@ GetBeatupMonLocation:
 	ld hl, wOTPartyMon1Species
 
 .got_species
-	ld a, [wd002]
+	ld a, [wCurBeatUpPartyMon]
 	add hl, bc
 	call GetPartyLocation
 	pop bc

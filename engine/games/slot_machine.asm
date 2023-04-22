@@ -1,27 +1,33 @@
-SLOTS_NO_BIAS  EQU -1
-SLOTS_NO_MATCH EQU -1
+; wSlotMatched values
+	const_def 0, 4
+	const SLOTS_SEVEN    ; $00
+	const SLOTS_POKEBALL ; $04
+	const SLOTS_CHERRY   ; $08
+	const SLOTS_PIKACHU  ; $0c
+	const SLOTS_SQUIRTLE ; $10
+	const SLOTS_STARYU   ; $14
+DEF NUM_SLOT_REELS EQU const_value / 4 ; 6
+DEF SLOTS_NO_MATCH EQU -1
 
-SLOTS_SEVEN    EQU $00
-SLOTS_POKEBALL EQU $04
-SLOTS_CHERRY   EQU $08
-SLOTS_PIKACHU  EQU $0c
-SLOTS_SQUIRTLE EQU $10
-SLOTS_STARYU   EQU $14
+; wSlotBias values
+DEF SLOTS_NO_BIAS EQU -1
 
-REEL_SIZE EQU 15
+DEF REEL_SIZE EQU 15
 
-; Constants for slot_reel offsets (see macros/wram.asm)
-REEL_ACTION        EQUS "(wReel1ReelAction - wReel1)"
-REEL_TILEMAP_ADDR  EQUS "(wReel1TilemapAddr - wReel1)"
-REEL_POSITION      EQUS "(wReel1Position - wReel1)"
-REEL_SPIN_DISTANCE EQUS "(wReel1SpinDistance - wReel1)"
-REEL_SPIN_RATE     EQUS "(wReel1SpinRate - wReel1)"
-REEL_OAM_ADDR      EQUS "(wReel1OAMAddr - wReel1)"
-REEL_X_COORD       EQUS "(wReel1XCoord - wReel1)"
-REEL_MANIP_COUNTER EQUS "(wReel1ManipCounter - wReel1)"
-REEL_MANIP_DELAY   EQUS "(wReel1ManipDelay - wReel1)"
-REEL_FIELD_0B      EQUS "(wReel1Field0b - wReel1)"
-REEL_STOP_DELAY    EQUS "(wReel1StopDelay - wReel1)"
+; Constants for slot_reel offsets (see macros/ram.asm)
+rsreset
+DEF REEL_ACTION        rb ; 0
+DEF REEL_TILEMAP_ADDR  rw ; 1
+DEF REEL_POSITION      rb ; 3
+DEF REEL_SPIN_DISTANCE rb ; 4
+DEF REEL_SPIN_RATE     rb ; 5
+DEF REEL_OAM_ADDR      rw ; 6
+DEF REEL_X_COORD       rb ; 8
+DEF REEL_MANIP_COUNTER rb ; 9
+DEF REEL_MANIP_DELAY   rb ; 10
+DEF REEL_DROP_COUNTER  rb ; 11
+                       rb_skip 3
+DEF REEL_STOP_DELAY    rb ; 15
 
 ; SlotsJumptable constants
 	const_def
@@ -44,7 +50,7 @@ REEL_STOP_DELAY    EQUS "(wReel1StopDelay - wReel1)"
 	const SLOTS_PAYOUT_ANIM
 	const SLOTS_RESTART_OF_QUIT
 	const SLOTS_QUIT
-SLOTS_END_LOOP_F EQU 7
+DEF SLOTS_END_LOOP_F EQU 7
 
 ; ReelActionJumptable constants
 	const_def
@@ -144,7 +150,7 @@ _SlotMachine:
 	call ByteFill
 	call Slots_InitReelTiles
 	call Slots_GetPals
-	ld a, $7
+	ld a, SPRITE_ANIM_DICT_SLOTS
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], $40
@@ -159,7 +165,7 @@ _SlotMachine:
 	call Random
 	and %00101010
 	ret nz
-	ld a, 1
+	ld a, TRUE
 	ld [wKeepSevenBiasChance], a ; 12.5% chance
 	ret
 
@@ -206,7 +212,7 @@ SlotsLoop:
 	ld a, [wFirstTwoReelsMatchingSevens]
 	and a
 	jr nz, .matching_sevens
-	ld a, %11100100 ; alternates two palettes
+	ld a, %11100100
 	call DmgToCgbBGPals
 	ret
 
@@ -215,7 +221,7 @@ SlotsLoop:
 	and $7
 	ret nz
 	ldh a, [rBGP]
-	xor %00001100
+	xor %00001100 ; alternates two palettes
 	call DmgToCgbBGPals
 	ret
 
@@ -249,12 +255,12 @@ DebugPrintSlotBias: ; unreferenced
 
 AnimateSlotReelIcons: ; unreferenced
 ; This animation was present in pokegold-spaceworld.
-	ld hl, wcf66
+	ld hl, wUnusedSlotReelIconDelay
 	ld a, [hl]
 	inc [hl]
 	and $7
 	ret nz
-	ld hl, wVirtualOAMSprite16TileID
+	ld hl, wShadowOAMSprite16TileID
 	ld c, NUM_SPRITE_OAM_STRUCTS - 16
 .loop
 	ld a, [hl]
@@ -479,12 +485,13 @@ SlotsAction_PayoutAnim:
 	jr c, .okay
 	inc de
 .okay
+; BUG: Slot machine payout sound effects cut each other off (see docs/bugs_and_glitches.md)
 	ld [hl], e
 	dec hl
 	ld [hl], d
 	ld a, [wSlotsDelay]
 	and $7
-	ret z ; ret nz would be more appropriate
+	ret z
 	ld de, SFX_GET_COIN_FROM_SLOTS
 	call PlaySFX
 	ret
@@ -551,7 +558,7 @@ Slots_GetCurrentReelState:
 	dec a
 	and $f
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, REEL_TILEMAP_ADDR
 	add hl, bc
 	ld a, [hli]
@@ -662,7 +669,7 @@ Slots_InitReelTiles:
 	ld bc, wReel1
 	ld hl, REEL_OAM_ADDR
 	add hl, bc
-	ld de, wVirtualOAMSprite16
+	ld de, wShadowOAMSprite16
 	ld [hl], e
 	inc hl
 	ld [hl], d
@@ -680,7 +687,7 @@ Slots_InitReelTiles:
 	ld bc, wReel2
 	ld hl, REEL_OAM_ADDR
 	add hl, bc
-	ld de, wVirtualOAMSprite24
+	ld de, wShadowOAMSprite24
 	ld [hl], e
 	inc hl
 	ld [hl], d
@@ -698,7 +705,7 @@ Slots_InitReelTiles:
 	ld bc, wReel3
 	ld hl, REEL_OAM_ADDR
 	add hl, bc
-	ld de, wVirtualOAMSprite32
+	ld de, wShadowOAMSprite32
 	ld [hl], e
 	inc hl
 	ld [hl], d
@@ -860,12 +867,14 @@ GetUnknownSlotReelData: ; unreferenced
 	ret
 
 .data:
+	table_width 1, GetUnknownSlotReelData.data
 	db 0 ; SLOTS_SEVEN
 	db 1 ; SLOTS_POKEBALL
 	db 2 ; SLOTS_CHERRY
 	db 3 ; SLOTS_PIKACHU
 	db 4 ; SLOTS_SQUIRTLE
 	db 5 ; SLOTS_STARYU
+	assert_table_length NUM_SLOT_REELS
 
 ReelActionJumptable:
 	ld hl, REEL_ACTION
@@ -1293,14 +1302,14 @@ ReelAction_CheckDropReel:
 	ld hl, REEL_ACTION
 	add hl, bc
 	inc [hl] ; REEL_ACTION_WAIT_DROP_REEL
-	ld hl, REEL_FIELD_0B
+	ld hl, REEL_DROP_COUNTER
 	add hl, bc
 	ld [hl], 32
 	ld hl, REEL_SPIN_RATE
 	add hl, bc
 	ld [hl], 0
 ReelAction_WaitDropReel:
-	ld hl, REEL_FIELD_0B
+	ld hl, REEL_DROP_COUNTER
 	add hl, bc
 	ld a, [hl]
 	and a
@@ -1311,7 +1320,7 @@ ReelAction_WaitDropReel:
 .DropReel:
 	ld hl, REEL_ACTION
 	add hl, bc
-	dec [hl]
+	dec [hl] ; REEL_ACTION_CHECK_DROP_REEL
 	ld hl, REEL_SPIN_RATE
 	add hl, bc
 	ld [hl], 8
@@ -1834,12 +1843,14 @@ Slots_GetPayout:
 	ret
 
 .PayoutTable:
-	dw 300
-	dw  50
-	dw   6
-	dw   8
-	dw  10
-	dw  15
+	table_width 2, Slots_GetPayout.PayoutTable
+	dw 300 ; SLOTS_SEVEN
+	dw  50 ; SLOTS_POKEBALL
+	dw   6 ; SLOTS_CHERRY
+	dw   8 ; SLOTS_PIKACHU
+	dw  10 ; SLOTS_SQUIRTLE
+	dw  15 ; SLOTS_STARYU
+	assert_table_length NUM_SLOT_REELS
 
 .no_win
 	ld hl, wPayout
@@ -1882,12 +1893,14 @@ Slots_PayoutText:
 	ret
 
 .PayoutStrings:
-	dbw "300@", .LinedUpSevens
-	dbw "50@@", .LinedUpPokeballs
-	dbw "6@@@", .LinedUpMonOrCherry
-	dbw "8@@@", .LinedUpMonOrCherry
-	dbw "10@@", .LinedUpMonOrCherry
-	dbw "15@@", .LinedUpMonOrCherry
+	table_width 6, Slots_PayoutText.PayoutStrings
+	dbw "300@", .LinedUpSevens      ; SLOTS_SEVEN
+	dbw "50@@", .LinedUpPokeballs   ; SLOTS_POKEBALL
+	dbw "6@@@", .LinedUpMonOrCherry ; SLOTS_CHERRY
+	dbw "8@@@", .LinedUpMonOrCherry ; SLOTS_PIKACHU
+	dbw "10@@", .LinedUpMonOrCherry ; SLOTS_SQUIRTLE
+	dbw "15@@", .LinedUpMonOrCherry ; SLOTS_STARYU
+	assert_table_length NUM_SLOT_REELS
 
 .Text_PrintPayout:
 	text_asm

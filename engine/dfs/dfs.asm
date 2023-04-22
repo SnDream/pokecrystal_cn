@@ -287,12 +287,12 @@ _TextScroll::
 	ld bc, TEXTBOX_WIDTH * 3 - 1
 	call CopyBytes
 	hlcoord TEXTBOX_INNERX - 1, TEXTBOX_INNERY + 2
-	ld a, "|"
+	ld a, "│"
 	ld [hli], a
 	ld bc, TEXTBOX_INNERW
 	ld a, " "
 	call ByteFill
-	ld [hl], "|"
+	ld [hl], "│"
 	hlcoord TEXTBOX_INNERX - 1, TEXTBOX_INNERY + 2, wAttrmap
 	ld bc, TEXTBOX_INNERW + 2
 	call ClearVramNo
@@ -1518,7 +1518,7 @@ SingleCodeDrawMap_Restore:
 	ld [hli], a
 	ret
 
-dfontab: MACRO
+MACRO dfontab
 rept _NARG
 	dwb DFS_C_\1_L, BANK(DFS_C_\1_L)
 	dwb DFS_C_\1_H, BANK(DFS_C_\1_H)

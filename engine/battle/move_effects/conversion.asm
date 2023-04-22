@@ -1,6 +1,4 @@
 BattleCommand_Conversion:
-; conversion
-
 	ld hl, wBattleMonMoves
 	ld de, wBattleMonType1
 	ldh a, [hBattleTurn]
@@ -89,7 +87,7 @@ BattleCommand_Conversion:
 	ld [de], a
 	inc de
 	ld [de], a
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	farcall GetTypeName
 	call AnimateCurrentMove
 	ld hl, TransformedTypeText

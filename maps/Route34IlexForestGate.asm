@@ -6,11 +6,12 @@
 
 Route34IlexForestGate_MapScripts:
 	def_scene_scripts
+	scene_const SCENE_ROUTE34ILEXFORESTGATE_TEACHER_BLOCKS_IF_FOREST_IS_RESTLESS
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .IsForestRestless
+	callback MAPCALLBACK_OBJECTS, Route34IsForestRestlessCallback
 
-.IsForestRestless:
+Route34IsForestRestlessCallback:
 	checkevent EVENT_FOREST_IS_RESTLESS
 	iffalse .Normal
 	disappear ROUTE34ILEXFORESTGATE_TEACHER1
@@ -29,14 +30,14 @@ Route34IlexForestGateCelebiEvent:
 	turnobject ROUTE34ILEXFORESTGATE_TEACHER2, LEFT
 	turnobject PLAYER, RIGHT
 	follow PLAYER, ROUTE34ILEXFORESTGATE_TEACHER2
-	applymovement PLAYER, MovementData_0x62d97
+	applymovement PLAYER, Route34IlexForestGateTeacherBlocksPlayerMovement
 	stopfollow
 	turnobject PLAYER, DOWN
 	opentext
 	writetext Route34IlexForestGateTeacher_ForestIsRestless
 	waitbutton
 	closetext
-	applymovement ROUTE34ILEXFORESTGATE_TEACHER2, MovementData_0x62d9a
+	applymovement ROUTE34ILEXFORESTGATE_TEACHER2, Route34IlexForestGateTeacherReturnsMovement
 .skip:
 	end
 
@@ -76,12 +77,12 @@ Route34IlexForestGateButterfreeScript:
 Route34IlexForestGateLassScript:
 	jumptextfaceplayer Route34IlexForestGateLassText
 
-MovementData_0x62d97:
+Route34IlexForestGateTeacherBlocksPlayerMovement:
 	step UP
 	step UP
 	step_end
 
-MovementData_0x62d9a:
+Route34IlexForestGateTeacherReturnsMovement:
 	step DOWN
 	step RIGHT
 	step_end
@@ -143,7 +144,7 @@ Route34IlexForestGate_MapEvents:
 	warp_event  5,  7, ILEX_FOREST, 1
 
 	def_coord_events
-	coord_event  4,  7, SCENE_DEFAULT, Route34IlexForestGateCelebiEvent
+	coord_event  4,  7, SCENE_ROUTE34ILEXFORESTGATE_TEACHER_BLOCKS_IF_FOREST_IS_RESTLESS, Route34IlexForestGateCelebiEvent
 
 	def_bg_events
 

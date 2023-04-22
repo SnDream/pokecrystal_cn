@@ -8,19 +8,19 @@
 
 WiseTriosRoom_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_DEFAULT
-	scene_script .DummyScene1 ; SCENE_FINISHED
+	scene_script WiseTriosRoomNoop1Scene, SCENE_WISETRIOSROOM_SAGE_BLOCKS
+	scene_script WiseTriosRoomNoop2Scene, SCENE_WISETRIOSROOM_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .WiseTrioCallback
+	callback MAPCALLBACK_OBJECTS, WiseTriosRoomWiseTrioCallback
 
-.DummyScene0:
+WiseTriosRoomNoop1Scene:
 	end
 
-.DummyScene1:
+WiseTriosRoomNoop2Scene:
 	end
 
-.WiseTrioCallback:
+WiseTriosRoomWiseTrioCallback:
 	checkevent EVENT_FOUGHT_SUICUNE
 	iftrue .NoWiseTrio
 	checkevent EVENT_KOJI_ALLOWS_YOU_PASSAGE_TO_TIN_TOWER
@@ -55,14 +55,14 @@ WiseTriosRoom_CannotEnterTinTowerScript:
 	turnobject PLAYER, DOWN
 	showemote EMOTE_SHOCK, WISETRIOSROOM_SAGE3, 20
 	follow PLAYER, WISETRIOSROOM_SAGE3
-	applymovement PLAYER, MovementData_0x98622
+	applymovement PLAYER, WiseTriosRoomSageBlocksPlayerMovement
 	stopfollow
 	turnobject PLAYER, RIGHT
 	opentext
 	writetext WiseTriosRoomSage3BlocksExitText
 	waitbutton
 	closetext
-	applymovement WISETRIOSROOM_SAGE3, MovementData_0x98625
+	applymovement WISETRIOSROOM_SAGE3, WiseTriosRoomSageReturnsMovement
 	turnobject WISETRIOSROOM_SAGE3, LEFT
 	end
 
@@ -100,10 +100,10 @@ TrainerSageKoji:
 	writetext SageKojiAfterBattleSpeechText
 	waitbutton
 	closetext
-	applymovement WISETRIOSROOM_SAGE6, MovementData_0x98628
+	applymovement WISETRIOSROOM_SAGE6, WiseTriosRoomSageAllowsPassageMovement
 	turnobject WISETRIOSROOM_SAGE6, UP
 	setevent EVENT_KOJI_ALLOWS_YOU_PASSAGE_TO_TIN_TOWER
-	setscene SCENE_FINISHED
+	setscene SCENE_WISETRIOSROOM_NOOP
 	end
 
 .KojiAllowsPassage:
@@ -113,17 +113,17 @@ TrainerSageKoji:
 	closetext
 	end
 
-MovementData_0x98622:
+WiseTriosRoomSageBlocksPlayerMovement:
 	step LEFT
 	step LEFT
 	step_end
 
-MovementData_0x98625:
+WiseTriosRoomSageReturnsMovement:
 	step RIGHT
 	step DOWN
 	step_end
 
-MovementData_0x98628:
+WiseTriosRoomSageAllowsPassageMovement:
 	step RIGHT
 	step DOWN
 	step_end
@@ -351,7 +351,7 @@ WiseTriosRoom_MapEvents:
 	warp_event  1,  4, ECRUTEAK_TIN_TOWER_ENTRANCE, 5
 
 	def_coord_events
-	coord_event  7,  4, SCENE_DEFAULT, WiseTriosRoom_CannotEnterTinTowerScript
+	coord_event  7,  4, SCENE_WISETRIOSROOM_SAGE_BLOCKS, WiseTriosRoom_CannotEnterTinTowerScript
 
 	def_bg_events
 

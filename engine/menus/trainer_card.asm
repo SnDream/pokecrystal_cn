@@ -289,7 +289,7 @@ TrainerCard_Page1_PrintDexCaught_GameTime:
 	lb bc, 1, 3
 	call PrintNum
 	hlcoord 16, 10
-	ld de, .quantity
+	ld de, .Unused
 	call PlaceString
 .skip
 	hlcoord 2, 12
@@ -319,10 +319,8 @@ TrainerCard_Page1_PrintDexCaught_GameTime:
 .PlayTime:
 	db "游戏时间@"
 
-.quantity:
+.Unused: ; unreferenced
 	db "只@"
-
-	; db "@" ; unused
 
 .Badges:
 	db "徽章▶@"
@@ -503,7 +501,7 @@ TrainerCard_Page2_3_OAMUpdate:
 	ld d, a
 	ld a, [de]
 	ld c, a
-	ld de, wVirtualOAMSprite00
+	ld de, wShadowOAMSprite00
 	ld b, NUM_JOHTO_BADGES
 .loop
 	srl c
@@ -557,7 +555,7 @@ TrainerCard_Page2_3_OAMUpdate:
 	inc de
 
 	ld a, [wTrainerCardBadgeTileID]
-	and $ff ^ (1 << 7)
+	and ~(1 << 7)
 	add [hl]
 	ld [de], a ; tile id
 	inc hl

@@ -1,9 +1,9 @@
-NAMINGSCREEN_CURSOR     EQU $7e
-NAMINGSCREEN_SELECTION  EQU $62
+DEF NAMINGSCREEN_CURSOR     EQU $7e
+DEF NAMINGSCREEN_SELECTION  EQU $62
 
-NAMINGSCREEN_BORDER     EQU "■" ; $60
-NAMINGSCREEN_MIDDLELINE EQU "→" ; $eb
-NAMINGSCREEN_UNDERLINE  EQU "<DOT>" ; $f2
+DEF NAMINGSCREEN_BORDER     EQU "■" ; $60
+DEF NAMINGSCREEN_MIDDLELINE EQU "→" ; $eb
+DEF NAMINGSCREEN_UNDERLINE  EQU "<DOT>" ; $f2
 
 _NamingScreen:
 	call DisableSpriteUpdates
@@ -92,7 +92,7 @@ NamingScreen:
 	ld e, MONICON_NAMINGSCREEN
 	rst FarCall
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	call IncreaseDFSCombineLevel
 	hlcoord 5, 2
@@ -133,8 +133,8 @@ NamingScreen:
 	db "你的名字？@"
 
 .Rival:
-	ld de, SilverSpriteGFX
-	ld b, BANK(SilverSpriteGFX)
+	ld de, RivalSpriteGFX
+	ld b, BANK(RivalSpriteGFX)
 	call .LoadSprite
 	hlcoord 5, 2
 	ld de, .RivalNameString
@@ -163,7 +163,7 @@ NamingScreen:
 	ld hl, vTiles0 tile $00
 	lb bc, BANK(PokeBallSpriteGFX), 4
 	call Request2bpp
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT and tile offset $00
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], a
@@ -205,7 +205,7 @@ NamingScreen:
 	ld d, h
 	ld hl, vTiles0 tile $04
 	call Request2bpp
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT and tile offset $00
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], a
@@ -289,6 +289,7 @@ NamingScreen_ApplyTextInputModeChinese:
 NamingScreen_ApplyTextInputMode:
 	; call NamingScreen_IsTargetBox
 	; jr nz, .not_box
+	; assert BoxNameInputLower - NameInputLower == BoxNameInputUpper - NameInputUpper
 	; ld hl, BoxNameInputLower - NameInputLower
 	; add hl, de
 	; ld d, h
@@ -1252,8 +1253,8 @@ LoadNamingScreenGFX:
 	ld a, BANK(NamingScreenGFX_Selection)
 	call FarCopyBytes
 
-	ld a, $5
-	ld hl, wSpriteAnimDict + 9 * 2
+	ld a, SPRITE_ANIM_DICT_TEXT_CURSOR
+	ld hl, wSpriteAnimDict + (NUM_SPRITEANIMDICT_ENTRIES - 1) * 2
 	ld [hli], a
 	ld [hl], NAMINGSCREEN_CURSOR
 	xor a
@@ -1280,7 +1281,7 @@ INCBIN "gfx/naming_screen/selection_chinese.2bpp"
 
 INCLUDE "data/text/name_input_chars.asm"
 
-NamingScreenGFX_End: ; unused
+NamingScreenGFX_End: ; unreferenced
 INCBIN "gfx/naming_screen/end.1bpp"
 
 NamingScreenGFX_MiddleLine:
@@ -1324,7 +1325,7 @@ _ComposeMailMessage:
 	ld bc, 8 tiles
 	ld a, BANK(.MailIcon)
 	call FarCopyBytes
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT and tile offset $00
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], a
@@ -1362,7 +1363,7 @@ _ComposeMailMessage:
 	ret
 
 .MailIcon:
-INCBIN "gfx/icons/mail_big.2bpp"
+INCBIN "gfx/naming_screen/mail.2bpp"
 
 .initwNamingScreenMaxNameLength
 	ld a, MAIL_MSG_LENGTH + 1
@@ -1657,7 +1658,7 @@ NamingScreen_ApplyTextInputModeMail:
 	ld de, EnglishInput
 	jp NamingScreen_ApplyTextInputMode
 
-; called from engine/sprite_anims.asm
+; called from engine/gfx/sprite_anims.asm
 
 ; redirct to NamingScreen_AnimateCursor
 ; ComposeMail_AnimateCursor:
@@ -1840,7 +1841,7 @@ MailComposition_TryAddLastCharacter:
 	ld a, [wNamingScreenLastCharacter]
 	jp MailComposition_TryAddCharacter
 
-; unused
+.add_dakuten ; unreferenced
 	ld a, [wNamingScreenCurNameLength]
 	and a
 	ret z

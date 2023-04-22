@@ -5,6 +5,7 @@ BattleTowerRoomMenu:
 	ret
 
 Function1700ba:
+; special
 	call InitBattleTowerChallengeRAM
 	farcall Function11811a
 	ret
@@ -67,7 +68,7 @@ Function170114:
 	call Function170c8b
 	ret
 
-Function170139:
+Function170139: ; unreferenced
 ; Convert the 4-digit decimal number at s5_aa41 into binary
 	ld a, BANK(s5_aa41)
 	call OpenSRAM
@@ -136,7 +137,7 @@ Function170139:
 	ld l, a
 	ld a, [wcd4c]
 	ld h, a
-	ld bc, $0006
+	ld bc, 6
 	call CopyBytes
 	ld a, l
 	ld [wcd4b], a
@@ -146,17 +147,17 @@ Function170139:
 	dec a
 	jr nz, .CopyLoop
 
-	ld a, BANK(s4_a013)
+	ld a, BANK(sEZChatBeginBattleMessage)
 	call OpenSRAM
-	ld hl, s4_a013
-	ld bc, 36
+	ld hl, sEZChatBattleMessages
+	ld bc, EASY_CHAT_MESSAGE_LENGTH * 3
 	call CopyBytes
 	call CloseSRAM
 
 	ld a, BANK(s5_a894) ; aka BANK(s5_a948)
 	call OpenSRAM
 	ld hl, s5_a894
-	ld bc, NAME_LENGTH_JAPANESE
+	ld bc, 6
 	call CopyBytes
 	ld hl, wc608
 	ld de, s5_a948
@@ -183,7 +184,7 @@ BattleTowerBattle:
 	call _BattleTowerBattle
 	ret
 
-DummySpecial_17021d:
+UnusedBattleTowerDummySpecial1:
 	ret
 
 InitBattleTowerChallengeRAM:
@@ -269,7 +270,7 @@ ReadBTTrainerParty:
 	jr nc, .skip_mon_1
 
 	ld a, [wBT_OTTempMon1]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld l, e
 	ld h, d
@@ -283,7 +284,7 @@ ReadBTTrainerParty:
 	farcall CheckStringForErrors
 	jr nc, .skip_mon_2
 	ld a, [wBT_OTTempMon2]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld l, e
 	ld h, d
@@ -297,7 +298,7 @@ ReadBTTrainerParty:
 	farcall CheckStringForErrors
 	jr nc, .skip_mon_3
 	ld a, [wBT_OTTempMon3]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld l, e
 	ld h, d
@@ -308,9 +309,9 @@ ReadBTTrainerParty:
 .skip_mon_3
 ; Add the terminator character to each of these names
 	ld a, "@"
-	ld [wBT_OTTempMon1NameEnd - 1], a
-	ld [wBT_OTTempMon2NameEnd - 1], a
-	ld [wBT_OTTempMon3NameEnd - 1], a
+	ld [wBT_OTTempMon1Name + MON_NAME_LENGTH - 1], a
+	ld [wBT_OTTempMon2Name + MON_NAME_LENGTH - 1], a
+	ld [wBT_OTTempMon3Name + MON_NAME_LENGTH - 1], a
 ; Fix errors in the movesets
 	call CheckBTMonMovesForErrors
 ; Repair the trainer name if needed, then copy it to wOTPlayerName
@@ -374,7 +375,7 @@ ReadBTTrainerParty:
 	ld [bc], a
 	ret
 
-ValidateBTParty:
+ValidateBTParty: ; unreferenced
 ; Check for and fix errors in party data
 	ld hl, wBT_OTTempMon1Species
 	ld d, BATTLETOWER_PARTY_LENGTH
@@ -385,11 +386,9 @@ ValidateBTParty:
 	ld c, l
 	ld a, [hl]
 	and a
-x = $ff
-rept ($ff - NUM_POKEMON)
+for x, $ff, NUM_POKEMON, -1
 	jr z, .invalid
 	cp x
-x = x - 1
 endr
 	jr nz, .valid
 
@@ -498,7 +497,7 @@ Function17042c:
 	ld a, [hli]
 	and a
 	jr z, .empty
-	cp 15
+	cp (Unknown_170470.end - Unknown_170470) + 1
 	jr nc, .copy_data
 
 	push hl
@@ -511,7 +510,7 @@ Function17042c:
 	pop hl
 
 	; If Unknown_170470[a-1] <= b, overwrite the current trainer's data
-	; with Unknown17047e, and exit the inner loop.
+	; with Unknown_17047e, and exit the inner loop.
 	cp b
 	jr c, .copy_data
 	jr z, .copy_data
@@ -519,9 +518,9 @@ Function17042c:
 
 .empty
 	; If a == 0 and b >= $fc, overwrite the current trainer's data with
-	; Unknown17047e, and exit the inner loop.
+	; Unknown_17047e, and exit the inner loop.
 	ld a, b
-	cp $fc
+	cp NUM_POKEMON + 1
 	jr nc, .copy_data
 
 .next_iteration
@@ -564,7 +563,7 @@ CopyBTTrainer_FromBT_OT_TowBT_OTTemp:
 
 	ld a, BANK(sBattleTowerChallengeState)
 	call OpenSRAM
-	ld a, BATTLETOWER_CHALLENGE_IN_PROGESS
+	ld a, BATTLETOWER_CHALLENGE_IN_PROGRESS
 	ld [sBattleTowerChallengeState], a
 	ld hl, sNrOfBeatenBattleTowerTrainers
 	inc [hl]
@@ -859,31 +858,31 @@ BattleTowerAction:
 	dw BattleTowerAction_GetChallengeState
 	dw BattleTowerAction_SetByteToQuickSaveChallenge
 	dw BattleTowerAction_SetByteToCancelChallenge
-	dw Function1707ac
-	dw Function1707f4
+	dw BattleTowerAction_05
+	dw BattleTowerAction_06
 	dw SaveBattleTowerLevelGroup
 	dw LoadBattleTowerLevelGroup
 	dw BattleTower_CheckSaveFileExistsAndIsYours
-	dw Function1708b1
+	dw BattleTowerAction_0A
 	dw CheckMobileEventIndex
-	dw Function1708c8
-	dw Function1708f0
+	dw BattleTowerAction_0C
+	dw BattleTowerAction_0D
 	dw BattleTowerAction_EggTicket
-	dw Function1709aa
-	dw Function1709bb
-	dw Function170a9c
-	dw Function170aa0
-	dw Function170aaf
-	dw Function170abe
-	dw Function170ad7
-	dw Function170807
-	dw Function17081d
+	dw BattleTowerAction_0F
+	dw BattleTowerAction_10
+	dw BattleTowerAction_11
+	dw BattleTowerAction_12
+	dw BattleTowerAction_13
+	dw BattleTowerAction_14
+	dw BattleTowerAction_15
+	dw BattleTowerAction_16
+	dw BattleTowerAction_17
 	dw BattleTowerAction_LevelCheck
 	dw BattleTowerAction_UbersCheck
 	dw ResetBattleTowerTrainersSRAM
 	dw BattleTower_GiveReward
-	dw Function17071b
-	dw Function170729
+	dw BattleTowerAction_1C
+	dw BattleTowerAction_1D
 	dw BattleTower_RandomlyChooseReward
 	dw BattleTower_SaveOptions
 
@@ -933,7 +932,7 @@ BattleTower_GiveReward:
 	ld [wScriptVar], a
 	ret
 
-Function17071b:
+BattleTowerAction_1C:
 	ld a, BANK(sBattleTowerChallengeState)
 	call OpenSRAM
 	ld a, BATTLETOWER_WON_CHALLENGE
@@ -941,7 +940,7 @@ Function17071b:
 	call CloseSRAM
 	ret
 
-Function170729:
+BattleTowerAction_1D:
 	ld a, BANK(sBattleTowerChallengeState)
 	call OpenSRAM
 	ld a, BATTLETOWER_RECEIVED_REWARD
@@ -1008,11 +1007,11 @@ BattleTowerAction_SetExplanationRead:
 
 BattleTowerAction_SetByteToQuickSaveChallenge:
 	ld c, BATTLETOWER_SAVED_AND_LEFT
-	jr asm_17079f
+	jr SetBattleTowerChallengeState
 
 BattleTowerAction_SetByteToCancelChallenge:
 	ld c, BATTLETOWER_NO_CHALLENGE
-asm_17079f:
+SetBattleTowerChallengeState:
 	ld a, BANK(sBattleTowerChallengeState)
 	call OpenSRAM
 	ld a, c
@@ -1020,7 +1019,7 @@ asm_17079f:
 	call CloseSRAM
 	ret
 
-Function1707ac:
+BattleTowerAction_05:
 	ld a, BANK(s5_aa8c) ; aka BANK(s5_be46)
 	call OpenSRAM
 	ld a, [s5_aa8c]
@@ -1061,7 +1060,7 @@ Function1707ac:
 	ld a, 8
 	ld [wScriptVar], a
 
-Function1707f4:
+BattleTowerAction_06:
 	ld a, BANK(s5_be46) ; aka BANK(s5_aa8b) and BANK(s5_aa8c)
 	call OpenSRAM
 	xor a
@@ -1071,7 +1070,7 @@ Function1707f4:
 	call CloseSRAM
 	ret
 
-Function170807:
+BattleTowerAction_16:
 	call UpdateTime
 	ld a, BANK(s5_b2f9) ; aka BANK(s5_b2fa)
 	call OpenSRAM
@@ -1082,7 +1081,7 @@ Function170807:
 	call CloseSRAM
 	ret
 
-Function17081d:
+BattleTowerAction_17:
 	xor a
 	ld [wScriptVar], a
 	ld a, BANK(s5_b2f9) ; aka BANK(s5_b2fa)
@@ -1169,13 +1168,13 @@ BattleTower_CheckSaveFileExistsAndIsYours:
 	ld [wScriptVar], a
 	ret
 
-Function1708b1: ; BattleTowerAction $0a
+BattleTowerAction_0A:
 	xor a
 	ld [wMusicFade], a
 	call MaxVolume
 	ret
 
-CheckMobileEventIndex: ; BattleTowerAction $0b something to do with GS Ball
+CheckMobileEventIndex: ; something to do with GS Ball
 	ld a, BANK(sMobileEventIndex)
 	call OpenSRAM
 	ld a, [sMobileEventIndex]
@@ -1183,7 +1182,7 @@ CheckMobileEventIndex: ; BattleTowerAction $0b something to do with GS Ball
 	call CloseSRAM
 	ret
 
-Function1708c8: ; BattleTowerAction $0c
+BattleTowerAction_0C:
 	call UpdateTime
 	ld a, BANK(s5_aa8b) ; aka BANK(s5_aa8c), BANK(s5_aa5d), BANK(s5_aa48), and BANK(s5_aa47)
 	call OpenSRAM
@@ -1202,7 +1201,7 @@ Function1708c8: ; BattleTowerAction $0c
 	call CloseSRAM
 	ret
 
-Function1708f0: ; BattleTowerAction $0d
+BattleTowerAction_0D:
 	xor a ; FALSE
 	ld [wScriptVar], a
 	call UpdateTime
@@ -1240,7 +1239,7 @@ Function170923:
 	call CloseSRAM
 	ret
 
-BattleTowerAction_EggTicket: ; BattleTowerAction $0e
+BattleTowerAction_EggTicket:
 	xor a ; FALSE
 	ld [wScriptVar], a
 	ld a, EGG_TICKET
@@ -1257,7 +1256,7 @@ BattleTowerAction_EggTicket: ; BattleTowerAction $0e
 	cp EGG
 	jr nz, .not_egg
 	push hl
-	ld hl, wPartyMonOT
+	ld hl, wPartyMonOTs
 	ld de, NAME_LENGTH_JAPANESE
 	ld a, b
 	and a
@@ -1289,7 +1288,7 @@ endr
 	ld a, EGG_TICKET
 	ld [wCurItem], a
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld a, -1
 	ld [wCurItemQuantity], a
 	ld hl, wNumItems
@@ -1310,7 +1309,7 @@ endr
 String_MysteryJP:
 	db "なぞナゾ@@" ; MYSTERY
 
-Function1709aa: ; BattleTowerAction $0f
+BattleTowerAction_0F:
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(w3_d090)
@@ -1321,7 +1320,7 @@ Function1709aa: ; BattleTowerAction $0f
 	ldh [rSVBK], a
 	ret
 
-Function1709bb: ; BattleTowerAction $10
+BattleTowerAction_10:
 	xor a ; FALSE
 	ld [wScriptVar], a
 	ld a, BANK(s5_a800)
@@ -1332,7 +1331,7 @@ Function1709bb: ; BattleTowerAction $10
 	jr nc, .invalid
 	ld e, a
 	ld d, 0
-	ld hl, .jumptable
+	ld hl, .Jumptable
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -1348,7 +1347,7 @@ Function1709bb: ; BattleTowerAction $10
 	call CloseSRAM
 	ret
 
-.jumptable:
+.Jumptable:
 	dw .NoAction
 	dw .NoAction
 	dw .DoAction1
@@ -1367,15 +1366,15 @@ Function1709bb: ; BattleTowerAction $10
 	ret
 
 .Action4:
-	ld a, BANK(s5_b023) ; aka BANK(s5_a825) and BANK(s5_a826)
+	ld a, BANK(s5_b023) ; aka BANK(sOfferReqGender) and BANK(sOfferReqSpecies)
 	call OpenSRAM
 	ld hl, s5_b023
 	ld de, wc608
 	ld bc, 105
 	call CopyBytes
-	ld a, [s5_a825]
+	ld a, [sOfferReqGender]
 	ld [wcd30], a
-	ld a, [s5_a826]
+	ld a, [sOfferReqSpecies]
 	ld [wcd31], a
 	call CloseSRAM
 	farcall Function11b6b4
@@ -1445,13 +1444,13 @@ Function1709bb: ; BattleTowerAction $10
 .no_scene_2
 	ret
 
-Function170a9c:
+BattleTowerAction_11:
 	ld c, FALSE
-	jr asm_170aa2
+	jr Set_s5_aa8d
 
-Function170aa0:
+BattleTowerAction_12:
 	ld c, TRUE
-asm_170aa2:
+Set_s5_aa8d:
 	ld a, BANK(s5_aa8d)
 	call OpenSRAM
 	ld a, c
@@ -1459,7 +1458,7 @@ asm_170aa2:
 	call CloseSRAM
 	ret
 
-Function170aaf:
+BattleTowerAction_13:
 	ld a, BANK(s5_aa8d)
 	call OpenSRAM
 	ld a, [s5_aa8d]
@@ -1467,7 +1466,7 @@ Function170aaf:
 	call CloseSRAM
 	ret
 
-Function170abe:
+BattleTowerAction_14:
 	call BattleTower_CheckSaveFileExistsAndIsYours
 	ld a, [wScriptVar]
 	and a
@@ -1481,7 +1480,7 @@ Function170abe:
 	call CloseSRAM
 	ret
 
-Function170ad7:
+BattleTowerAction_15:
 	ld a, BANK(sBattleTowerSaveFileFlags)
 	call OpenSRAM
 	ld a, [sBattleTowerSaveFileFlags]
@@ -1531,7 +1530,7 @@ BattleTowerAction_UbersCheck:
 	ret
 
 LoadOpponentTrainerAndPokemonWithOTSprite:
-	farcall Function_LoadOpponentTrainerAndPokemons
+	farcall LoadOpponentTrainerAndPokemon
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBT_OTTrainerClass)
@@ -1576,7 +1575,7 @@ LoadOpponentTrainerAndPokemonWithOTSprite:
 
 INCLUDE "data/trainers/sprites.asm"
 
-DummySpecial_170bd2:
+UnusedBattleTowerDummySpecial2:
 	ret
 
 CheckForBattleTowerRules:

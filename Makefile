@@ -1,27 +1,36 @@
-roms := pokecrystal.gbc pokecrystal11.gbc pokecrystal_au.gbc pokecrystal_debug.gbc pokecrystal11_debug.gbc
+roms := \
+	pokecrystal.gbc \
+	pokecrystal11.gbc \
+	pokecrystal_au.gbc \
+	pokecrystal_debug.gbc \
+	pokecrystal11_debug.gbc
+patches := pokecrystal11.patch
 
 rom_obj := \
-audio.o \
-home.o \
-main.o \
-wram.o \
-data/text/common.o \
-data/maps/map_data.o \
-data/pokemon/dex_entries.o \
-data/pokemon/egg_moves.o \
-data/pokemon/evos_attacks.o \
-engine/movie/credits.o \
-engine/overworld/events.o \
-gfx/pics.o \
-gfx/sprites.o \
-gfx/tilesets.o \
-lib/mobile/main.o
+	audio.o \
+	home.o \
+	main.o \
+	ram.o \
+	data/text/common.o \
+	data/maps/map_data.o \
+	data/pokemon/dex_entries.o \
+	data/pokemon/egg_moves.o \
+	data/pokemon/evos_attacks.o \
+	engine/movie/credits.o \
+	engine/overworld/events.o \
+	gfx/misc.o \
+	gfx/pics.o \
+	gfx/sprites.o \
+	gfx/tilesets.o \
+	lib/mobile/main.o \
+	lib/mobile/mail.o
 
 pokecrystal_obj         := $(rom_obj:.o=.o)
 pokecrystal11_obj       := $(rom_obj:.o=11.o)
 pokecrystal_au_obj      := $(rom_obj:.o=_au.o)
 pokecrystal_debug_obj   := $(rom_obj:.o=_debug.o)
 pokecrystal11_debug_obj := $(rom_obj:.o=11_debug.o)
+pokecrystal11_vc_obj    := $(rom_obj:.o=11_vc.o)
 
 
 ### Build tools
@@ -53,23 +62,49 @@ crystal11:       pokecrystal11.gbc
 crystal_au:      pokecrystal_au.gbc
 crystal_debug:   pokecrystal_debug.gbc
 crystal11_debug: pokecrystal11_debug.gbc
+crystal11_vc:    pokecrystal11.patch
 
 clean: tidy
-	find gfx \( -name "*.[12]bpp" -o -name "*.lz" -o -name "*.gbcpal" -o -name "*.sgb.tilemap" \) -delete
-	find gfx/pokemon -mindepth 1 ! -path "gfx/pokemon/unown/*" \( -name "bitmask.asm" -o -name "frames.asm" -o -name "front.animated.tilemap" -o -name "front.dimensions" \) -delete
+	find gfx \
+	     \( -name "*.[12]bpp" \
+	        -o -name "*.lz" \
+	        -o -name "*.gbcpal" \
+	        -o -name "*.sgb.tilemap" \) \
+	     -delete
+	find gfx/pokemon -mindepth 1 \
+	     ! -path "gfx/pokemon/unown/*" \
+	     \( -name "bitmask.asm" \
+	        -o -name "frames.asm" \
+	        -o -name "front.animated.tilemap" \
+	        -o -name "front.dimensions" \) \
+	     -delete
 
 tidy:
-	rm -f $(roms) $(pokecrystal_obj) $(pokecrystal11_obj) $(pokecrystal_au_obj) $(pokecrystal_debug_obj) $(pokecrystal11_debug_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym) rgbdscheck.o
+	$(RM) $(roms) \
+	      $(roms:.gbc=.sym) \
+	      $(roms:.gbc=.map) \
+	      $(patches) \
+	      $(patches:.patch=_vc.gbc) \
+	      $(patches:.patch=_vc.sym) \
+	      $(patches:.patch=_vc.map) \
+	      $(patches:%.patch=vc/%.constants.sym) \
+	      $(pokecrystal_obj) \
+	      $(pokecrystal11_obj) \
+	      $(pokecrystal11_vc_obj) \
+	      $(pokecrystal_au_obj) \
+	      $(pokecrystal_debug_obj) \
+	      $(pokecrystal11_debug_obj) \
+	      rgbdscheck.o
 	$(MAKE) clean -C tools/
 
-compare: $(roms)
+compare: $(roms) $(patches)
 	@$(SHA1) -c roms.sha1
 
 tools:
 	$(MAKE) -C tools/
 
 
-RGBASMFLAGS = -L -Weverything
+RGBASMFLAGS = -hL -Q8 -P includes.asm -Weverything -Wnumeric-string=2 -Wtruncation=1
 # Create a sym/map for debug purposes if `make` run with `DEBUG=1`
 ifeq ($(DEBUG),1)
 RGBASMFLAGS += -E
@@ -80,17 +115,13 @@ $(pokecrystal11_obj):       RGBASMFLAGS += -D _CRYSTAL11
 $(pokecrystal_au_obj):      RGBASMFLAGS += -D _CRYSTAL11 -D _CRYSTAL_AU
 $(pokecrystal_debug_obj):   RGBASMFLAGS += -D _DEBUG
 $(pokecrystal11_debug_obj): RGBASMFLAGS += -D _CRYSTAL11 -D _DEBUG
+$(pokecrystal11_vc_obj):    RGBASMFLAGS += -D _CRYSTAL11 -D _CRYSTAL11_VC
+
+%.patch: vc/%.constants.sym %_vc.gbc %.gbc vc/%.patch.template
+	tools/make_patch $*_vc.sym $^ $@
 
 rgbdscheck.o: rgbdscheck.asm
 	$(RGBASM) -o $@ $<
-
-# The dep rules have to be explicit or else missing files won't be reported.
-# As a side effect, they're evaluated immediately instead of when the rule is invoked.
-# It doesn't look like $(shell) can be deferred so there might not be a better way.
-define DEP
-$1: $2 $$(shell tools/scan_includes $2) | rgbdscheck.o
-	$$(RGBASM) $$(RGBASMFLAGS) -o $$@ $$<
-endef
 
 # Build tools when building the rom.
 # This has to happen before the rules are processed, since that's when scan_includes is run.
@@ -98,12 +129,26 @@ ifeq (,$(filter clean tidy tools,$(MAKECMDGOALS)))
 
 $(info $(shell $(MAKE) -C tools))
 
+# The dep rules have to be explicit or else missing files won't be reported.
+# As a side effect, they're evaluated immediately instead of when the rule is invoked.
+# It doesn't look like $(shell) can be deferred so there might not be a better way.
+preinclude_deps := includes.asm $(shell tools/scan_includes includes.asm)
+define DEP
+$1: $2 $$(shell tools/scan_includes $2) $(preinclude_deps) | rgbdscheck.o
+	$$(RGBASM) $$(RGBASMFLAGS) -o $$@ $$<
+endef
+
 # Dependencies for shared objects objects
 $(foreach obj, $(pokecrystal_obj), $(eval $(call DEP,$(obj),$(obj:.o=.asm))))
 $(foreach obj, $(pokecrystal11_obj), $(eval $(call DEP,$(obj),$(obj:11.o=.asm))))
 $(foreach obj, $(pokecrystal_au_obj), $(eval $(call DEP,$(obj),$(obj:_au.o=.asm))))
 $(foreach obj, $(pokecrystal_debug_obj), $(eval $(call DEP,$(obj),$(obj:_debug.o=.asm))))
 $(foreach obj, $(pokecrystal11_debug_obj), $(eval $(call DEP,$(obj),$(obj:11_debug.o=.asm))))
+$(foreach obj, $(pokecrystal11_vc_obj), $(eval $(call DEP,$(obj),$(obj:11_vc.o=.asm))))
+
+# Dependencies for VC files that need to run scan_includes
+%.constants.sym: %.constants.asm $(shell tools/scan_includes %.constants.asm) $(preinclude_deps) | rgbdscheck.o
+	$(RGBASM) $(RGBASMFLAGS) $< > $@
 
 endif
 
@@ -113,17 +158,12 @@ pokecrystal11_opt       = -Cjv -t PM_CRYSTAL -i BYTC -n 1 -k 01 -l 0x33 -m 0x10 
 pokecrystal_au_opt      = -Cjv -t PM_CRYSTAL -i BYTU -n 0 -k 01 -l 0x33 -m 0x10 -r 3 -p 0
 pokecrystal_debug_opt   = -Cjv -t PM_CRYSTAL -i BYTE -n 0 -k 01 -l 0x33 -m 0x10 -r 3 -p 0
 pokecrystal11_debug_opt = -Cjv -t PM_CRYSTAL -i BYTC -n 1 -k 01 -l 0x33 -m 0x10 -r 3 -p 0
-
-pokecrystal_base         = us
-pokecrystal11_base       = us
-pokecrystal_au_base      = us
-pokecrystal_debug_base   = dbg
-pokecrystal11_debug_base = dbg
+pokecrystal11_vc_opt    = -Cjv -t PM_CRYSTAL -i BYTE -n 1 -k 01 -l 0x33 -m 0x10 -r 3 -p 0
 
 %.gbc: $$(%_obj) layout.link
 	$(RGBLINK) -n $*.sym -m $*.map -l layout.link -o $@ $(filter %.o,$^)
 	$(RGBFIX) $($*_opt) $@
-	tools/stadium --base $($*_base) $@
+	tools/stadium $@
 
 
 ### LZ compression rules
@@ -169,14 +209,15 @@ gfx/pokemon/girafarig/front.animated.tilemap: gfx/pokemon/girafarig/front.2bpp g
 
 ### Misc file-specific graphics rules
 
-gfx/pokemon/%/back.2bpp: rgbgfx += -h
+gfx/pokemon/%/back.2bpp: rgbgfx += -Z -c embedded
+gfx/pokemon/%/front.2bpp: rgbgfx += -c embedded
 
-gfx/trainers/%.2bpp: rgbgfx += -h
+gfx/trainers/%.2bpp: rgbgfx += -Z -c embedded
 
-gfx/pokemon/egg/unused_front.2bpp: rgbgfx += -h
+gfx/pokemon/egg/unused_front.2bpp: rgbgfx += -Z
 
-gfx/new_game/shrink1.2bpp: rgbgfx += -h
-gfx/new_game/shrink2.2bpp: rgbgfx += -h
+gfx/new_game/shrink1.2bpp: rgbgfx += -Z
+gfx/new_game/shrink2.2bpp: rgbgfx += -Z
 
 gfx/mail/dragonite.1bpp: tools/gfx += --remove-whitespace
 gfx/mail/large_note.1bpp: tools/gfx += --remove-whitespace
@@ -186,7 +227,7 @@ gfx/mail/litebluemail_border.1bpp: tools/gfx += --remove-whitespace
 
 gfx/pokedex/pokedex.2bpp: tools/gfx += --trim-whitespace
 gfx/pokedex/pokedex_sgb.2bpp: tools/gfx += --trim-whitespace
-gfx/pokedex/question_mark.2bpp: rgbgfx += -h
+gfx/pokedex/question_mark.2bpp: rgbgfx += -Z
 gfx/pokedex/slowpoke.2bpp: tools/gfx += --trim-whitespace
 
 gfx/pokegear/pokegear.2bpp: rgbgfx += -x2
@@ -227,13 +268,13 @@ gfx/battle_anims/rocks.2bpp: tools/gfx += --remove-whitespace
 gfx/battle_anims/skyattack.2bpp: tools/gfx += --remove-whitespace
 gfx/battle_anims/status.2bpp: tools/gfx += --remove-whitespace
 
-gfx/player/chris.2bpp: rgbgfx += -h
-gfx/player/chris_back.2bpp: rgbgfx += -h
-gfx/player/kris.2bpp: rgbgfx += -h
-gfx/player/kris_back.2bpp: rgbgfx += -h
+gfx/player/chris.2bpp: rgbgfx += -Z
+gfx/player/chris_back.2bpp: rgbgfx += -Z
+gfx/player/kris.2bpp: rgbgfx += -Z
+gfx/player/kris_back.2bpp: rgbgfx += -Z
 
-gfx/trainer_card/chris_card.2bpp: rgbgfx += -h
-gfx/trainer_card/kris_card.2bpp: rgbgfx += -h
+gfx/trainer_card/chris_card.2bpp: rgbgfx += -Z
+gfx/trainer_card/kris_card.2bpp: rgbgfx += -Z
 gfx/trainer_card/leaders.2bpp: tools/gfx += --trim-whitespace
 
 gfx/overworld/chris_fish.2bpp: tools/gfx += --trim-whitespace
@@ -241,7 +282,7 @@ gfx/overworld/kris_fish.2bpp: tools/gfx += --trim-whitespace
 
 gfx/sprites/big_onix.2bpp: tools/gfx += --remove-whitespace --remove-xflip
 
-gfx/battle/dude.2bpp: rgbgfx += -h
+gfx/battle/dude.2bpp: rgbgfx += -Z
 
 gfx/font/unused_bold_font.1bpp: tools/gfx += --trim-whitespace
 
@@ -274,7 +315,7 @@ gfx/mobile/stadium2_n64.2bpp: tools/gfx += --trim-whitespace
 		tools/gfx $(tools/gfx) -d1 -o $@ $@)
 
 %.gbcpal: %.png
-	$(RGBGFX) -p $@ $<
+	$(RGBGFX) -c embedded -p $@ $<
 
 %.dimensions: %.png
 	tools/png_dimensions $< $@

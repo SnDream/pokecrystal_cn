@@ -197,11 +197,11 @@ NoTreeMon:
 
 GetTreeScore:
 	call .CoordScore
-	ld [wBuffer1], a
+	ld [wTreeMonCoordScore], a
 	call .OTIDScore
-	ld [wBuffer2], a
+	ld [wTreeMonOTIDScore], a
 	ld c, a
-	ld a, [wBuffer1]
+	ld a, [wTreeMonCoordScore]
 	sub c
 	jr z, .rare
 	jr nc, .ok
@@ -210,7 +210,7 @@ GetTreeScore:
 	cp 5
 	jr c, .good
 
-.bad
+; bad
 	xor a ; TREEMON_SCORE_BAD
 	ret
 

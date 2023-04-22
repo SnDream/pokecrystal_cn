@@ -391,7 +391,7 @@ DoubleCodeDrawMap_GB:
 	ld [wDFSCode + 2], a
 	ret
 
-dfontab_GB: MACRO
+MACRO dfontab_GB
 rept _NARG
 	dwb DFS_C_\1_L, BANK(DFS_C_\1_L)
 	dwb DFS_C_\1_H, BANK(DFS_C_\1_H)

@@ -109,13 +109,13 @@ GetFrontpicPointer:
 	ld a, [wCurPartySpecies]
 	ld d, BANK(PokemonPicPointers)
 	jr .ok
-
 .unown
 	ld a, [wUnownLetter]
 	ld d, BANK(UnownPicPointers)
-
 .ok
-	ld hl, PokemonPicPointers ; UnownPicPointers
+	; These are assumed to be at the same address in their respective banks.
+	assert PokemonPicPointers == UnownPicPointers
+	ld hl, PokemonPicPointers
 	dec a
 	ld bc, 6
 	call AddNTimes
@@ -125,7 +125,7 @@ GetFrontpicPointer:
 	push af
 	inc hl
 	ld a, d
-	call GetFarHalfword
+	call GetFarWord
 	pop bc
 	ret
 
@@ -208,7 +208,8 @@ GetMonBackpic:
 	push de
 
 	; These are assumed to be at the same address in their respective banks.
-	ld hl, PokemonPicPointers ; UnownPicPointers
+	assert PokemonPicPointers == UnownPicPointers
+	ld hl, PokemonPicPointers
 	ld a, b
 	ld d, BANK(PokemonPicPointers)
 	cp UNOWN
@@ -227,7 +228,7 @@ GetMonBackpic:
 	push af
 	inc hl
 	ld a, d
-	call GetFarHalfword
+	call GetFarWord
 	ld de, wDecompressScratch
 	pop af
 	call FarDecompress
@@ -246,7 +247,7 @@ GetMonBackpic:
 FixPicBank:
 ; This is a thing for some reason.
 
-PICS_FIX EQU $36
+DEF PICS_FIX EQU $36
 EXPORT PICS_FIX
 
 	push hl
@@ -300,7 +301,7 @@ GSIntro_GetMonFrontpic: ; unreferenced
 	push af
 	inc hl
 	ld a, BANK(PokemonPicPointers)
-	call GetFarHalfword
+	call GetFarWord
 	pop af
 	pop de
 	call FarDecompress
@@ -310,7 +311,7 @@ GetTrainerPic:
 	ld a, [wTrainerClass]
 	and a
 	ret z
-	cp NUM_TRAINER_CLASSES
+	cp NUM_TRAINER_CLASSES + 1
 	ret nc
 	call WaitBGMap
 	xor a
@@ -331,7 +332,7 @@ GetTrainerPic:
 	push af
 	inc hl
 	ld a, BANK(TrainerPicPointers)
-	call GetFarHalfword
+	call GetFarWord
 	pop af
 	ld de, wDecompressScratch
 	call FarDecompress

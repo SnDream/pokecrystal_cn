@@ -1,4 +1,4 @@
-; see engine/naming_screen.asm
+; see engine/menus/naming_screen.asm
 
 ChineseInput:
 	db   "ABCDE FGHIJ KLMNOP"

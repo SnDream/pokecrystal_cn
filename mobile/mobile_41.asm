@@ -37,7 +37,7 @@ StubbedTrainerRankings_MagikarpLength:
 	ret
 	ld a, BANK(sTrainerRankingLongestMagikarp)
 	call OpenSRAM
-	ld de, wBuffer1
+	ld de, wMagikarpLength
 	ld hl, sTrainerRankingLongestMagikarp
 
 	; Is this Magikarp the longest measured?
@@ -282,7 +282,7 @@ StubbedTrainerRankings_TrainerBattles:
 	ld hl, sTrainerRankingTrainerBattles
 	jp StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_Unused1:
+StubbedTrainerRankings_Unused1: ; unreferenced
 	ret
 	ld hl, sTrainerRankingUnused1
 	jp StubbedTrainerRankings_Increment3Byte
@@ -362,7 +362,7 @@ StubbedTrainerRankings_PhoneCalls:
 	ld hl, sTrainerRankingPhoneCalls
 	jr StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_Unused2:
+StubbedTrainerRankings_Unused2: ; unreferenced
 	ret
 	ld hl, sTrainerRankingUnused2
 	jr StubbedTrainerRankings_Increment3Byte
@@ -386,22 +386,22 @@ StubbedTrainerRankings_TreeEncounters:
 	ld hl, sTrainerRankingTreeEncounters
 	jr StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_Unused3:
+StubbedTrainerRankings_Unused3: ; unreferenced
 	ret
 	ld hl, sTrainerRankingUnused3
 	jr StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_ColosseumWins: ; win
+StubbedTrainerRankings_ColosseumWins:
 	ret
 	ld hl, sTrainerRankingColosseumWins
 	jr StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_ColosseumLosses: ; lose
+StubbedTrainerRankings_ColosseumLosses:
 	ret
 	ld hl, sTrainerRankingColosseumLosses
 	jr StubbedTrainerRankings_Increment3Byte
 
-StubbedTrainerRankings_ColosseumDraws: ; draw
+StubbedTrainerRankings_ColosseumDraws:
 	ret
 	ld hl, sTrainerRankingColosseumDraws
 	jr StubbedTrainerRankings_Increment3Byte
@@ -431,8 +431,7 @@ StubbedTrainerRankings_Increment2Byte:
 	ld bc, 1
 	jr StubbedTrainerRankings_Increment
 
-; unused
-StubbedTrainerRankings_Increment1Byte:
+StubbedTrainerRankings_Increment1Byte: ; unreferenced
 	push bc
 	ld bc, 0
 
@@ -556,9 +555,8 @@ DeleteMobileEventIndex:
 	call CloseSRAM
 	ret
 
-; Used in the Japanese version to initialize Trainer Rankings data
-; for a new save file. Unreferenced in the English version.
-InitializeTrainerRankings:
+InitializeTrainerRankings: ; unreferenced
+; Initializes Trainer Rankings data for a new save file in JP Crystal.
 	ld hl, sTrainerRankings
 	ld bc, sTrainerRankingsEnd - sTrainerRankings
 	xor a
@@ -699,14 +697,22 @@ endr
 	pop bc
 	ret
 
-._9	dd 1000000000
-._8	dd 100000000
-._7	dd 10000000
-._6	dd 1000000
-._5	dd 100000
-._4	dd 10000
-._3	dd 1000
-._2	dd 100
+._9
+	dd 1000000000
+._8
+	dd 100000000
+._7
+	dd 10000000
+._6
+	dd 1000000
+._5
+	dd 100000
+._4
+	dd 10000
+._3
+	dd 1000
+._2
+	dd 100
 
 .Function1062b2:
 	ld c, $0
@@ -807,8 +813,8 @@ Mobile_AlwaysReturnNotCarry:
 	or a
 	ret
 
-Function106331:
-; called by Mobile_DummyReturnFalse in Crystal-J
+Function106331: ; unreferenced
+; called by Mobile_DummyReturnFalse in JP Crystal
 	; check ~[s4_b000] == [s7_a800]
 	ld a, BANK(s4_b000)
 	call OpenSRAM
@@ -867,8 +873,8 @@ Function10635c:
 	ld de, wcd30
 	ld hl, $41
 	ld bc, $41
-	ld a, $40
-	call Function3e32
+	ld a, MOBILEAPI_20
+	call MobileAPI
 	ld a, [wMobileCommsJumptableIndex]
 	inc a
 	ld [wMobileCommsJumptableIndex], a
@@ -937,8 +943,8 @@ Function1063e5:
 
 Function1063f3:
 	ld de, wcd31
-	ld a, $32
-	call Function3e32
+	ld a, MOBILEAPI_TELEPHONESTATUS
+	call MobileAPI
 	ld a, [wMobileCommsJumptableIndex]
 	inc a
 	ld [wMobileCommsJumptableIndex], a
@@ -985,8 +991,8 @@ Function106403:
 	ret
 
 Function106442:
-	ld a, $36
-	call Function3e32
+	ld a, MOBILEAPI_1B
+	call MobileAPI
 	xor a
 	ldh [hMobile], a
 	ldh [hMobileReceive], a
@@ -1023,12 +1029,12 @@ Function106464::
 	call Get2bpp
 	ld de, $40b0
 	ld hl, vTiles2 tile $6b
-	ld b, $0f ; XXX no graphics at 0f:40b0
+	ld b, $0f ; no graphics at 0f:40b0; JP leftover???
 	call Get2bpp
 	farcall LoadFrame
 	ret
 
-Function10649b:
+Function10649b: ; unreferenced
 	ld a, [wTextboxFrame]
 	maskbits NUM_FRAMES
 	ld bc, 6 * LEN_1BPP_TILE
@@ -1063,7 +1069,7 @@ Function1064c3:
 	ldh [rSVBK], a
 	jr asm_1064ed
 
-Function1064d8:
+Function1064d8: ; unreferenced
 	ldh a, [rSVBK]
 	push af
 	ld a, $6
@@ -1097,7 +1103,7 @@ asm_1064ed:
 	ldh [rSVBK], a
 	ret
 
-Function10650a:
+Function10650a: ; unreferenced
 	ld de, MobilePhoneTilesGFX
 	lb bc, BANK(MobilePhoneTilesGFX), 17
 	call Get2bpp

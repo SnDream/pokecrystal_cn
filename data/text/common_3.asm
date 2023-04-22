@@ -72,14 +72,14 @@ _LinkAbnormalMonText::
 
 _LinkAskTradeForText::
 	text "Trade @"
-	text_ram wd004
+	text_ram wBufferTrademonNickname
 	text_start
 	line "for @"
 	text_ram wStringBuffer1
 	text "?"
 	done
 
-UnknownText_0x1c422a::
+_MobileBattleMustPickThreeMonText::
 	text "To enter a mobile"
 	line "battle, you must"
 
@@ -89,12 +89,12 @@ UnknownText_0x1c422a::
 	para "Is that OK?"
 	done
 
-UnknownText_0x1c4275::
+_MobileBattleMoreInfoText::
 	text "Need more info on"
 	line "mobile battles?"
 	done
 
-UnknownText_0x1c4298::
+_MobileBattleRulesText::
 	text "For a mobile"
 	line "battle, choose"
 	cont "three #MON."
@@ -121,7 +121,7 @@ UnknownText_0x1c4298::
 	line "wins."
 	done
 
-UnknownText_0x1c439c::
+_WouldYouLikeToMobileBattleText::
 	text "Today's remaining"
 	line "time is @"
 	text_decimal wStringBuffer2, 1, 2
@@ -131,7 +131,7 @@ UnknownText_0x1c439c::
 	line "battle?"
 	done
 
-UnknownText_0x1c43dc::
+_WantAQuickMobileBattleText::
 	text "There are only @"
 	text_decimal wStringBuffer2, 1, 2
 	text_start
@@ -141,7 +141,7 @@ UnknownText_0x1c43dc::
 	line "battle?"
 	done
 
-UnknownText_0x1c4419::
+_WantToRushThroughAMobileBattleText::
 	text "There is only"
 	line "1 min. left today!"
 
@@ -149,7 +149,7 @@ UnknownText_0x1c4419::
 	line "through a battle?"
 	done
 
-UnknownText_0x1c445a::
+_PleaseTryAgainTomorrowText::
 	text "There is less than"
 	line "1 min. left today!"
 
@@ -157,7 +157,7 @@ UnknownText_0x1c445a::
 	line "tomorrow."
 	done
 
-UnknownText_0x1c449c::
+_TryAgainUsingSameSettingsText::
 	text "Try again using"
 	line "the same settings?"
 	done
@@ -172,12 +172,12 @@ _MobileBattleNoTimeLeftForLinkingText::
 	line "linking today."
 	done
 
-UnknownText_0x1c4508::
+_PickThreeMonForMobileBattleText::
 	text "Pick three #MON"
 	line "for battle."
 	done
 
-UnknownText_0x1c4525::
+_MobileBattleRemainingTimeText::
 	text "Today's remaining"
 	line "time is @"
 	text_decimal wStringBuffer2, 1, 2
@@ -332,7 +332,7 @@ _SeerTradeText::
 	text_ram wSeerNickname
 	text_start
 	line "came from @"
-	text_ram wSeerOTName
+	text_ram wSeerOT
 	text_start
 	cont "in a trade?"
 
@@ -340,7 +340,7 @@ _SeerTradeText::
 	text_ram wSeerCaughtLocation
 	text_start
 	line "was where @"
-	text_ram wSeerOTName
+	text_ram wSeerOT
 	text_start
 	cont "met @"
 	text_ram wSeerNickname
@@ -490,7 +490,7 @@ _MartHowManyText::
 	done
 
 _MartFinalPriceText::
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text " @"
 	text_ram wStringBuffer2
 	text "(S)"
@@ -519,7 +519,7 @@ _HerbalLadyHowManyText::
 	done
 
 _HerbalLadyFinalPriceText::
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text " @"
 	text_ram wStringBuffer2
 	text "(S)"
@@ -602,7 +602,7 @@ _PharmacyHowManyText::
 	done
 
 _PharmacyFinalPriceText::
-	text_decimal wItemQuantityChangeBuffer, 1, 2
+	text_decimal wItemQuantityChange, 1, 2
 	text " @"
 	text_ram wStringBuffer2
 	text "(S)"
@@ -630,7 +630,6 @@ _PharmacyComeAgainText::
 	line "See you around."
 	done
 
-; unreferenced
 _NothingToSellText::
 	text "You don't have"
 	line "anything to sell."
@@ -754,25 +753,21 @@ _MainMenuTimeUnknownText::
 	text "Clock time unknown"
 	done
 
-; unreferenced mobile
 _DeleteSavedLoginPasswordText::
 	text "Delete the saved"
 	line "LOG-IN PASSWORD?"
 	done
 
-; unreferenced mobile
 _DeletedTheLoginPasswordText::
 	text "Deleted the LOG-IN"
 	line "PASSWORD."
 	done
 
-; unreferenced mobile
-_MobilePickThreeMonForBattle::
+_MobilePickThreeMonForBattleText::
 	text "Pick three #MON"
 	line "for battle."
 	prompt
 
-; unreferenced mobile
 _MobileUseTheseThreeMonText::
 	text_ram wMobileParticipant1Nickname
 	text ","
@@ -786,13 +781,11 @@ _MobileUseTheseThreeMonText::
 	para "Use these three?"
 	done
 
-; unreferenced mobile
 _MobileOnlyThreeMonMayEnterText::
 	text "Only three #MON"
 	line "may enter."
 	prompt
 
-; unreferenced mobile
 _MobileCardFolderIntro1Text::
 	text "The CARD FOLDER"
 	line "stores your and"
@@ -810,7 +803,6 @@ _MobileCardFolderIntro1Text::
 	para ""
 	done
 
-; unreferenced mobile
 _MobileCardFolderIntro2Text::
 	text "This is your CARD."
 
@@ -824,7 +816,6 @@ _MobileCardFolderIntro2Text::
 	para ""
 	done
 
-; unreferenced mobile
 _MobileCardFolderIntro3Text::
 	text "If you have your"
 	line "friend's CARD, you"
@@ -839,7 +830,6 @@ _MobileCardFolderIntro3Text::
 	para ""
 	done
 
-; unreferenced mobile
 _MobileCardFolderIntro4Text::
 	text "To safely store"
 	line "your collection of"
@@ -851,7 +841,6 @@ _MobileCardFolderIntro4Text::
 	para ""
 	done
 
-; unreferenced mobile
 _MobileCardFolderAskDeleteText::
 	text "If the CARD FOLDER"
 	line "is deleted, all"
@@ -868,13 +857,11 @@ _MobileCardFolderAskDeleteText::
 	line "your CARD FOLDER?"
 	done
 
-; unreferenced mobile
 _MobileCardFolderDeleteAreYouSureText::
 	text "Are you sure you"
 	line "want to delete it?"
 	done
 
-; unreferenced mobile
 _MobileCardFolderDeletedText::
 	text "The CARD FOLDER"
 	line "has been deleted."
@@ -882,7 +869,6 @@ _MobileCardFolderDeletedText::
 	para ""
 	done
 
-; unreferenced mobile
 _MobileCardFolderAskOpenOldText::
 	text "There is an older"
 	line "CARD FOLDER from a"
@@ -892,13 +878,11 @@ _MobileCardFolderAskOpenOldText::
 	line "open it?"
 	done
 
-; unreferenced mobile
 _MobileCardFolderAskDeleteOldText::
 	text "Delete the old"
 	line "CARD FOLDER?"
 	done
 
-; unreferenced mobile
 _MobileCardFolderFinishRegisteringCardsText::
 	text "Finish registering"
 	line "CARDS?"
@@ -1242,7 +1226,7 @@ _BallSoCloseText::
 
 Text_BallCaught::
 	text "Gotcha! @"
-	text_ram wEnemyMonNick
+	text_ram wEnemyMonNickname
 	text_start
 	line "was caught!@"
 	sound_caught_mon
@@ -1263,7 +1247,7 @@ _BallSentToPCText::
 	prompt
 
 _NewDexDataText::
-	text_ram wEnemyMonNick
+	text_ram wEnemyMonNickname
 	text "'s data"
 	line "was newly added to"
 	cont "the #DEX.@"

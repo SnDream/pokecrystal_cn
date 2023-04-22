@@ -6,11 +6,11 @@
 
 AzaleaPokecenter1F_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene
+	scene_script AzaleaPokecenter1FNoopScene ; unusable
 
 	def_callbacks
 
-.DummyScene:
+AzaleaPokecenter1FNoopScene:
 	end
 
 AzaleaPokecenter1FNurseScript:
@@ -36,8 +36,7 @@ AzaleaPokecenter1FGentlemanText:
 	line "fainted."
 	done
 
-AzaleaPokecenter1FUnusedText:
-; unreferenced
+AzaleaPokecenter1FUnusedText: ; unreferenced
 	text "This BILL guy"
 	line "created the system"
 

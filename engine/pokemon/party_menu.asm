@@ -36,7 +36,7 @@ InitPartyMenuLayout:
 
 LoadPartyMenuGFX:
 	call LoadFontsBattleExtra
-	callfar InitPartyMenuPalettes ; engine/color.asm
+	callfar InitPartyMenuPalettes
 	callfar ClearSpriteAnims2
 	ret
 
@@ -92,7 +92,7 @@ PlacePartyNicknames:
 	push hl
 	ld hl, wPartyMonNicknames
 	ld a, b
-	call GetNick
+	call GetNickname
 	lb bc, 15, 1
 	farcall FixStrLength
 	pop hl
@@ -148,7 +148,7 @@ PlacePartyHPBar:
 	ld hl, wHPPals
 	ld a, [wSGBPals]
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	call SetShortHPPal
 	ld b, SCGB_PARTY_MENU_HP_BARS
@@ -398,6 +398,7 @@ PlacePartyMonEvoStoneCompatibility:
 	ret
 
 .DetermineCompatibility:
+; BUG: Only the first three evolution entries can have Stone compatibility reported correctly (see docs/bugs_and_glitches.md)
 	ld de, wStringBuffer1
 	ld a, BANK(EvosAttacksPointers)
 	ld bc, 2
@@ -412,6 +413,7 @@ PlacePartyMonEvoStoneCompatibility:
 	call FarCopyBytes
 	ld hl, wStringBuffer1
 .loop2
+; BUG: EVOLVE_STAT can break Stone compatibility reporting (see docs/bugs_and_glitches.md)
 	ld a, [hli]
 	and a
 	jr z, .nope
@@ -603,7 +605,7 @@ InitPartyMenuGFX:
 	ret z
 	ld c, a
 	xor a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 .loop
 	push bc
 	push hl
@@ -611,9 +613,9 @@ InitPartyMenuGFX:
 	ld a, BANK(LoadMenuMonIcon)
 	ld e, MONICON_PARTYMENU
 	rst FarCall
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	inc a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	pop hl
 	pop bc
 	dec c
@@ -695,7 +697,7 @@ PartyMenuSelect:
 	dec a
 	ld [wCurPartyMon], a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	ld hl, wPartySpecies
 	add hl, bc
 	ld a, [hl]
@@ -728,7 +730,7 @@ PrintPartyMenuText:
 	and $f ; drop high nibble
 	ld hl, PartyMenuStrings
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	add hl, de
 	ld a, [hli]
@@ -771,12 +773,10 @@ TeachWhichPKMNString:
 MoveToWhereString:
 	db "要与哪只调整位置？@"
 
-ChooseAFemalePKMNString:
-; unused
+ChooseAFemalePKMNString: ; unreferenced
 	db "请选择雌性宝可梦。@"
 
-ChooseAMalePKMNString:
-; unused
+ChooseAMalePKMNString: ; unreferenced
 	db "请选择雄性宝可梦。@"
 
 ToWhichPKMNString:
@@ -788,7 +788,7 @@ YouHaveNoPKMNString:
 PrintPartyMenuActionText:
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	ld a, [wPartyMenuActionText]
 	and $f
 	ld hl, .MenuActionTexts

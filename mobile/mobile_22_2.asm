@@ -32,7 +32,7 @@ Function8b342::
 .two
 	ret
 
-Function8b35d:
+Function8b35d: ; unreferenced
 	ld a, h
 	cp d
 	ret nz
@@ -40,7 +40,7 @@ Function8b35d:
 	cp e
 	ret
 
-Function8b363:
+Function8b363: ; unreferenced
 	push bc
 	farcall Mobile_AlwaysReturnNotCarry
 	pop bc
@@ -719,7 +719,7 @@ Function8b75d:
 	jr nz, .asm_8b780
 	jr Function8b79e
 
-Function8b787:
+Function8b787: ; unreferenced
 	ret
 
 Function8b788:
@@ -772,7 +772,7 @@ Function8b7bd:
 	ld hl, MenuHeader_0x8b867
 	call CopyMenuHeader
 	ld a, [wd030]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wd031]
 	ld [wMenuScrollPosition], a
 	ld a, [wd032]
@@ -800,15 +800,15 @@ Function8b7bd:
 	call ScrollingMenu
 	call Mobile_DisableSpriteUpdates
 	ld a, [wMenuJoypad]
-	cp $2
+	cp B_BUTTON
 	jr z, .asm_8b823
-	cp $20
+	cp D_LEFT
 	jr nz, .asm_8b813
 	call Function8b832
 	jr .asm_8b7ea
 
 .asm_8b813
-	cp $10
+	cp D_RIGHT
 	jr nz, .asm_8b81c
 	call Function8b83e
 	jr .asm_8b7ea
@@ -848,7 +848,7 @@ Function8b83e:
 Function8b84b:
 	ld [wMenuScrollPosition], a
 	ld a, [wMenuCursorY]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ret
 
 Function8b855:
@@ -1019,7 +1019,7 @@ Function8b99f:
 	ld hl, wd002
 	dec a
 	ld c, a
-	ld b, $0
+	ld b, 0
 	add hl, bc
 	ld a, [hl]
 	cp $ff

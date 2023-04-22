@@ -1,4 +1,4 @@
-Function_LoadOpponentTrainerAndPokemons:
+LoadOpponentTrainerAndPokemon:
 	ldh a, [rSVBK]
 	push af
 	ld a, BANK(wBT_OTTrainer)
@@ -30,8 +30,8 @@ if DEF(_CRYSTAL11)
 	maskbits BATTLETOWER_NUM_UNIQUE_TRAINERS
 	cp BATTLETOWER_NUM_UNIQUE_TRAINERS
 else
-; Crystal 1.0 used the wrong constant here, so only the first 21
-; trainers in BattleTowerTrainers can be sampled.
+; BUG: Crystal 1.0 used the wrong constant here, so only the first
+; 21 trainers in BattleTowerTrainers can be sampled.
 	maskbits BATTLETOWER_NUM_UNIQUE_MON
 	cp BATTLETOWER_NUM_UNIQUE_MON
 endc
@@ -68,7 +68,7 @@ endc
 	ld bc, NAME_LENGTH
 	call CopyBytes
 
-	call Function_LoadRandomBattleTowerMon
+	call LoadRandomBattleTowerMon
 	pop af
 
 	ld hl, BattleTowerTrainerData
@@ -91,11 +91,11 @@ endc
 
 	ret
 
-Function_LoadRandomBattleTowerMon:
+LoadRandomBattleTowerMon:
 	ld c, BATTLETOWER_PARTY_LENGTH
 .loop
 	push bc
-	ld a, BANK(sBTMonPrevTrainer1)
+	ld a, BANK(sBTMonOfTrainers)
 	call OpenSRAM
 
 .FindARandomBattleTowerMon:
@@ -168,13 +168,13 @@ Function_LoadRandomBattleTowerMon:
 	ld bc, NICKNAMED_MON_STRUCT_LENGTH
 	call CopyBytes
 
-	ld a, [wNamedObjectIndexBuffer]
+	ld a, [wNamedObjectIndex]
 	push af
 	push de
 	ld hl, -NICKNAMED_MON_STRUCT_LENGTH
 	add hl, de
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	ld bc, PARTYMON_STRUCT_LENGTH
 	add hl, bc
 	push hl
@@ -187,7 +187,7 @@ Function_LoadRandomBattleTowerMon:
 
 	pop de
 	pop af
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	pop bc
 	dec c
 	jp nz, .loop

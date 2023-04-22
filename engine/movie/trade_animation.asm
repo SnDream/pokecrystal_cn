@@ -1,5 +1,5 @@
-TRADEANIM_RIGHT_ARROW EQU "▶" ; $ed
-TRADEANIM_LEFT_ARROW  EQU "▼" ; $ee
+DEF TRADEANIM_RIGHT_ARROW EQU "▶" ; $ed
+DEF TRADEANIM_LEFT_ARROW  EQU "▼" ; $ee
 
 ; TradeAnim_TubeAnimJumptable.Jumptable indexes
 	const_def
@@ -7,21 +7,21 @@ TRADEANIM_LEFT_ARROW  EQU "▼" ; $ee
 	const TRADEANIMSTATE_1 ; 1
 	const TRADEANIMSTATE_2 ; 2
 	const TRADEANIMSTATE_3 ; 3
-TRADEANIMJUMPTABLE_LENGTH EQU const_value
+DEF TRADEANIMJUMPTABLE_LENGTH EQU const_value
 
-add_tradeanim: MACRO
+MACRO add_tradeanim
 \1_TradeCmd:
 	dw \1
 ENDM
 
-tradeanim: MACRO
-	db (\1_TradeCmd - DoTradeAnimation.JumpTable) / 2
+MACRO tradeanim
+	db (\1_TradeCmd - DoTradeAnimation.Jumptable) / 2
 ENDM
 
 TradeAnimation:
 	farcall dfsClearCache
 	xor a
-	ld [wcf66], a
+	ld [wUnusedTradeAnimPlayEvolutionMusic], a
 	ld hl, wPlayerTrademonSenderName
 	ld de, wOTTrademonSenderName
 	call LinkTradeAnim_LoadTradePlayerNames
@@ -73,7 +73,7 @@ TradeAnimation:
 TradeAnimationPlayer2:
 	farcall dfsClearCache
 	xor a
-	ld [wcf66], a
+	ld [wUnusedTradeAnimPlayEvolutionMusic], a
 	ld hl, wOTTrademonSenderName
 	ld de, wPlayerTrademonSenderName
 	call LinkTradeAnim_LoadTradePlayerNames
@@ -139,7 +139,7 @@ RunTradeAnimScript:
 	push af
 	set NO_TEXT_SCROLL, [hl]
 	call .TradeAnimLayout
-	ld a, [wcf66]
+	ld a, [wUnusedTradeAnimPlayEvolutionMusic]
 	and a
 	jr nz, .anim_loop
 	ld de, MUSIC_EVOLUTION
@@ -170,7 +170,7 @@ RunTradeAnimScript:
 	ld a, $1
 	ldh [rVBK], a
 	ld hl, vTiles0
-	ld bc, sScratch - vTiles0
+	ld bc, VRAM_End - VRAM_Begin
 	xor a
 	call ByteFill
 	ld a, $0
@@ -178,7 +178,7 @@ RunTradeAnimScript:
 
 .NotCGB:
 	hlbgcoord 0, 0
-	ld bc, sScratch - vBGMap0
+	ld bc, VRAM_End - vBGMap0
 	ld a, " "
 	call ByteFill
 	ld hl, TradeGameBoyLZ
@@ -214,10 +214,10 @@ RunTradeAnimScript:
 	call TradeAnim_GetFrontpic
 	ld a, [wPlayerTrademonSpecies]
 	ld de, wPlayerTrademonSpeciesName
-	call TradeAnim_GetNickname
+	call TradeAnim_GetNicknamename
 	ld a, [wOTTrademonSpecies]
 	ld de, wOTTrademonSpeciesName
-	call TradeAnim_GetNickname
+	call TradeAnim_GetNicknamename
 	call TradeAnim_NormalPals
 	ret
 
@@ -227,7 +227,7 @@ DoTradeAnimation:
 	jr nz, .finished
 	call .DoTradeAnimCommand
 	callfar PlaySpriteAnimations
-	ld hl, wcf65
+	ld hl, wFrameCounter2
 	inc [hl]
 	call DelayFrame
 	and a
@@ -239,9 +239,9 @@ DoTradeAnimation:
 	ret
 
 .DoTradeAnimCommand:
-	jumptable .JumpTable, wJumptableIndex
+	jumptable .Jumptable, wJumptableIndex
 
-.JumpTable:
+.Jumptable:
 	add_tradeanim TradeAnim_AdvanceScriptPointer ; 00
 	add_tradeanim TradeAnim_ShowGivemonData      ; 01
 	add_tradeanim TradeAnim_ShowGetmonData       ; 02
@@ -275,8 +275,8 @@ DoTradeAnimation:
 	add_tradeanim TradeAnim_TextboxScrollStart   ; 1e
 	add_tradeanim TradeAnim_ScrollOutRight       ; 1f
 	add_tradeanim TradeAnim_ScrollOutRight2      ; 20
-	add_tradeanim TradeAnim_Wait80              ; 21
-	add_tradeanim TradeAnim_Wait40              ; 22
+	add_tradeanim TradeAnim_Wait80               ; 21
+	add_tradeanim TradeAnim_Wait40               ; 22
 	add_tradeanim TradeAnim_RockingBall          ; 23
 	add_tradeanim TradeAnim_DropBall             ; 24
 	add_tradeanim TradeAnim_WaitAnim             ; 25
@@ -287,9 +287,9 @@ DoTradeAnimation:
 	add_tradeanim TradeAnim_GetTrademonSFX       ; 2a
 	add_tradeanim TradeAnim_End                  ; 2b
 	add_tradeanim TradeAnim_AnimateFrontpic      ; 2c
-	add_tradeanim TradeAnim_Wait96              ; 2d
-	add_tradeanim TradeAnim_Wait80IfOTEgg       ; 2e
-	add_tradeanim TradeAnim_Wait180IfOTEgg      ; 2f
+	add_tradeanim TradeAnim_Wait96               ; 2d
+	add_tradeanim TradeAnim_Wait80IfOTEgg        ; 2e
+	add_tradeanim TradeAnim_Wait180IfOTEgg       ; 2f
 
 TradeAnim_IncrementJumptableIndex:
 	ld hl, wJumptableIndex
@@ -472,7 +472,7 @@ TradeAnim_TubeToPlayer8:
 	call DisableLCD
 	callfar ClearSpriteAnims
 	hlbgcoord 0, 0
-	ld bc, sScratch - vBGMap0
+	ld bc, VRAM_End - vBGMap0
 	ld a, " "
 	call ByteFill
 	xor a
@@ -819,9 +819,9 @@ TradeAnim_GetFrontpic:
 	predef GetMonFrontpic
 	ret
 
-TradeAnim_GetNickname:
+TradeAnim_GetNicknamename:
 	push de
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, wStringBuffer1
 	pop de
@@ -1336,7 +1336,7 @@ LinkTradeAnim_LoadTradeMonSpecies:
 	ret
 
 TradeAnim_FlashBGPals:
-	ld a, [wcf65]
+	ld a, [wFrameCounter2]
 	and $7
 	ret nz
 	ldh a, [rBGP]
@@ -1358,7 +1358,7 @@ LoadTradeBallAndCableGFX:
 	ld hl, vTiles0 tile $74
 	lb bc, BANK(TradeCableGFX), 4
 	call Request2bpp
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], $62
@@ -1372,7 +1372,7 @@ LoadTradeBubbleGFX:
 	ld hl, vTiles0 tile $72
 	lb bc, BANK(TradeBubbleGFX), 4
 	call Request2bpp
-	xor a
+	xor a ; SPRITE_ANIM_DICT_DEFAULT
 	ld hl, wSpriteAnimDict
 	ld [hli], a
 	ld [hl], $62
@@ -1431,7 +1431,7 @@ DebugTrade: ; unreferenced
 	jr nz, .loop2
 	ret
 
-debugtrade: MACRO
+MACRO debugtrade
 ; species, ot name, ot id
 	db \1, \2
 	dw \3

@@ -220,7 +220,7 @@ PrintIMELine:
 	ld h, d
 	ld l, e
 	ld a, [wIMEBank]
-	call GetFarHalfword
+	call GetFarWord
 	ld a, l
 	cp a, "@"
 	jr z, .end

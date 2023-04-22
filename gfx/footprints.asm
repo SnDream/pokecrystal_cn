@@ -4,10 +4,12 @@
 ; then a row of the bottom two tiles for those eight footprints.
 
 ; These macros help extract the first and the last two tiles, respectively.
-footprint_top    EQUS "0,                 2 * LEN_1BPP_TILE"
-footprint_bottom EQUS "2 * LEN_1BPP_TILE, 2 * LEN_1BPP_TILE"
+DEF footprint_top    EQUS "0,                 2 * LEN_1BPP_TILE"
+DEF footprint_bottom EQUS "2 * LEN_1BPP_TILE, 2 * LEN_1BPP_TILE"
 
+Footprints:
 ; Entries correspond to Pokémon species, two apiece, 8 tops then 8 bottoms
+	table_width LEN_1BPP_TILE * 4, Footprints
 
 ; 001-008 top halves
 INCBIN "gfx/footprints/bulbasaur.1bpp",  footprint_top
@@ -585,3 +587,5 @@ INCBIN "gfx/footprints/253.1bpp",        footprint_bottom
 INCBIN "gfx/footprints/254.1bpp",        footprint_bottom
 INCBIN "gfx/footprints/255.1bpp",        footprint_bottom
 INCBIN "gfx/footprints/256.1bpp",        footprint_bottom
+
+	assert_table_length $100

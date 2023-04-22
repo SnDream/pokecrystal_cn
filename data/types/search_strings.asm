@@ -1,5 +1,6 @@
 PokedexTypeSearchStrings:
 ; entries correspond with PokedexTypeSearchConversionTable (see data/types/search_types.asm)
+	table_width POKEDEX_TYPE_STRING_LENGTH, PokedexTypeSearchStrings
 	db "忽略@@@"
 	db "一般@@@"
 	db "火@@@@@"
@@ -18,3 +19,4 @@ PokedexTypeSearchStrings:
 	db "龙@@@@@"
 	db "恶@@@@@"
 	db "钢@@@@@"
+	assert_table_length NUM_TYPES + 1

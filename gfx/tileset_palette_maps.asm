@@ -1,11 +1,11 @@
-tilepal: MACRO
+MACRO tilepal
 ; used in gfx/tilesets/*_palette_map.asm
 ; vram bank, pals
-x = \1 << OAM_TILE_BANK
-rept (_NARG - 1) / 2
-	dn (x | PAL_BG_\3), (x | PAL_BG_\2)
-	shift 2
-endr
+	DEF x = \1 << OAM_TILE_BANK
+	rept (_NARG - 1) / 2
+		dn (x | PAL_BG_\3), (x | PAL_BG_\2)
+		shift 2
+	endr
 ENDM
 
 TilesetKantoPalMap:
@@ -90,7 +90,7 @@ INCLUDE "gfx/tilesets/lighthouse_palette_map.asm"
 TilesetPlayersRoomPalMap:
 INCLUDE "gfx/tilesets/players_room_palette_map.asm"
 
-UnusedMuseumPalMap:
+UnusedMuseumPalMap: ; unreferenced
 INCLUDE "gfx/tilesets/unused_museum_palette_map.asm"
 
 TilesetIcePathPalMap:
@@ -109,7 +109,7 @@ TilesetBattleTowerOutsidePalMap:
 INCLUDE "gfx/tilesets/battle_tower_outside_palette_map.asm"
 
 MapGroupPalettes: ; unreferenced
-; entries correspond to GROUP_* constants
+; entries correspond to MAPGROUP_* constants
 rept NUM_MAP_GROUPS
 	db PAL_BG_ROOF
 endr

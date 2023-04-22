@@ -3,20 +3,20 @@
 
 KogasRoom_MapScripts:
 	def_scene_scripts
-	scene_script .LockDoor ; SCENE_DEFAULT
-	scene_script .DummyScene ; SCENE_FINISHED
+	scene_script KogasRoomLockDoorScene, SCENE_KOGASROOM_LOCK_DOOR
+	scene_script KogasRoomNoopScene,     SCENE_KOGASROOM_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .KogasRoomDoors
+	callback MAPCALLBACK_TILES, KogasRoomDoorsCallback
 
-.LockDoor:
-	prioritysjump .KogasDoorLocksBehindYou
+KogasRoomLockDoorScene:
+	sdefer KogasRoomDoorLocksBehindYouScript
 	end
 
-.DummyScene:
+KogasRoomNoopScene:
 	end
 
-.KogasRoomDoors:
+KogasRoomDoorsCallback:
 	checkevent EVENT_KOGAS_ROOM_ENTRANCE_CLOSED
 	iffalse .KeepEntranceOpen
 	changeblock 4, 14, $2a ; wall
@@ -27,7 +27,7 @@ KogasRoom_MapScripts:
 .KeepExitClosed:
 	endcallback
 
-.KogasDoorLocksBehindYou:
+KogasRoomDoorLocksBehindYouScript:
 	applymovement PLAYER, KogasRoom_EnterMovement
 	refreshscreen $86
 	playsound SFX_STRENGTH
@@ -35,7 +35,7 @@ KogasRoom_MapScripts:
 	changeblock 4, 14, $2a ; wall
 	reloadmappart
 	closetext
-	setscene SCENE_FINISHED
+	setscene SCENE_KOGASROOM_NOOP
 	setevent EVENT_KOGAS_ROOM_ENTRANCE_CLOSED
 	waitsfx
 	end

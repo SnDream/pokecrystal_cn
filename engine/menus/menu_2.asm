@@ -1,7 +1,7 @@
 PlaceMenuItemName:
 	push de
 	ld a, [wMenuSelection]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	pop hl
 	call PlaceString
@@ -12,7 +12,7 @@ PlaceMenuItemQuantity:
 	ld a, [wMenuSelection]
 	ld [wCurItem], a
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	pop hl
 	and a
 	jr nz, .done
@@ -166,20 +166,20 @@ StartMenu_PrintBugContestStatus:
 	set NO_TEXT_SCROLL, [hl]
 	call StartMenu_DrawBugContestStatusBox
 	hlcoord 1, 2
-	ld de, .Balls_EN
+	ld de, .BallsString
 	call PlaceString
 	hlcoord 5, 2
 	ld de, wParkBallsRemaining
 	lb bc, 1, 2
 	call PrintNum
 	hlcoord 1, 4
-	ld de, .CAUGHT
+	ld de, .CaughtString
 	call PlaceString
 	ld a, [wContestMon]
 	and a
-	ld de, .None
+	ld de, .NoneString
 	jr z, .no_contest_mon
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 .no_contest_mon
@@ -189,7 +189,7 @@ StartMenu_PrintBugContestStatus:
 	and a
 	jr z, .skip_level
 	hlcoord 1, 6
-	ld de, .LEVEL
+	ld de, .LevelString
 	call PlaceString
 	ld a, [wContestMonLevel]
 	ld h, b
@@ -203,22 +203,23 @@ StartMenu_PrintBugContestStatus:
 	ld [wOptions], a
 	ret
 
-.Balls_JP:
+.BallsJPString: ; unreferenced
 	db "ボール<　><　><　>こ@"
-.CAUGHT:
+.CaughtString:
 	db "捕获@"
-.Balls_EN:
+.BallsString:
 	db "剩余   球@"
-.None:
+.NoneString:
 	db "无@"
-.LEVEL:
+.LevelString:
 	db "等级@"; $6D,$6B,"@" ;":L"
 
 FindApricornsInBag:
 ; Checks the bag for Apricorns.
-	ld hl, wBuffer1
+	ld hl, wKurtApricornCount
 	xor a
 	ld [hli], a
+	assert wKurtApricornCount + 1 == wKurtApricornItems
 	dec a
 	ld bc, 10
 	call ByteFill
@@ -242,15 +243,15 @@ FindApricornsInBag:
 	jr .loop
 
 .done
-	ld a, [wBuffer1]
+	ld a, [wKurtApricornCount]
 	and a
 	ret nz
 	scf
 	ret
 
-.addtobuffer
+.addtobuffer:
 	push hl
-	ld hl, wBuffer1
+	ld hl, wKurtApricornCount
 	inc [hl]
 	ld e, [hl]
 	ld d, 0

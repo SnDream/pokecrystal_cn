@@ -1,6 +1,5 @@
 BattleCommand_Present:
-; present
-
+; BUG: Present damage is incorrect in link battles (see docs/bugs_and_glitches.md)
 	ld a, [wLinkMode]
 	cp LINK_COLOSSEUM
 	jr z, .colosseum_skippush
@@ -80,7 +79,7 @@ BattleCommand_Present:
 	call _CheckBattleScene
 	jr nc, .do_animation
 	call AnimateFailedMove
-	ld hl, RefusedGiftText
+	ld hl, PresentFailedText
 	call StdBattleTextbox
 .do_animation
 	jp EndMoveEffect

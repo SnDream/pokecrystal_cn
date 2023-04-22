@@ -4,25 +4,25 @@
 
 RuinsOfAlphKabutoChamber_MapScripts:
 	def_scene_scripts
-	scene_script .CheckWall ; SCENE_DEFAULT
-	scene_script .DummyScene ; SCENE_FINISHED
+	scene_script RuinsOfAlphKabutoChamberCheckWallScene, SCENE_RUINSOFALPHKABUTOCHAMBER_CHECK_WALL
+	scene_script RuinsOfAlphKabutoChamberNoopScene,      SCENE_RUINSOFALPHKABUTOCHAMBER_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .HiddenDoors
+	callback MAPCALLBACK_TILES, RuinsOfAlphKabutoChamberHiddenDoorsCallback
 
-.CheckWall:
+RuinsOfAlphKabutoChamberCheckWallScene:
 	checkevent EVENT_WALL_OPENED_IN_KABUTO_CHAMBER
 	iftrue .OpenWall
 	end
 
 .OpenWall:
-	prioritysjump .WallOpenScript
+	sdefer RuinsOfAlphKabutoChamberWallOpenScript
 	end
 
-.DummyScene:
+RuinsOfAlphKabutoChamberNoopScene:
 	end
 
-.HiddenDoors:
+RuinsOfAlphKabutoChamberHiddenDoorsCallback:
 	checkevent EVENT_WALL_OPENED_IN_KABUTO_CHAMBER
 	iftrue .WallOpen
 	changeblock 4, 0, $2e ; closed wall
@@ -36,7 +36,7 @@ RuinsOfAlphKabutoChamber_MapScripts:
 	changeblock 4, 2, $02 ; right floor
 	endcallback
 
-.WallOpenScript:
+RuinsOfAlphKabutoChamberWallOpenScript:
 	pause 30
 	earthquake 30
 	showemote EMOTE_SHOCK, PLAYER, 20
@@ -45,7 +45,7 @@ RuinsOfAlphKabutoChamber_MapScripts:
 	changeblock 4, 0, $30 ; open wall
 	reloadmappart
 	earthquake 50
-	setscene SCENE_FINISHED
+	setscene SCENE_RUINSOFALPHKABUTOCHAMBER_NOOP
 	closetext
 	end
 
@@ -200,8 +200,7 @@ RuinsOfAlphKabutoChamberScientistTremorText:
 	cont "this wall here…"
 	done
 
-RuinsOfAlphKabutoChamberUnusedText:
-; unused
+RuinsOfAlphKabutoChamberUnusedText: ; unreferenced
 	text "The patterns on"
 	line "the wall appear to"
 	cont "be words!"
@@ -224,8 +223,7 @@ RuinsOfAlphKabutoChamberWallPatternLeftText:
 	line "on the walls…"
 	done
 
-RuinsOfAlphKabutoChamberUnownText:
-; unused
+RuinsOfAlphKabutoChamberUnownText: ; unreferenced
 	text "It's UNOWN text!"
 	done
 

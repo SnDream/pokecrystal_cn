@@ -1,6 +1,6 @@
 _DoItemEffect::
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call CopyName1
 	ld a, 1
@@ -12,7 +12,8 @@ _DoItemEffect::
 	ret
 
 ItemEffects:
-; entries correspond to item ids
+; entries correspond to item ids (see constants/item_constants.asm)
+	table_width 2, ItemEffects
 	dw PokeBallEffect      ; MASTER_BALL
 	dw PokeBallEffect      ; ULTRA_BALL
 	dw NoEffect            ; BRIGHTPOWDER
@@ -192,8 +193,24 @@ ItemEffects:
 	dw PokeBallEffect      ; PARK_BALL
 	dw NoEffect            ; RAINBOW_WING
 	dw NoEffect            ; ITEM_B3
+	assert_table_length ITEM_B3
+; The items past ITEM_B3 do not have effect entries:
+;	BRICK_PIECE
+;	SURF_MAIL
+;	LITEBLUEMAIL
+;	PORTRAITMAIL
+;	LOVELY_MAIL
+;	EON_MAIL
+;	MORPH_MAIL
+;	BLUESKY_MAIL
+;	MUSIC_MAIL
+;	MIRAGE_MAIL
+;	ITEM_BE
+; They all have the ITEMMENU_NOUSE attribute so they can't be used anyway.
+; NoEffect would be appropriate, with the table then being NUM_ITEMS long.
 
 PokeBallEffect:
+; BUG: The Dude's catching tutorial may crash if his Poké Ball can't be used (see docs/bugs_and_glitches.md)
 	ld a, [wBattleMode]
 	dec a
 	jp nz, UseBallInTrainerBattle
@@ -214,6 +231,7 @@ PokeBallEffect:
 	jp z, Ball_BoxIsFullMessage
 
 .room_in_party
+; BUG: Using a Park Ball in non-Contest battles has a corrupt animation (see docs/bugs_and_glitches.md)
 	xor a
 	ld [wWildMon], a
 	ld a, [wCurItem]
@@ -322,14 +340,10 @@ PokeBallEffect:
 	jr nz, .statuscheck
 	ld a, 1
 .statuscheck
-; This routine is buggy. It was intended that SLP and FRZ provide a higher
-; catch rate than BRN/PSN/PAR, which in turn provide a higher catch rate than
-; no status effect at all. But instead, it makes BRN/PSN/PAR provide no
-; benefit.
-; Uncomment the line below to fix this.
+; BUG: BRN/PSN/PAR do not affect catch rate (see docs/bugs_and_glitches.md)
 	ld b, a
 	ld a, [wEnemyMonStatus]
-	and 1 << FRZ | SLP
+	and 1 << FRZ | SLP_MASK
 	ld c, 10
 	jr nz, .addstatus
 	ld a, [wEnemyMonStatus] ; FIXED
@@ -344,9 +358,7 @@ PokeBallEffect:
 	ld a, $ff
 .max_1
 
-	; BUG: farcall overwrites a, and GetItemHeldEffect takes b anyway.
-	; This is probably the reason the HELD_CATCH_CHANCE effect is never used.
-	; Uncomment the line below to fix.
+; BUG: HELD_CATCH_CHANCE has no effect (see docs/bugs_and_glitches.md)
 	ld d, a
 	push de
 	ld a, [wBattleMonItem]
@@ -364,7 +376,7 @@ PokeBallEffect:
 
 .skip_hp_calc
 	ld b, a
-	ld [wBuffer1], a
+	ld [wFinalCatchRate], a
 	call Random
 
 	cp b
@@ -394,28 +406,28 @@ PokeBallEffect:
 	ld [wFXAnimID + 1], a
 	xor a
 	ldh [hBattleTurn], a
-	ld [wBuffer2], a
+	ld [wThrownBallWobbleCount], a
 	ld [wNumHits], a
 	predef PlayBattleAnim
 
 	ld a, [wWildMon]
 	and a
 	jr nz, .caught
-	ld a, [wBuffer2]
-	cp $1
+	ld a, [wThrownBallWobbleCount]
+	cp 1
 	ld hl, BallBrokeFreeText
 	jp z, .shake_and_break_free
-	cp $2
+	cp 2
 	ld hl, BallAppearedCaughtText
 	jp z, .shake_and_break_free
-	cp $3
+	cp 3
 	ld hl, BallAlmostHadItText
 	jp z, .shake_and_break_free
-	cp $4
+	cp 4
 	ld hl, BallSoCloseText
 	jp z, .shake_and_break_free
-.caught
 
+.caught
 	ld hl, wEnemyMonStatus
 	ld a, [hli]
 	push af
@@ -434,9 +446,7 @@ PokeBallEffect:
 	push af
 	set SUBSTATUS_TRANSFORMED, [hl]
 
-; This code is buggy. Any wild Pokémon that has Transformed will be
-; caught as a Ditto, even if it was something else like Mew.
-; To fix, do not set [wTempEnemyMonSpecies] to DITTO.
+; BUG: Catching a Transformed Pokémon always catches a Ditto (see docs/bugs_and_glitches.md)
 	bit SUBSTATUS_TRANSFORMED, a
 	jr nz, .load_data ; FIXED - jr nz, .ditto
 	; jr .not_ditto
@@ -570,7 +580,7 @@ PokeBallEffect:
 	call PrintText
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	call YesNoBox
@@ -630,7 +640,7 @@ PokeBallEffect:
 	call PrintText
 
 	ld a, [wCurPartySpecies]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 
 	call YesNoBox
@@ -706,7 +716,7 @@ PokeBallEffect:
 .toss
 	ld hl, wNumItems
 	inc a
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jp TossItem
 
 .used_park_ball
@@ -748,10 +758,8 @@ ParkBallMultiplier:
 	ld b, $ff
 	ret
 
-GetPokedexEntryBank:
-; This function is buggy.
-; It gets the wrong bank for Kadabra (64), Tauros (128), and Sunflora (192).
-; Uncomment the line below to fix this.
+HeavyBall_GetDexEntryBank:
+; BUG: Heavy Ball uses wrong weight value for three Pokémon (see docs/bugs_and_glitches.md)
 	push hl
 	push de
 	ld a, [wEnemyMonSpecies]
@@ -779,7 +787,7 @@ HeavyBallMultiplier:
 ; else add 0 to catch rate if weight < 204.8 kg
 ; else add 20 to catch rate if weight < 307.2 kg
 ; else add 30 to catch rate if weight < 409.6 kg
-; else add 40 to catch rate (never happens)
+; else add 40 to catch rate
 	ld a, [wEnemyMonSpecies]
 	ld hl, PokedexDataPointerTable
 	dec a
@@ -788,20 +796,20 @@ HeavyBallMultiplier:
 	add hl, de
 	add hl, de
 	ld a, BANK(PokedexDataPointerTable)
-	call GetFarHalfword
+	call GetFarWord
 
 .SkipText:
-	call GetPokedexEntryBank
+	call HeavyBall_GetDexEntryBank
 	call GetFarByte
 	inc hl
 	cp "@"
 	jr nz, .SkipText
 
-	call GetPokedexEntryBank
+	call HeavyBall_GetDexEntryBank
 	; push bc
 	; inc hl
 	inc hl
-	call GetFarHalfword
+	call GetFarWord
 
 	; srl h
 	; rr l
@@ -894,9 +902,6 @@ LureBallMultiplier:
 	ret
 
 MoonBallMultiplier:
-; This function is buggy.
-; Intent:  multiply catch rate by 4 if mon evolves with moon stone
-; Reality: no boost
 	push bc
 	ld a, [wTempEnemyMonSpecies]
 	dec a
@@ -906,7 +911,7 @@ MoonBallMultiplier:
 	add hl, bc
 	add hl, bc
 	ld a, BANK(EvosAttacksPointers)
-	call GetFarHalfword
+	call GetFarWord
 	pop bc
 
 	push bc
@@ -920,9 +925,7 @@ MoonBallMultiplier:
 	inc hl
 	inc hl
 
-; Moon Stone's constant from Pokémon Red is used.
-; No Pokémon evolve with Burn Heal,
-; so Moon Balls always have a catch rate of 1×.
+; BUG: Moon Ball does not boost catch rate (see docs/bugs_and_glitches.md)
 	push bc
 	ld a, BANK("Evolutions and Attacks")
 	call GetFarByte
@@ -940,9 +943,6 @@ MoonBallMultiplier:
 	ret
 
 LoveBallMultiplier:
-; This function is buggy.
-; Intent:  multiply catch rate by 8 if mons are of same species, different sex
-; Reality: multiply catch rate by 8 if mons are of same species, same sex
 
 	; does species match?
 	ld a, [wTempEnemyMonSpecies]
@@ -963,9 +963,9 @@ LoveBallMultiplier:
 	jr c, .done1 ; no effect on genderless
 
 	ld d, 0 ; male
-	jr nz, .playermale
+	jr nz, .got_player_gender
 	inc d   ; female
-.playermale
+.got_player_gender
 
 	; check wild mon species
 	push de
@@ -977,10 +977,11 @@ LoveBallMultiplier:
 	jr c, .done2 ; no effect on genderless
 
 	ld d, 0 ; male
-	jr nz, .wildmale
+	jr nz, .got_wild_gender
 	inc d   ; female
-.wildmale
+.got_wild_gender
 
+; BUG: Love Ball boosts catch rate for the wrong gender (see docs/bugs_and_glitches.md)
 	ld a, d
 	pop de
 	cp d
@@ -1005,17 +1006,13 @@ LoveBallMultiplier:
 	ret
 
 FastBallMultiplier:
-; This function is buggy.
-; Intent:  multiply catch rate by 4 if enemy mon is in one of the three
-;          FleeMons tables.
-; Reality: multiply catch rate by 4 if enemy mon is one of the first three in
-;          the first FleeMons table.
 	ld a, [wTempEnemyMonSpecies]
 	ld c, a
 	ld hl, FleeMons
 	ld d, 3
 
 .loop
+; BUG: Fast Ball only boosts catch rate for three Pokémon (see docs/bugs_and_glitches.md)
 	ld a, BANK(FleeMons)
 	call GetFarByte
 
@@ -1067,14 +1064,13 @@ LevelBallMultiplier:
 	ld b, $ff
 	ret
 
-; These two texts were carried over from gen 1.
-; They are not used in gen 2, and are dummied out.
+; BallDodgedText and BallMissedText were used in Gen 1.
 
-BallDodgedText:
+BallDodgedText: ; unreferenced
 	text_far _BallDodgedText
 	text_end
 
-BallMissedText:
+BallMissedText: ; unreferenced
 	text_far _BallMissedText
 	text_end
 
@@ -1282,7 +1278,7 @@ RareCandy_StatBooster_GetParameters:
 	call GetBaseData
 	ld a, [wCurPartyMon]
 	ld hl, wPartyMonNicknames
-	call GetNick
+	call GetNickname
 	ret
 
 RareCandyEffect:
@@ -1823,7 +1819,7 @@ ContinueRevive:
 	ld [hl], d
 	inc hl
 	ld [hl], e
-	jp LoadCurHPIntoBuffer5
+	jp LoadCurHPIntoBuffer3
 
 RestoreHealth:
 	ld a, MON_HP + 1
@@ -1835,7 +1831,7 @@ RestoreHealth:
 	adc d
 	ld [hl], a
 	jr c, .full_hp
-	call LoadCurHPIntoBuffer5
+	call LoadCurHPIntoBuffer3
 	ld a, MON_HP + 1
 	call GetPartyParamLocation
 	ld d, h
@@ -1868,21 +1864,21 @@ RemoveHP:
 	ld [hld], a
 	ld [hl], a
 .okay
-	call LoadCurHPIntoBuffer5
+	call LoadCurHPIntoBuffer3
 	ret
 
 IsMonFainted:
 	push de
-	call LoadMaxHPToBuffer1
-	call LoadCurHPToBuffer3
-	call LoadHPFromBuffer3
+	call LoadMaxHPIntoBuffer1
+	call LoadCurHPIntoBuffer2
+	call LoadHPFromBuffer2
 	ld a, d
 	or e
 	pop de
 	ret
 
 IsMonAtFullHealth:
-	call LoadHPFromBuffer3
+	call LoadHPFromBuffer2
 	ld h, d
 	ld l, e
 	call LoadHPFromBuffer1
@@ -1892,60 +1888,60 @@ IsMonAtFullHealth:
 	sbc d
 	ret
 
-LoadCurHPIntoBuffer5:
+LoadCurHPIntoBuffer3:
 	ld a, MON_HP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	ld a, [hl]
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ret
 
-LoadHPIntoBuffer5:
+LoadHPIntoBuffer3: ; unreferenced
 	ld a, d
-	ld [wBuffer6], a
+	ld [wHPBuffer3 + 1], a
 	ld a, e
-	ld [wBuffer5], a
+	ld [wHPBuffer3], a
 	ret
 
-LoadHPFromBuffer5:
-	ld a, [wBuffer6]
+LoadHPFromBuffer3: ; unreferenced
+	ld a, [wHPBuffer3 + 1]
 	ld d, a
-	ld a, [wBuffer5]
+	ld a, [wHPBuffer3]
 	ld e, a
 	ret
 
-LoadCurHPToBuffer3:
+LoadCurHPIntoBuffer2:
 	ld a, MON_HP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer4], a
+	ld [wHPBuffer2 + 1], a
 	ld a, [hl]
-	ld [wBuffer3], a
+	ld [wHPBuffer2], a
 	ret
 
-LoadHPFromBuffer3:
-	ld a, [wBuffer4]
+LoadHPFromBuffer2:
+	ld a, [wHPBuffer2 + 1]
 	ld d, a
-	ld a, [wBuffer3]
+	ld a, [wHPBuffer2]
 	ld e, a
 	ret
 
-LoadMaxHPToBuffer1:
+LoadMaxHPIntoBuffer1:
 	push hl
 	ld a, MON_MAXHP
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [wBuffer2], a
+	ld [wHPBuffer1 + 1], a
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wHPBuffer1], a
 	pop hl
 	ret
 
 LoadHPFromBuffer1:
-	ld a, [wBuffer2]
+	ld a, [wHPBuffer1 + 1]
 	ld d, a
-	ld a, [wBuffer1]
+	ld a, [wHPBuffer1]
 	ld e, a
 	ret
 
@@ -2172,13 +2168,14 @@ INCLUDE "data/items/x_stats.asm"
 PokeFluteEffect:
 	ld a, [wBattleMode]
 	and a
-	jr nz, .dummy
-.dummy
+	jr nz, .in_battle
+	; overworld flute code was dummied out here
 
+.in_battle
 	xor a
-	ld [wd002], a
+	ld [wPokeFluteCuredSleep], a
 
-	ld b, $ff ^ SLP
+	ld b, ~SLP_MASK
 
 	ld hl, wPartyMon1Status
 	call .CureSleep
@@ -2199,7 +2196,7 @@ PokeFluteEffect:
 	and b
 	ld [hl], a
 
-	ld a, [wd002]
+	ld a, [wPokeFluteCuredSleep]
 	and a
 	ld hl, .PlayedFluteText
 	jp z, PrintText
@@ -2208,22 +2205,22 @@ PokeFluteEffect:
 
 	ld a, [wLowHealthAlarm]
 	and 1 << DANGER_ON_F
-	jr nz, .dummy2
-.dummy2
+	jr nz, .dummy
+	; more code was dummied out here
+.dummy
 	ld hl, .FluteWakeUpText
 	jp PrintText
 
 .CureSleep:
 	ld de, PARTYMON_STRUCT_LENGTH
 	ld c, PARTY_LENGTH
-
 .loop
 	ld a, [hl]
 	push af
-	and SLP
+	and SLP_MASK
 	jr z, .not_asleep
-	ld a, 1
-	ld [wd002], a
+	ld a, TRUE
+	ld [wPokeFluteCuredSleep], a
 .not_asleep
 	pop af
 	and b
@@ -2296,7 +2293,7 @@ ItemfinderEffect:
 
 RestorePPEffect:
 	ld a, [wCurItem]
-	ld [wd002], a
+	ld [wTempRestorePPItem], a
 
 .loop
 	; Party Screen opens to choose on which mon to use the Item
@@ -2305,14 +2302,14 @@ RestorePPEffect:
 	jp c, PPRestoreItem_Cancel
 
 .loop2
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp MAX_ELIXER
 	jp z, Elixer_RestorePPofAllMoves
 	cp ELIXER
 	jp z, Elixer_RestorePPofAllMoves
 
 	ld hl, RaiseThePPOfWhichMoveText
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp PP_UP
 	jr z, .ppup
 	ld hl, RestoreThePPOfWhichMoveText
@@ -2338,12 +2335,12 @@ RestorePPEffect:
 
 	push hl
 	ld a, [hl]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetMoveName
 	call CopyName1
 	pop hl
 
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp PP_UP
 	jp nz, Not_PP_Up
 
@@ -2358,7 +2355,6 @@ RestorePPEffect:
 	jr c, .do_ppup
 
 .CantUsePPUpOnSketch:
-.pp_is_maxed_out
 	ld hl, PPIsMaxedOutText
 	call PrintText
 	jr .loop2
@@ -2493,7 +2489,7 @@ RestorePP:
 	cp b
 	jr nc, .dont_restore
 
-	ld a, [wd002]
+	ld a, [wTempRestorePPItem]
 	cp MAX_ELIXER
 	jr z, .restore_all
 	cp MAX_ETHER
@@ -2600,7 +2596,7 @@ UseItemText:
 UseDisposableItem:
 	ld hl, wNumItems
 	ld a, 1
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	jp TossItem
 
 UseBallInTrainerBattle:
@@ -2655,16 +2651,17 @@ WontHaveAnyEffectMessage:
 	ld hl, ItemWontHaveEffectText
 	jr CantUseItemMessage
 
-BelongsToSomeoneElseMessage:
+BelongsToSomeoneElseMessage: ; unreferenced
 	ld hl, ItemBelongsToSomeoneElseText
 	jr CantUseItemMessage
 
-CyclingIsntAllowedMessage:
+CyclingIsntAllowedMessage: ; unreferenced
 	ld hl, NoCyclingText
 	jr CantUseItemMessage
 
-CantGetOnYourBikeMessage:
+CantGetOnYourBikeMessage: ; unreferenced
 	ld hl, ItemCantGetOnText
+	; fallthrough
 
 CantUseItemMessage:
 ; Item couldn't be used.
@@ -2716,11 +2713,11 @@ ItemUsedText:
 	text_far _ItemUsedText
 	text_end
 
-ItemGotOnText:
+ItemGotOnText: ; unreferenced
 	text_far _ItemGotOnText
 	text_end
 
-ItemGotOffText:
+ItemGotOffText: ; unreferenced
 	text_far _ItemGotOffText
 	text_end
 
@@ -2728,12 +2725,12 @@ ApplyPPUp:
 	ld a, MON_MOVES
 	call GetPartyParamLocation
 	push hl
-	ld de, wBuffer1
+	ld de, wPPUpPPBuffer
 	predef FillPP
 	pop hl
 	ld bc, MON_PP - MON_MOVES
 	add hl, bc
-	ld de, wBuffer1
+	ld de, wPPUpPPBuffer
 	ld b, 0
 .loop
 	inc b

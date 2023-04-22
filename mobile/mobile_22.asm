@@ -20,18 +20,18 @@ OpenSRAMBank4:
 	ret
 
 Function89168:
-	ld hl, wGameTimerPause
-	set GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	set GAME_TIMER_MOBILE_F, [hl]
 	ret
 
 Function8916e:
-	ld hl, wGameTimerPause
-	res GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	res GAME_TIMER_MOBILE_F, [hl]
 	ret
 
 Function89174:
-	ld hl, wGameTimerPause
-	bit GAMETIMERPAUSE_MOBILE_7_F, [hl]
+	ld hl, wGameTimerPaused
+	bit GAME_TIMER_MOBILE_F, [hl]
 	ret
 
 Function8917a:
@@ -234,7 +234,7 @@ Function89261:
 	add $5
 	ld [hl], a
 	pop af
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	call PushWindow
 	call Mobile22_SetBGMapMode0
 	call Mobile_EnableSpriteUpdates
@@ -507,7 +507,7 @@ Function893ef:
 	call FarCopyBytes
 	ret
 
-Function893fe:
+Function893fe: ; unreferenced
 	call DisableLCD
 	call Function893ef
 	call EnableLCD
@@ -533,7 +533,7 @@ Function8942b:
 Function89448:
 ; Clears the sprite array
 	push af
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	ld d, 24 * SPRITEOAMSTRUCT_LENGTH
 	xor a
 .loop
@@ -792,7 +792,7 @@ Palette_895de:
 	RGB 07, 07, 06
 	RGB 00, 00, 00
 
-Function895e6:
+Function895e6: ; unreferenced
 	ld a, 7
 	hlcoord 0, 0, wAttrmap
 	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
@@ -989,32 +989,33 @@ Function896f5:
 	inc hl
 	ld b, 2
 
-ClearScreenArea:
-; clears an area of the screen
+Function896ff: ; unreferenced
 ; INPUT:
 ; hl = address of upper left corner of the area
 ; b = height
 ; c = width
 
-	ld a, " " ; blank tile
-	ld de, 20 ; screen width
-.loop
+; clears an area of the screen
+	ld a, " "
+	ld de, SCREEN_WIDTH
+.row_loop
 	push bc
 	push hl
-.innerLoop
+.col_loop
 	ld [hli], a
 	dec c
-	jr nz, .innerLoop
+	jr nz, .col_loop
 	pop hl
 	pop bc
 	add hl, de
 	dec b
-	jr nz, .loop
+	jr nz, .row_loop
 
+; alternates tiles $36 and $18 at the bottom of the area
 	dec hl
 	inc c
 	inc c
-.asm_89713
+.bottom_loop
 	ld a, $36
 	ld [hli], a
 	dec c
@@ -1022,7 +1023,7 @@ ClearScreenArea:
 	ld a, $18
 	ld [hli], a
 	dec c
-	jr nz, .asm_89713
+	jr nz, .bottom_loop
 	ret
 
 Function8971f:
@@ -1695,7 +1696,7 @@ Function89b07:
 	farcall Function4a3a7
 	ret
 
-Function89b14:
+Function89b14: ; unreferenced
 	call ClearBGPalettes
 	call Function89b07
 	call Function89b00
@@ -1812,13 +1813,13 @@ Function89b97:
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, wVirtualOAMSprite00
+	ld de, wShadowOAMSprite00
 .asm_89bb4
 	ld a, [hli]
 	cp $ff
 	ret z
 	ld c, a
-	ld b, $0
+	ld b, 0
 .asm_89bbb
 	push hl
 	ld a, [hli]
@@ -1899,7 +1900,7 @@ Function89c44:
 	pop de
 	ret
 .asm_89c4f
-	ld hl, wVirtualOAMSprite00
+	ld hl, wShadowOAMSprite00
 	push de
 	ld a, b
 	ld [hli], a ; y
@@ -2007,7 +2008,7 @@ Function89cdf:
 	ld c, a
 	ld e, $2
 	ld a, $2
-	ld hl, wVirtualOAMSprite00
+	ld hl, wShadowOAMSprite00
 .asm_89cee
 	push af
 	push bc
@@ -2086,7 +2087,7 @@ Function89d5e:
 	push af
 	call CopyMenuHeader
 	pop af
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	call Mobile22_SetBGMapMode0
 	call PlaceVerticalMenuItems
 	call InitVerticalMenuCursor
@@ -2135,9 +2136,9 @@ Function89dab:
 	ld hl, wMenuJoypadFilter
 	and [hl]
 	ret z
-	bit 0, a
+	bit A_BUTTON_F, a
 	jr nz, .asm_89dc7
-	bit 1, a
+	bit B_BUTTON_F, a
 	jr nz, .asm_89dd9
 	xor a
 	ret
@@ -2426,7 +2427,7 @@ Function89f77:
 
 Function89f9a:
 	dec a
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	and a
 	ret z
 .asm_89fa0
@@ -2903,7 +2904,7 @@ Function8a31c:
 	call Function8a3b2
 	pop bc
 	ld a, c
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld [wMenuSelection], a
 	call PlaceVerticalMenuItems
 	call InitVerticalMenuCursor
@@ -2942,9 +2943,9 @@ Function8a383:
 	ld hl, wMenuJoypadFilter
 	and [hl]
 	ret z
-	bit 0, a
+	bit A_BUTTON_F, a
 	jr nz, .asm_8a399
-	bit 1, a
+	bit B_BUTTON_F, a
 	jr nz, .asm_8a39e
 	xor a
 	ret
@@ -2961,7 +2962,7 @@ Function8a3a2:
 	dec a
 	ld hl, wd002
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [hl]
 	ld [wMenuSelection], a
@@ -3131,7 +3132,7 @@ asm_8a529:
 	ld [hli], a
 	ld a, $ff
 	ld [hli], a
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	xor a
 	ld bc, 8 * SPRITEOAMSTRUCT_LENGTH
 	call ByteFill
@@ -3663,7 +3664,7 @@ Function8a930:
 .asm_8a943
 	call Function8b7bd
 	ld a, [wMenuJoypad]
-	and $1
+	and A_BUTTON
 	jr nz, .asm_8a953
 	ld a, c
 	and a
@@ -3963,7 +3964,7 @@ Function8ab3b:
 Function8ab93:
 	call ClearBGPalettes
 	call LoadStandardMenuHeader
-	farcall Function105688
+	farcall DoNameCardSwap
 	call ClearSprites
 	call Function891fe
 	call Function89b28
@@ -4225,7 +4226,7 @@ Function8adb3:
 	pop af
 	ret
 
-Function8adbf:
+Function8adbf: ; unreferenced
 	call OpenSRAMBank4
 	ld hl, $a603
 	call Function89b45

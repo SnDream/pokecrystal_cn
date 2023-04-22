@@ -1,4 +1,4 @@
-MAHOGANYTOWN_RAGECANDYBAR_PRICE EQU 300
+DEF MAHOGANYTOWN_RAGECANDYBAR_PRICE EQU 300
 
 	object_const_def
 	const MAHOGANYTOWN_POKEFAN_M
@@ -8,19 +8,19 @@ MAHOGANYTOWN_RAGECANDYBAR_PRICE EQU 300
 
 MahoganyTown_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_DEFAULT
-	scene_script .DummyScene1 ; SCENE_FINISHED
+	scene_script MahoganyTownNoop1Scene, SCENE_MAHOGANYTOWN_TRY_RAGECANDYBAR
+	scene_script MahoganyTownNoop2Scene, SCENE_MAHOGANYTOWN_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_NEWMAP, .FlyPoint
+	callback MAPCALLBACK_NEWMAP, MahoganyTownFlypointCallback
 
-.DummyScene0:
+MahoganyTownNoop1Scene:
 	end
 
-.DummyScene1:
+MahoganyTownNoop2Scene:
 	end
 
-.FlyPoint:
+MahoganyTownFlypointCallback:
 	setflag ENGINE_FLYPOINT_MAHOGANY
 	endcallback
 
@@ -255,8 +255,8 @@ MahoganyTown_MapEvents:
 	warp_event  9,  1, ROUTE_43_MAHOGANY_GATE, 3
 
 	def_coord_events
-	coord_event 19,  8, SCENE_DEFAULT, MahoganyTownTryARageCandyBarScript
-	coord_event 19,  9, SCENE_DEFAULT, MahoganyTownTryARageCandyBarScript
+	coord_event 19,  8, SCENE_MAHOGANYTOWN_TRY_RAGECANDYBAR, MahoganyTownTryARageCandyBarScript
+	coord_event 19,  9, SCENE_MAHOGANYTOWN_TRY_RAGECANDYBAR, MahoganyTownTryARageCandyBarScript
 
 	def_bg_events
 	bg_event  1,  5, BGEVENT_READ, MahoganyTownSign

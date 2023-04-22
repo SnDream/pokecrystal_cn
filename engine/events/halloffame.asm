@@ -1,4 +1,4 @@
-HALLOFFAME_COLON EQU $63
+DEF HALLOFFAME_COLON EQU $63
 
 HallOfFame::
 	call HallOfFame_FadeOutMusic
@@ -365,8 +365,9 @@ _HallOfFamePC:
 	call DisplayHOFMon
 	ld a, DFS_VRAM_LIMIT_VRAM0
 	ld [wDFSVramLimit], a
+; BUG: A "HOF Master!" title for 200-Time Famers is defined but inaccessible (see docs/bugs_and_glitches.md)
 	ld a, [wHallOfFameTempWinCount]
-	cp HOF_MASTER_COUNT + 1 ; should be HOF_MASTER_COUNT
+	cp HOF_MASTER_COUNT + 1
 	jr c, .print_num_hof
 	ld de, .HOFMaster
 	hlcoord 1, 2
@@ -468,7 +469,7 @@ DisplayHOFMon:
 	call Textbox
 	ld a, [wTempMonSpecies]
 	ld [wCurPartySpecies], a
-	ld [wDeciramBuffer], a
+	ld [wTextDecimalByte], a
 	ld hl, wTempMonDVs
 	predef GetUnownLetter
 	xor a
@@ -483,7 +484,7 @@ DisplayHOFMon:
 	ld [hli], a
 	ld [hl], "<DOT>"
 	hlcoord 16, 13
-	ld de, wDeciramBuffer
+	ld de, wTextDecimalByte
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 3
 	call PrintNum
 	call GetBasePokemonName

@@ -14,35 +14,35 @@
 
 Route36NationalParkGate_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_ROUTE36NATIONALPARKGATE_NOTHING
-	scene_script .DummyScene1 ; SCENE_ROUTE36NATIONALPARKGATE_UNUSED
-	scene_script .LeaveContestEarly ; SCENE_ROUTE36NATIONALPARKGATE_LEAVE_CONTEST_EARLY
+	scene_script Route36NationalParkGateNoop1Scene,             SCENE_ROUTE36NATIONALPARKGATE_NOOP
+	scene_script Route36NationalParkGateNoop2Scene,             SCENE_ROUTE36NATIONALPARKGATE_UNUSED
+	scene_script Route36NationalParkGateLeaveContestEarlyScene, SCENE_ROUTE36NATIONALPARKGATE_LEAVE_CONTEST_EARLY
 
 	def_callbacks
-	callback MAPCALLBACK_NEWMAP, .CheckIfContestRunning
-	callback MAPCALLBACK_OBJECTS, .CheckIfContestAvailable
+	callback MAPCALLBACK_NEWMAP, Route36NationalParkGateCheckIfContestRunningCallback
+	callback MAPCALLBACK_OBJECTS, Route36NationalParkGateCheckIfContestAvailableCallback
 
-.DummyScene0:
+Route36NationalParkGateNoop1Scene:
 	end
 
-.DummyScene1:
+Route36NationalParkGateNoop2Scene:
 	end
 
-.LeaveContestEarly:
-	prioritysjump .LeavingContestEarly
+Route36NationalParkGateLeaveContestEarlyScene:
+	sdefer Route36NationalParkGateLeavingContestEarlyScript
 	end
 
-.CheckIfContestRunning:
+Route36NationalParkGateCheckIfContestRunningCallback:
 	checkflag ENGINE_BUG_CONTEST_TIMER
 	iftrue .BugContestIsRunning
-	setscene SCENE_ROUTE36NATIONALPARKGATE_NOTHING
+	setscene SCENE_ROUTE36NATIONALPARKGATE_NOOP
 	endcallback
 
 .BugContestIsRunning:
 	setscene SCENE_ROUTE36NATIONALPARKGATE_LEAVE_CONTEST_EARLY
 	endcallback
 
-.CheckIfContestAvailable:
+Route36NationalParkGateCheckIfContestAvailableCallback:
 	checkevent EVENT_WARPED_FROM_ROUTE_35_NATIONAL_PARK_GATE
 	iftrue .Return
 	readvar VAR_WEEKDAY
@@ -61,7 +61,7 @@ Route36NationalParkGate_MapScripts:
 .Return:
 	endcallback
 
-.LeavingContestEarly:
+Route36NationalParkGateLeavingContestEarlyScript:
 	turnobject PLAYER, UP
 	opentext
 	readvar VAR_CONTESTMINUTES
@@ -463,7 +463,7 @@ BugCatchingContestant10BScript:
 	closetext
 	end
 
-UnusedBugCatchingContestExplanationSign:
+UnusedBugCatchingContestExplanationSign: ; unreferenced
 ; duplicate of BugCatchingContestExplanationSign in Route35NationalParkGate.asm
 	jumptext UnusedBugCatchingContestExplanationText
 
@@ -503,7 +503,7 @@ Route36NationalParkGateOfficer1GiveParkBallsText:
 
 Route36NationalParkGatePlayerReceivedParkBallsText:
 	text "<PLAYER> received"
-	line "20 PARK BALLS."
+	line "{d:BUG_CONTEST_BALLS} PARK BALLS."
 	done
 
 Route36NationalParkGateOfficer1ExplainsRulesText:
@@ -512,7 +512,7 @@ Route36NationalParkGateOfficer1ExplainsRulesText:
 	cont "est bug #MON"
 	cont "is the winner."
 
-	para "You have 20"
+	para "You have {d:BUG_CONTEST_MINUTES}"
 	line "minutes."
 
 	para "If you run out of"
@@ -795,10 +795,9 @@ BugCatchingContestant10BStillCompetingText:
 	line "win."
 	done
 
-UnusedSudowoodoText:
-; This text is unused and unreferenced in the final game.
-; The tree Pokémon is Sudowoodo.
-; The Silph Scope 2 was later reworked into the Squirtbottle.
+UnusedSilphScope2Text: ; unreferenced
+; This text is referring to Sudowoodo.
+; The SILPHSCOPE2 was later reworked into the SQUIRTBOTTLE.
 	text "I hear there's a"
 	line "#MON that looks"
 	cont "just like a tree."

@@ -1,14 +1,14 @@
 FieldMoveJumptableReset:
 	xor a
-	ld hl, wBuffer1
-	ld bc, 7
+	ld hl, wFieldMoveData
+	ld bc, wFieldMoveDataEnd - wFieldMoveData
 	call ByteFill
 	ret
 
 FieldMoveJumptable:
-	ld a, [wBuffer1]
+	ld a, [wFieldMoveJumptableIndex]
 	rst JumpTable
-	ld [wBuffer1], a
+	ld [wFieldMoveJumptableIndex], a
 	bit 7, a
 	jr nz, .okay
 	and a
@@ -19,13 +19,13 @@ FieldMoveJumptable:
 	scf
 	ret
 
-GetPartyNick:
+GetPartyNickname:
 ; write wCurPartyMon nickname to wStringBuffer1-3
 	ld hl, wPartyMonNicknames
 	ld a, BOXMON
 	ld [wMonType], a
 	ld a, [wCurPartyMon]
-	call GetNick
+	call GetNickname
 	call CopyName1
 ; copy text from wStringBuffer2 to wStringBuffer3
 	ld de, wStringBuffer2
@@ -183,17 +183,15 @@ CheckMapForSomethingToCut:
 	call CheckOverworldTileArrays
 	pop hl
 	jr nc, .fail
-	; Back up the wOverworldMapBlocks address to wBuffer3
+	; Save the Cut field move data
 	ld a, l
-	ld [wBuffer3], a
+	ld [wCutWhirlpoolOverworldBlockAddr], a
 	ld a, h
-	ld [wBuffer4], a
-	; Back up the replacement tile to wBuffer5
+	ld [wCutWhirlpoolOverworldBlockAddr + 1], a
 	ld a, b
-	ld [wBuffer5], a
-	; Back up the animation index to wBuffer6
+	ld [wCutWhirlpoolReplacementBlock], a
 	ld a, c
-	ld [wBuffer6], a
+	ld [wCutWhirlpoolAnimationType], a
 	xor a
 	ret
 
@@ -206,7 +204,7 @@ Script_CutFromMenu:
 	special UpdateTimePals
 
 Script_Cut:
-	callasm GetPartyNick
+	callasm GetPartyNickname
 	writetext UseCutText
 	reloadmappart
 	callasm CutDownTreeOrGrass
@@ -214,18 +212,18 @@ Script_Cut:
 	end
 
 CutDownTreeOrGrass:
-	ld hl, wBuffer3 ; OverworldMapTile
+	ld hl, wCutWhirlpoolOverworldBlockAddr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld a, [wBuffer5] ; ReplacementTile
+	ld a, [wCutWhirlpoolReplacementBlock]
 	ld [hl], a
 	xor a
 	ldh [hBGMapMode], a
 	call OverworldTextModeSwitch
 	call UpdateSprites
 	call DelayFrame
-	ld a, [wBuffer6] ; Animation type
+	ld a, [wCutWhirlpoolAnimationType]
 	ld e, a
 	farcall OWCutAnimation
 	call BufferScreen
@@ -271,7 +269,7 @@ CheckOverworldTileArrays:
 	xor a
 	ret
 
-INCLUDE "data/events/field_move_blocks.asm"
+INCLUDE "data/collision/field_move_blocks.asm"
 
 FlashFunction:
 	call .CheckUseFlash
@@ -280,7 +278,6 @@ FlashFunction:
 	ret
 
 .CheckUseFlash:
-; Flash
 	ld de, ENGINE_ZEPHYRBADGE
 	farcall CheckBadge
 	jr c, .nozephyrbadge
@@ -380,8 +377,8 @@ SurfFunction:
 
 .DoSurf:
 	call GetSurfType
-	ld [wBuffer2], a
-	call GetPartyNick
+	ld [wSurfingPlayerState], a
+	call GetPartyNickname
 	ld hl, SurfFromMenuScript
 	call QueueScript
 	ld a, $81
@@ -403,13 +400,14 @@ SurfFromMenuScript:
 	special UpdateTimePals
 
 UsedSurfScript:
+; BUG: Surfing directly across a map connection does not load the new map (see docs/bugs_and_glitches.md)
 	writetext UsedSurfText ; "used SURF!"
 	waitbutton
 	closetext
 
 	callasm .stubbed_fn
 
-	readmem wBuffer2
+	readmem wSurfingPlayerState
 	writevar VAR_MOVEMENT
 
 	special UpdatePlayerSprite
@@ -517,8 +515,8 @@ TrySurfOW::
 	jr nz, .quit
 
 	call GetSurfType
-	ld [wBuffer2], a
-	call GetPartyNick
+	ld [wSurfingPlayerState], a
+	call GetPartyNickname
 
 	ld a, BANK(AskSurfScript)
 	ld hl, AskSurfScript
@@ -554,12 +552,11 @@ FlyFunction:
 	ret
 
 .Jumptable:
- 	dw .TryFly
- 	dw .DoFly
- 	dw .FailFly
+	dw .TryFly
+	dw .DoFly
+	dw .FailFly
 
 .TryFly:
-; Fly
 	ld de, ENGINE_STORMBADGE
 	call CheckBadge
 	jr c, .nostormbadge
@@ -639,7 +636,6 @@ WaterfallFunction:
 	ret
 
 .TryWaterfall:
-; Waterfall
 	ld de, ENGINE_RISINGBADGE
 	farcall CheckBadge
 	ld a, $80
@@ -676,7 +672,7 @@ Script_WaterfallFromMenu:
 	special UpdateTimePals
 
 Script_UsedWaterfall:
-	callasm GetPartyNick
+	callasm GetPartyNickname
 	writetext .UseWaterfallText
 	waitbutton
 	closetext
@@ -690,7 +686,7 @@ Script_UsedWaterfall:
 .CheckContinueWaterfall:
 	xor a
 	ld [wScriptVar], a
-	ld a, [wPlayerStandingTile]
+	ld a, [wPlayerTile]
 	call CheckWaterfallTile
 	ret z
 	farcall StubbedTrainerRankings_Waterfall
@@ -757,7 +753,7 @@ DigFunction:
 	ld a, $2
 
 EscapeRopeOrDig:
-	ld [wBuffer2], a
+	ld [wEscapeRopeOrDigType], a
 .loop
 	ld hl, .DigTable
 	call FieldMoveJumptable
@@ -800,8 +796,8 @@ EscapeRopeOrDig:
 	ld de, wNextWarp
 	ld bc, 3
 	call CopyBytes
-	call GetPartyNick
-	ld a, [wBuffer2]
+	call GetPartyNickname
+	ld a, [wEscapeRopeOrDigType]
 	cp $2
 	jr nz, .escaperope
 	ld hl, .UsedDigScript
@@ -817,7 +813,7 @@ EscapeRopeOrDig:
 	ret
 
 .FailDig:
-	ld a, [wBuffer2]
+	ld a, [wEscapeRopeOrDigType]
 	cp $2
 	jr nz, .failescaperope
 	ld hl, .CantUseDigText
@@ -913,7 +909,7 @@ TeleportFunction:
 	ret
 
 .DoTeleport:
-	call GetPartyNick
+	call GetPartyNickname
 	ld hl, .TeleportScript
 	call QueueScript
 	ld a, $81
@@ -965,7 +961,6 @@ StrengthFunction:
 	ret
 
 .TryStrength:
-; Strength
 	ld de, ENGINE_PLAINBADGE
 	call CheckBadge
 	jr c, .Failed
@@ -1000,8 +995,8 @@ SetStrengthFlag:
 	ld hl, wPartySpecies
 	add hl, de
 	ld a, [hl]
-	ld [wBuffer6], a
-	call GetPartyNick
+	ld [wStrengthSpecies], a
+	call GetPartyNickname
 	ret
 
 Script_StrengthFromMenu:
@@ -1011,8 +1006,8 @@ Script_StrengthFromMenu:
 Script_UsedStrength:
 	callasm SetStrengthFlag
 	writetext .UseStrengthText
-	readmem wBuffer6
-	cry 0
+	readmem wStrengthSpecies
+	cry 0 ; plays [wStrengthSpecies] cry
 	pause 3
 	writetext .MoveBoulderText
 	closetext
@@ -1147,14 +1142,15 @@ TryWhirlpoolMenu:
 	call CheckOverworldTileArrays
 	pop hl
 	jr nc, .failed
+	; Save the Whirlpool field move data
 	ld a, l
-	ld [wBuffer3], a
+	ld [wCutWhirlpoolOverworldBlockAddr], a
 	ld a, h
-	ld [wBuffer4], a
+	ld [wCutWhirlpoolOverworldBlockAddr + 1], a
 	ld a, b
-	ld [wBuffer5], a
+	ld [wCutWhirlpoolReplacementBlock], a
 	ld a, c
-	ld [wBuffer6], a
+	ld [wCutWhirlpoolAnimationType], a
 	xor a
 	ret
 
@@ -1167,7 +1163,7 @@ Script_WhirlpoolFromMenu:
 	special UpdateTimePals
 
 Script_UsedWhirlpool:
-	callasm GetPartyNick
+	callasm GetPartyNickname
 	writetext UseWhirlpoolText
 	reloadmappart
 	callasm DisappearWhirlpool
@@ -1175,16 +1171,16 @@ Script_UsedWhirlpool:
 	end
 
 DisappearWhirlpool:
-	ld hl, wBuffer3
+	ld hl, wCutWhirlpoolOverworldBlockAddr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld a, [wBuffer5]
+	ld a, [wCutWhirlpoolReplacementBlock]
 	ld [hl], a
 	xor a
 	ldh [hBGMapMode], a
 	call OverworldTextModeSwitch
-	ld a, [wBuffer6]
+	ld a, [wCutWhirlpoolAnimationType]
 	ld e, a
 	farcall PlayWhirlpoolSound
 	call BufferScreen
@@ -1266,7 +1262,7 @@ HeadbuttFromMenuScript:
 	special UpdateTimePals
 
 HeadbuttScript:
-	callasm GetPartyNick
+	callasm GetPartyNickname
 	writetext UseHeadbuttText
 
 	reloadmappart
@@ -1323,7 +1319,7 @@ TryRockSmashFromMenu:
 	call GetFacingObject
 	jr c, .no_rock
 	ld a, d
-	cp $18
+	cp SPRITEMOVEDATA_SMASHABLE_ROCK
 	jr nz, .no_rock
 
 	ld hl, RockSmashFromMenuScript
@@ -1340,7 +1336,7 @@ GetFacingObject:
 	farcall CheckFacingObject
 	jr nc, .fail
 
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	call GetObjectStruct
 	ld hl, OBJECT_MAP_OBJECT_INDEX
 	add hl, bc
@@ -1363,7 +1359,7 @@ RockSmashFromMenuScript:
 	special UpdateTimePals
 
 RockSmashScript:
-	callasm GetPartyNick
+	callasm GetPartyNickname
 	writetext UseRockSmashText
 	closetext
 	special WaitSFX
@@ -1414,7 +1410,7 @@ HasRockSmash:
 	ld d, ROCK_SMASH
 	call CheckPartyMove
 	jr nc, .yes
-.no
+; no
 	ld a, 1
 	jr .done
 .yes
@@ -1429,7 +1425,7 @@ FishFunction:
 	push af
 	call FieldMoveJumptableReset
 	pop af
-	ld [wBuffer2], a
+	ld [wFishingRodUsed], a
 .loop
 	ld hl, .FishTable
 	call FieldMoveJumptable
@@ -1446,6 +1442,7 @@ FishFunction:
 	dw .FishNoFish
 
 .TryFish:
+; BUG: You can fish on top of NPCs (see docs/bugs_and_glitches.md)
 	ld a, [wPlayerState]
 	cp PLAYER_SURF
 	jr z, .fail
@@ -1468,7 +1465,7 @@ FishFunction:
 
 .goodtofish
 	ld d, a
-	ld a, [wBuffer2]
+	ld a, [wFishingRodUsed]
 	ld e, a
 	farcall Fish
 	ld a, d
@@ -1492,7 +1489,7 @@ FishFunction:
 
 .FishGotSomething:
 	ld a, $1
-	ld [wBuffer6], a
+	ld [wFishingResult], a
 	ld hl, Script_GotABite
 	call QueueScript
 	ld a, $81
@@ -1500,7 +1497,7 @@ FishFunction:
 
 .FishNoBite:
 	ld a, $2
-	ld [wBuffer6], a
+	ld [wFishingResult], a
 	ld hl, Script_NotEvenANibble
 	call QueueScript
 	ld a, $81
@@ -1508,7 +1505,7 @@ FishFunction:
 
 .FishNoFish:
 	ld a, $0
-	ld [wBuffer6], a
+	ld [wFishingResult], a
 	ld hl, Script_NotEvenANibble2
 	call QueueScript
 	ld a, $81
@@ -1621,7 +1618,7 @@ RodNothingText:
 	text_far _RodNothingText
 	text_end
 
-UnusedNothingHereText: ; unused
+UnusedNothingHereText: ; unreferenced
 	text_far _UnusedNothingHereText
 	text_end
 
@@ -1701,7 +1698,7 @@ BikeFunction:
 	jr .nope
 
 .ok
-	call GetPlayerStandingTile
+	call GetPlayerTile
 	and $f ; lo nybble only
 	jr nz, .nope ; not FLOOR_TILE
 	xor a
@@ -1727,7 +1724,7 @@ Script_GetOnBike_Register:
 	special UpdatePlayerSprite
 	end
 
-; unused
+Overworld_DummyFunction: ; unreferenced
 	nop
 	ret
 

@@ -1,5 +1,6 @@
 BattleAnimations::
 ; entries correspond to constants/move_constants.asm
+	table_width 2, BattleAnimations
 	dw BattleAnim_0
 	dw BattleAnim_Pound
 	dw BattleAnim_KarateChop
@@ -252,10 +253,12 @@ BattleAnimations::
 	dw BattleAnim_RockSmash
 	dw BattleAnim_Whirlpool
 	dw BattleAnim_BeatUp
+	assert_table_length NUM_ATTACKS + 1
 	dw BattleAnim_252
 	dw BattleAnim_253
 	dw BattleAnim_254
 	dw BattleAnim_SweetScent2
+	assert_table_length $100
 ; $100
 	dw BattleAnim_ThrowPokeBall
 	dw BattleAnim_SendOutMon
@@ -279,6 +282,7 @@ BattleAnimations::
 	dw BattleAnim_Wobble
 	dw BattleAnim_Shake
 	dw BattleAnim_HitConfusion
+	assert_table_length NUM_BATTLE_ANIMS + 1
 
 BattleAnim_0:
 BattleAnim_252:
@@ -481,7 +485,7 @@ BattleAnim_SendOutMon:
 
 BattleAnim_ReturnMon:
 	anim_sound 0, 0, SFX_BALL_POOF
-.anim:
+BattleAnimSub_Return:
 	anim_bgeffect ANIM_BG_RETURN_MON, $0, BG_EFFECT_USER, $0
 	anim_wait 32
 	anim_ret
@@ -1314,7 +1318,7 @@ BattleAnim_RazorWind:
 	anim_wait 24
 	anim_ret
 
-BattleAnim_Sonicboom_JP:
+BattleAnim_Sonicboom_JP: ; unreferenced
 BattleAnim_Sonicboom:
 	anim_2gfx ANIM_GFX_WHIP, ANIM_GFX_HIT
 .loop
@@ -4106,7 +4110,7 @@ BattleAnim_BatonPass:
 	anim_1gfx ANIM_GFX_MISC
 	anim_obj ANIM_OBJ_BATON_PASS, 44, 104, $20
 	anim_sound 0, 0, SFX_BATON_PASS
-	anim_call BattleAnim_ReturnMon.anim
+	anim_call BattleAnimSub_Return
 	anim_wait 64
 	anim_ret
 

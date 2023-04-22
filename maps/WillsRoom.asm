@@ -3,20 +3,20 @@
 
 WillsRoom_MapScripts:
 	def_scene_scripts
-	scene_script .LockDoor ; SCENE_DEFAULT
-	scene_script .DummyScene ; SCENE_FINISHED
+	scene_script WillsRoomLockDoorScene, SCENE_WILLSROOM_LOCK_DOOR
+	scene_script WillsRoomNoopScene,     SCENE_WILLSROOM_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_TILES, .WillsRoomDoors
+	callback MAPCALLBACK_TILES, WillsRoomDoorsCallback
 
-.LockDoor:
-	prioritysjump .WillsDoorLocksBehindYou
+WillsRoomLockDoorScene:
+	sdefer WillsRoomDoorLocksBehindYouScript
 	end
 
-.DummyScene:
+WillsRoomNoopScene:
 	end
 
-.WillsRoomDoors:
+WillsRoomDoorsCallback:
 	checkevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
 	iffalse .KeepEntranceOpen
 	changeblock 4, 14, $2a ; wall
@@ -27,7 +27,7 @@ WillsRoom_MapScripts:
 .KeepExitClosed:
 	endcallback
 
-.WillsDoorLocksBehindYou:
+WillsRoomDoorLocksBehindYouScript:
 	applymovement PLAYER, WillsRoom_EnterMovement
 	refreshscreen $86
 	playsound SFX_STRENGTH
@@ -35,7 +35,7 @@ WillsRoom_MapScripts:
 	changeblock 4, 14, $2a ; wall
 	reloadmappart
 	closetext
-	setscene SCENE_FINISHED
+	setscene SCENE_WILLSROOM_NOOP
 	setevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
 	waitsfx
 	end

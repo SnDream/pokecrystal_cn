@@ -4,16 +4,17 @@
 
 BattleTowerBattleRoom_MapScripts:
 	def_scene_scripts
-	scene_script .EnterBattleRoom ; SCENE_DEFAULT
-	scene_script .DummyScene ; SCENE_FINISHED
+	scene_script BattleTowerBattleRoomEnterScene, SCENE_BATTLETOWERBATTLEROOM_ENTER
+	scene_script BattleTowerBattleRoomNoopScene,  SCENE_BATTLETOWERBATTLEROOM_NOOP
 
 	def_callbacks
 
-.EnterBattleRoom:
+BattleTowerBattleRoomEnterScene:
 	disappear BATTLETOWERBATTLEROOM_YOUNGSTER
-	prioritysjump Script_BattleRoom
-	setscene SCENE_FINISHED
-.DummyScene:
+	sdefer Script_BattleRoom
+	setscene SCENE_BATTLETOWERBATTLEROOM_NOOP
+	; fallthrough
+BattleTowerBattleRoomNoopScene:
 	end
 
 Script_BattleRoom:
@@ -131,7 +132,7 @@ Script_ChallengeCanceled: ; unreferenced
 	closetext
 	end
 
-Text_ReturnedAfterSave_Mobile:
+Text_ReturnedAfterSave_Mobile: ; unreferenced
 	text "You'll be returned"
 	line "after you SAVE."
 	done

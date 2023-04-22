@@ -6,7 +6,7 @@ AI_Basic:
 ;  -Using status-only moves if the player can't be statused
 ;  -Using moves that fail if they've already been used
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -73,7 +73,7 @@ AI_Setup:
 ; 50% chance to greatly encourage stat-down moves during the first turn of player's Pokemon.
 ; Almost 90% chance to greatly discourage stat-modifying moves otherwise.
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -147,7 +147,7 @@ AI_Types:
 ; Discourage not very effective moves unless
 ; all damaging moves are of the same type.
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -234,7 +234,7 @@ AI_Types:
 AI_Offensive:
 ; Greatly discourage non-damaging moves.
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -261,7 +261,7 @@ AI_Offensive:
 AI_Smart:
 ; Context-specific scoring.
 
-	ld hl, wBuffer1
+	ld hl, wEnemyAIMoveScores
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -518,7 +518,7 @@ AI_Smart_LockOn:
 
 .player_locked_on
 	push hl
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld c, NUM_MOVES + 1
 
@@ -904,7 +904,7 @@ AI_Smart_ResetStats:
 	ret
 
 ; Discourage this move if neither:
-; Any of enemy's stat levels is	lower than -2.
+; Any of enemy's stat levels is lower than -2.
 ; Any of player's stat levels is higher than +2.
 .discourage
 	pop hl
@@ -1269,7 +1269,7 @@ AI_Smart_Rage:
 	call AICheckEnemyHalfHP
 	jr nc, .discourage
 
-; 50% chance to encourage this move otherwise.
+; 20% chance to encourage this move otherwise.
 	call AI_80_20
 	ret nc
 	dec [hl]
@@ -1472,7 +1472,7 @@ AI_Smart_SleepTalk:
 ; Greatly discourage this move otherwise.
 
 	ld a, [wEnemyMonStatus]
-	and SLP
+	and SLP_MASK
 	cp 1
 	jr z, .discourage
 
@@ -1610,7 +1610,7 @@ AI_Smart_HealBell:
 	jr z, .ok
 	dec [hl]
 .ok
-	and 1 << FRZ | SLP
+	and 1 << FRZ | SLP_MASK
 	ret z
 	call AI_50_50
 	ret c
@@ -1665,6 +1665,7 @@ AI_Smart_Thief:
 	ret
 
 AI_Smart_Conversion2:
+; BUG: "Smart" AI discourages Conversion2 after the first turn (see docs/bugs_and_glitches.md)
 	ld a, [wLastPlayerMove]
 	and a
 	jr nz, .discourage
@@ -1743,8 +1744,8 @@ AI_Smart_MeanLook:
 	pop hl
 	jp z, AIDiscourageMove
 
-; 80% chance to greatly encourage this move if the enemy is badly poisoned (buggy).
-; Should check wPlayerSubStatus5 instead.
+; 80% chance to greatly encourage this move if the enemy is badly poisoned.
+; BUG: "Smart" AI encourages Mean Look if its own Pokémon is badly poisoned (see docs/bugs_and_glitches.md)
 	ld a, [wEnemySubStatus5]
 	bit SUBSTATUS_TOXIC, a
 	jr nz, .encourage
@@ -2320,7 +2321,7 @@ AI_Smart_HiddenPower:
 	cp EFFECTIVE
 	jr c, .bad
 
-; Discourage Hidden Power if its base power	is lower than 50.
+; Discourage Hidden Power if its base power is lower than 50.
 	ld a, d
 	cp 50
 	jr c, .bad
@@ -2893,7 +2894,7 @@ AI_Opportunist:
 	ret c
 
 .lowhp
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld c, NUM_MOVES + 1
 .checkmove
@@ -2987,7 +2988,7 @@ AI_Aggressive:
 	jr z, .done
 
 ; Discourage moves that do less damage unless they're reckless too.
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, 0
 .checkmove2
@@ -3060,7 +3061,7 @@ AI_Cautious:
 	and a
 	ret z
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld c, NUM_MOVES + 1
 .loop
@@ -3098,7 +3099,7 @@ INCLUDE "data/battle/ai/residual_moves.asm"
 AI_Status:
 ; Dismiss status moves that don't affect the player.
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld b, NUM_MOVES + 1
 .checkmove
@@ -3161,7 +3162,7 @@ AI_Risky:
 ; Use any move that will KO the target.
 ; Risky moves will often be an exception (see below).
 
-	ld hl, wBuffer1 - 1
+	ld hl, wEnemyAIMoveScores - 1
 	ld de, wEnemyMonMoves
 	ld c, NUM_MOVES + 1
 .checkmove

@@ -74,7 +74,7 @@ Pack:
 	ld hl, ItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -102,7 +102,7 @@ Pack:
 	ld hl, KeyItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wKeyItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wKeyItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -135,7 +135,7 @@ Pack:
 	call Pack_InterpretJoypad
 	ret c
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .use_quit
 	ld hl, .MenuHeader2
@@ -224,7 +224,7 @@ Pack:
 	ld hl, BallsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wBallsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wBallsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -241,29 +241,29 @@ Pack:
 
 .ItemBallsKey_LoadSubmenu:
 	farcall _CheckTossableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .tossable
 	farcall CheckSelectableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .selectable
 	farcall CheckItemMenu
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .usable
 	jr .unusable
 
 .selectable
 	farcall CheckItemMenu
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .selectable_usable
 	jr .selectable_unusable
 
 .tossable
 	farcall CheckSelectableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .tossable_selectable
 	jr .tossable_unselectable
@@ -424,7 +424,7 @@ Jumptable_GiveTossQuit:
 
 UseItem:
 	farcall CheckItemMenu
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	ld hl, .dw
 	rst JumpTable
 	ret
@@ -531,7 +531,7 @@ ResetPocketCursorPositions: ; unreferenced
 
 RegisterItem:
 	farcall CheckSelectableItem
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	and a
 	jr nz, .cant_register
 	ld a, [wCurPocket]
@@ -592,7 +592,7 @@ GiveItem:
 	push af
 	ld a, [wPackJumptableIndex]
 	push af
-	call GetCurNick
+	call GetCurNickname
 	ld hl, wStringBuffer1
 	ld de, wMonOrItemNameBuffer
 	ld bc, MON_NAME_LENGTH
@@ -685,7 +685,7 @@ BattlePack:
 	ld hl, ItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -713,7 +713,7 @@ BattlePack:
 	ld hl, KeyItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wKeyItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wKeyItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -764,7 +764,7 @@ BattlePack:
 	ld hl, BallsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wBallsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wBallsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -781,7 +781,7 @@ BattlePack:
 
 ItemSubmenu:
 	farcall CheckItemContext
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 TMHMSubmenu:
 	and a
 	jr z, .NoUse
@@ -836,7 +836,7 @@ TMHMSubmenu:
 
 .Use:
 	farcall CheckItemContext
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	ld hl, .ItemFunctionJumptable
 	rst JumpTable
 	ret
@@ -953,7 +953,7 @@ DepositSellPack:
 	ld hl, PC_Mart_ItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -969,7 +969,7 @@ DepositSellPack:
 	ld hl, PC_Mart_KeyItemsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wKeyItemsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wKeyItemsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -994,7 +994,7 @@ DepositSellPack:
 	ld hl, PC_Mart_BallsPocketMenuHeader
 	call CopyMenuHeader
 	ld a, [wBallsPocketCursor]
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	ld a, [wBallsPocketScrollPosition]
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
@@ -1423,7 +1423,7 @@ INCBIN "gfx/pack/pack_menu.tilemap"
 
 Pack_GetItemName:
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	call CopyName1
 	ret
@@ -1539,7 +1539,7 @@ PC_Mart_BallsPocketMenuHeader:
 	dba PlaceMenuItemQuantity
 	dba UpdateItemDescription
 
-PackNoItemText:
+PackNoItemText: ; unreferenced
 	text_far _PackNoItemText
 	text_end
 
@@ -1579,7 +1579,7 @@ PackEmptyText:
 	text_far _PackEmptyText
 	text_end
 
-YouCantUseItInABattleText:
+YouCantUseItInABattleText: ; unreferenced
 	text_far _YouCantUseItInABattleText
 	text_end
 

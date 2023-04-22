@@ -1,4 +1,4 @@
-ROUTE39FARMHOUSE_MILK_PRICE EQU 500
+DEF ROUTE39FARMHOUSE_MILK_PRICE EQU 500
 
 	object_const_def
 	const ROUTE39FARMHOUSE_POKEFAN_M
@@ -122,7 +122,7 @@ FarmerMText_BuyMilk:
 	line "to restore HP!"
 
 	para "I'll give it to ya"
-	line "fer just ¥500."
+	line "fer just ¥{d:ROUTE39FARMHOUSE_MILK_PRICE}."
 	done
 
 FarmerMText_GotMilk:
@@ -172,7 +172,7 @@ FarmerFText_HealedMiltank:
 	line "fer your trouble."
 	done
 
-Text_ReceivedTM13:
+Text_ReceivedTM13: ; unreferenced
 	text "<PLAYER> received"
 	line "TM13."
 	done

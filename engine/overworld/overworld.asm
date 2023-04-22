@@ -366,8 +366,7 @@ AddSpriteGFX:
 	ret
 
 LoadSpriteGFX:
-; Bug: b is not preserved, so it's useless as a next count.
-; Uncomment the lines below to fix.
+; BUG: LoadSpriteGFX does not limit the capacity of UsedSprites (see docs/bugs_and_glitches.md)
 
 	ld hl, wUsedSprites
 	ld b, SPRITE_GFX_LIST_CAPACITY
@@ -386,9 +385,7 @@ LoadSpriteGFX:
 	ret
 
 .LoadSprite:
-	; push bc
 	call GetSprite
-	; pop bc
 	ld a, l
 	ret
 
@@ -773,7 +770,7 @@ endr
 LoadEmote::
 ; Get the address of the pointer to emote c.
 	ld a, c
-	ld bc, 6 ; sizeof(emote)
+	ld bc, EMOTE_LENGTH
 	ld hl, Emotes
 	call AddNTimes
 ; Load the emote address into de

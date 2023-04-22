@@ -14,7 +14,7 @@ HandleCmdQueue::
 	ld hl, wCmdQueue
 	xor a
 .loop
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ld a, [hl]
 	and a
 	jr z, .skip
@@ -27,7 +27,7 @@ HandleCmdQueue::
 .skip
 	ld de, CMDQUEUE_ENTRY_SIZE
 	add hl, de
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	inc a
 	cp CMDQUEUE_CAPACITY
 	jr nz, .loop
@@ -135,7 +135,7 @@ HandleQueuedCommand:
 	dba CmdQueue_Type4
 
 CmdQueues_AnonJumptable:
-	ld hl, CMDQUEUE_05
+	ld hl, CMDQUEUE_JUMPTABLE_INDEX
 	add hl, bc
 	ld a, [hl]
 	pop hl
@@ -143,13 +143,13 @@ CmdQueues_AnonJumptable:
 	ret
 
 CmdQueues_IncAnonJumptableIndex:
-	ld hl, CMDQUEUE_05
+	ld hl, CMDQUEUE_JUMPTABLE_INDEX
 	add hl, bc
 	inc [hl]
 	ret
 
 CmdQueues_DecAnonJumptableIndex:
-	ld hl, CMDQUEUE_05
+	ld hl, CMDQUEUE_JUMPTABLE_INDEX
 	add hl, bc
 	dec [hl]
 	ret
@@ -163,7 +163,7 @@ CmdQueue_Type1:
 
 CmdQueue_Type4:
 	call CmdQueues_AnonJumptable
-	; anonymous dw
+.anon_dw
 	dw .zero
 	dw .one
 
@@ -207,7 +207,7 @@ CmdQueue_Type4:
 
 CmdQueue_Type3:
 	call CmdQueues_AnonJumptable
-	; anonymous dw
+.anon_dw
 	dw .zero
 	dw .one
 	dw .two
@@ -241,7 +241,7 @@ CmdQueue_Type3:
 .PlayerNotFacingDown:
 	ld a, $7f
 	ld [wd173], a
-	ld hl, CMDQUEUE_05
+	ld hl, CMDQUEUE_JUMPTABLE_INDEX
 	add hl, bc
 	ld [hl], 0
 	ret
@@ -266,19 +266,19 @@ CmdQueue_StoneTable:
 	and a
 	jr z, .next
 
-	ld hl, OBJECT_MOVEMENTTYPE
+	ld hl, OBJECT_MOVEMENT_TYPE
 	add hl, de
 	ld a, [hl]
 	cp SPRITEMOVEDATA_STRENGTH_BOULDER
 	jr nz, .next
 
-	ld hl, OBJECT_NEXT_TILE
+	ld hl, OBJECT_TILE
 	add hl, de
 	ld a, [hl]
 	call CheckPitTile
 	jr nz, .next
 
-	ld hl, OBJECT_DIRECTION_WALKING
+	ld hl, OBJECT_WALKING
 	add hl, de
 	ld a, [hl]
 	cp STANDING

@@ -8,43 +8,44 @@
 
 ElmsLab_MapScripts:
 	def_scene_scripts
-	scene_script .MeetElm ; SCENE_DEFAULT
-	scene_script .DummyScene1 ; SCENE_ELMSLAB_CANT_LEAVE
-	scene_script .DummyScene2 ; SCENE_ELMSLAB_NOTHING
-	scene_script .DummyScene3 ; SCENE_ELMSLAB_MEET_OFFICER
-	scene_script .DummyScene4 ; SCENE_ELMSLAB_UNUSED
-	scene_script .DummyScene5 ; SCENE_ELMSLAB_AIDE_GIVES_POTION
+	scene_script ElmsLabMeetElmScene, SCENE_ELMSLAB_MEET_ELM
+	scene_script ElmsLabNoop1Scene,   SCENE_ELMSLAB_CANT_LEAVE
+	scene_script ElmsLabNoop2Scene,   SCENE_ELMSLAB_NOOP
+	scene_script ElmsLabNoop3Scene,   SCENE_ELMSLAB_MEET_OFFICER
+	scene_script ElmsLabNoop4Scene,   SCENE_ELMSLAB_UNUSED
+	scene_script ElmsLabNoop5Scene,   SCENE_ELMSLAB_AIDE_GIVES_POTION
+	scene_const SCENE_ELMSLAB_AIDE_GIVES_POKE_BALLS
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .MoveElmCallback
+	callback MAPCALLBACK_OBJECTS, ElmsLabMoveElmCallback
 
-.MeetElm:
-	prioritysjump .WalkUpToElm
+ElmsLabMeetElmScene:
+	sdefer ElmsLabWalkUpToElmScript
 	end
 
-.DummyScene1:
+ElmsLabNoop1Scene:
 	end
 
-.DummyScene2:
+ElmsLabNoop2Scene:
 	end
 
-.DummyScene3:
+ElmsLabNoop3Scene:
 	end
 
-.DummyScene4:
+ElmsLabNoop4Scene:
 	end
 
-.DummyScene5:
+ElmsLabNoop5Scene:
 	end
 
-.MoveElmCallback:
+ElmsLabMoveElmCallback:
 	checkscene
-	iftrue .Skip ; not SCENE_DEFAULT
+	iftrue .Skip ; not SCENE_ELMSLAB_MEET_ELM
 	moveobject ELMSLAB_ELM, 3, 4
 .Skip:
 	endcallback
 
-.WalkUpToElm:
+ElmsLabWalkUpToElmScript:
 	applymovement PLAYER, ElmsLab_WalkUpToElmMovement
 	showemote EMOTE_SHOCK, ELMSLAB_ELM, 15
 	turnobject ELMSLAB_ELM, RIGHT
@@ -273,7 +274,7 @@ ElmDirectionsScript:
 	setevent EVENT_GOT_A_POKEMON_FROM_ELM
 	setevent EVENT_RIVAL_CHERRYGROVE_CITY
 	setscene SCENE_ELMSLAB_AIDE_GIVES_POTION
-	setmapscene NEW_BARK_TOWN, SCENE_FINISHED
+	setmapscene NEW_BARK_TOWN, SCENE_NEWBARKTOWN_NOOP
 	end
 
 ElmDescribesMrPokemonScript:
@@ -477,7 +478,7 @@ AideScript_GivePotion:
 	writetext AideText_AlwaysBusy
 	waitbutton
 	closetext
-	setscene SCENE_ELMSLAB_NOTHING
+	setscene SCENE_ELMSLAB_NOOP
 	end
 
 AideScript_WalkBalls1:
@@ -505,7 +506,7 @@ AideScript_GiveYouBalls:
 	promptbutton
 	itemnotify
 	closetext
-	setscene SCENE_ELMSLAB_NOTHING
+	setscene SCENE_ELMSLAB_NOOP
 	end
 
 AideScript_ReceiveTheBalls:
@@ -560,7 +561,7 @@ CopScript:
 	closetext
 	applymovement ELMSLAB_OFFICER, OfficerLeavesMovement
 	disappear ELMSLAB_OFFICER
-	setscene SCENE_ELMSLAB_NOTHING
+	setscene SCENE_ELMSLAB_NOOP
 	end
 
 ElmsLabWindow:
@@ -601,8 +602,7 @@ ElmsLabTrashcan:
 ElmsLabPC:
 	jumptext ElmsLabPCText
 
-ElmsLabTrashcan2:
-; unused
+ElmsLabTrashcan2: ; unreferenced
 	jumpstd TrashCanScript
 
 ElmsLabBookshelf:
@@ -1209,7 +1209,7 @@ ElmGiveTicketText2:
 	line "PROF.OAK in KANTO!"
 	done
 
-ElmsLabSignpostText_Egg:
+ElmsLabMonEggText: ; unreferenced
 	text "It's the #MON"
 	line "EGG being studied"
 	cont "by PROF.ELM."

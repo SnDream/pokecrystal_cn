@@ -7,11 +7,11 @@ Function16c000: ; unreferenced
 	ldh a, [hSystemBooted]
 	and a
 	ret z
-	; Set some flag, preserving the old state
-	ld a, [wcfbe]
+	; Disable the joypad during mobile setup
+	ld a, [wJoypadDisable]
 	push af
-	set 7, a
-	ld [wcfbe], a
+	set JOYPAD_DISABLE_SGB_TRANSFER_F, a
+	ld [wJoypadDisable], a
 	; Do stuff
 	call MobileSystemSplashScreen_InitGFX ; Load GFX
 	farcall SetRAMStateForMobile
@@ -24,7 +24,7 @@ Function16c000: ; unreferenced
 	ldh [hSystemBooted], a
 	; Restore the flag state
 	pop af
-	ld [wcfbe], a
+	ld [wJoypadDisable], a
 	ret
 
 .RunJumptable:
@@ -78,7 +78,7 @@ Function16c000: ; unreferenced
 
 Function16c089:
 	ld a, $1
-	ld [wBuffer2], a
+	ld [wd1eb], a
 	ld [wd1f1], a
 	xor a
 	ldh [hWY], a
@@ -96,7 +96,7 @@ Function16c09e:
 
 Function16c0a8:
 	xor a
-	ld [wBuffer2], a
+	ld [wd1eb], a
 	ld [wd1f1], a
 	call ClearSprites
 	ld a, $90
@@ -515,8 +515,8 @@ Function16cb08:
 
 Function16cb0f:
 	xor a
-	ld [wBuffer1], a
-	ld [wBuffer2], a
+	ld [wd1ea], a
+	ld [wd1eb], a
 	xor a
 	ld [wd1ec], a
 	ld a, $70
@@ -530,12 +530,12 @@ Function16cb0f:
 	ret
 
 Function16cb2e:
-	ld a, [wBuffer2]
+	ld a, [wd1eb]
 	and a
 	ret z
 	call Function16cb40
 	ld hl, Unknown_16cb86
-	ld de, wVirtualOAM
+	ld de, wShadowOAM
 	call Function16cb5d
 	ret
 

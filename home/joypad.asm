@@ -27,8 +27,8 @@ UpdateJoypad::
 ; hJoypadSum: pressed so far
 
 ; Any of these three bits can be used to disable input.
-	ld a, [wcfbe]
-	and %11010000
+	ld a, [wJoypadDisable]
+	and (1 << JOYPAD_DISABLE_MON_FAINT_F) | (1 << JOYPAD_DISABLE_SGB_TRANSFER_F) | (1 << 4)
 	ret nz
 
 ; If we're saving, input is disabled.
@@ -346,14 +346,14 @@ WaitPressAorB_BlinkCursor::
 ;
 ; NOTE: The cursor has to be shown before calling
 ; this function or no cursor will be shown at all.
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	push af
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	push af
 	xor a
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ld a, 6
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 
 .loop
 	push hl
@@ -367,9 +367,9 @@ WaitPressAorB_BlinkCursor::
 	jr z, .loop
 
 	pop af
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	pop af
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ret
 
 SimpleWaitPressAorB::
@@ -447,37 +447,37 @@ BlinkCursor::
 	cp b
 	pop bc
 	jr nz, .place_arrow
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	dec a
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ret nz
-	ldh a, [hObjectStructIndexBuffer]
+	ldh a, [hObjectStructIndex]
 	dec a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	ret nz
 	ld a, "─"
 	ld [hl], a
 	ld a, -1
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ld a, 6
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	ret
 
 .place_arrow
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	and a
 	ret z
 	dec a
-	ldh [hMapObjectIndexBuffer], a
+	ldh [hMapObjectIndex], a
 	ret nz
 	dec a
-	ldh [hMapObjectIndexBuffer], a
-	ldh a, [hObjectStructIndexBuffer]
+	ldh [hMapObjectIndex], a
+	ldh a, [hObjectStructIndex]
 	dec a
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	ret nz
 	ld a, 6
-	ldh [hObjectStructIndexBuffer], a
+	ldh [hObjectStructIndex], a
 	ld a, "▼"
 	ld [hl], a
 	ret

@@ -1,4 +1,4 @@
-landmark: MACRO
+MACRO landmark
 ; x, y, name
 	db \1 + 8, \2 + 16
 	dw \3
@@ -6,7 +6,8 @@ ENDM
 
 Landmarks:
 ; entries correspond to constants/landmark_constants.asm
-	dbbw       0,   0, SpecialMapName
+	table_width 4, Landmarks
+	landmark  -8, -16, SpecialMapName
 	landmark 140, 100, NewBarkTownName
 	landmark 128, 100, Route29Name
 	landmark 100, 100, CherrygroveCityName
@@ -53,6 +54,7 @@ Landmarks:
 	landmark 112,  72, DarkCaveName
 	landmark 124,  88, Route46Name
 	landmark 148,  68, SilverCaveName
+	assert_table_length KANTO_LANDMARK
 	landmark  52, 108, PalletTownName
 	landmark  52,  92, Route1Name
 	landmark  52,  76, ViridianCityName
@@ -102,6 +104,7 @@ Landmarks:
 	landmark  12, 100, TohjoFallsName
 	landmark  20,  68, Route28Name
 	landmark 140, 116, FastShipName
+	assert_table_length NUM_LANDMARKS
 
 NewBarkTownName:     db "若叶镇@"
 CherrygroveCityName: db "吉花市@"
@@ -144,11 +147,11 @@ VictoryRoadName:     db "冠军之路@"
 MtMoonName:          db "月见山@"
 RockTunnelName:      db "岩山隧道@"
 LavRadioTowerName:   db "紫苑电台@"
-SilphCoName:         db "西尔佛公司@"
-SafariZoneName:      db "狩猎地带@"
+SilphCoName:         db "西尔佛公司@" ; unreferenced
+SafariZoneName:      db "狩猎地带@" ; unreferenced
 SeafoamIslandsName:  db "双子岛@"
-PokemonMansionName:  db "宝可梦屋@"
-CeruleanCaveNane:    db "华蓝洞窟@"
+PokemonMansionName:  db "宝可梦屋@" ; unreferenced
+CeruleanCaveNane:    db "华蓝洞窟@" ; unreferenced
 Route1Name:          db "1号道路@"
 Route2Name:          db "2号道路@"
 Route3Name:          db "3号道路@"
@@ -199,7 +202,7 @@ DarkCaveName:        db "黑暗洞穴@"
 IlexForestName:      db "栎树林@"
 BurnedTowerName:     db "烧焦塔@"
 FastShipName:        db "高速船@"
-ViridianForestName:  db "常青森林@"
+ViridianForestName:  db "常青森林@" ; unreferenced
 DiglettsCaveName:    db "地鼠洞穴@"
 TohjoFallsName:      db "都城瀑布@"
 UndergroundName:     db "地下通道@"

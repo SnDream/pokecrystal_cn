@@ -16,23 +16,23 @@
 
 Route32_MapScripts:
 	def_scene_scripts
-	scene_script .DummyScene0 ; SCENE_DEFAULT
-	scene_script .DummyScene1 ; SCENE_ROUTE32_OFFER_SLOWPOKETAIL
-	scene_script .DummyScene2 ; SCENE_ROUTE32_NOTHING
+	scene_script Route32Noop1Scene, SCENE_ROUTE32_COOLTRAINER_M_BLOCKS
+	scene_script Route32Noop2Scene, SCENE_ROUTE32_OFFER_SLOWPOKETAIL
+	scene_script Route32Noop3Scene, SCENE_ROUTE32_NOOP
 
 	def_callbacks
-	callback MAPCALLBACK_OBJECTS, .Frieda
+	callback MAPCALLBACK_OBJECTS, Route32FriedaCallback
 
-.DummyScene0:
+Route32Noop1Scene:
 	end
 
-.DummyScene1:
+Route32Noop2Scene:
 	end
 
-.DummyScene2:
+Route32Noop3Scene:
 	end
 
-.Frieda:
+Route32FriedaCallback:
 	readvar VAR_WEEKDAY
 	ifequal FRIDAY, .FriedaAppears
 	disappear ROUTE32_FRIEDA
@@ -125,7 +125,7 @@ Route32WannaBuyASlowpokeTailScript:
 SlowpokeTailSalesmanScript:
 	faceplayer
 _OfferToSellSlowpokeTail:
-	setscene SCENE_ROUTE32_NOTHING
+	setscene SCENE_ROUTE32_NOOP
 	opentext
 	writetext Text_MillionDollarSlowpokeTail
 	yesorno
@@ -172,7 +172,7 @@ TrainerFisherRalph1:
 	opentext
 	checkflag ENGINE_RALPH_READY_FOR_REMATCH
 	iftrue .Rematch
-	checkflag ENGINE_FISH_SWARM
+	checkflag ENGINE_QWILFISH_SWARM
 	iftrue .Swarm
 	checkcellnum PHONE_FISHER_RALPH
 	iftrue .NumberAccepted
@@ -542,7 +542,6 @@ Route32CooltrainerMText_AideIsWaiting:
 	done
 
 Route32CooltrainerMText_UnusedSproutTower:
-; unused
 	text "Have you gone to"
 	line "SPROUT TOWER?"
 
@@ -679,9 +678,7 @@ FisherRalphSwarmText:
 	line "as you can, kid!"
 	done
 
-; --- start a segment of unused text
-
-Route32UnusedFisher1SeenText:
+Route32UnusedFisher1SeenText: ; unreferenced
 	text "I keep catching"
 	line "the same #MON…"
 
@@ -690,37 +687,35 @@ Route32UnusedFisher1SeenText:
 	cont "around for me."
 	done
 
-Route32UnusedFisher1BeatenText:
+Route32UnusedFisher1BeatenText: ; unreferenced
 	text "Nothing ever goes"
 	line "right for me now…"
 	done
 
-Route32UnusedFisher1AfterText:
+Route32UnusedFisher1AfterText: ; unreferenced
 	text "How come the guy"
 	line "next to me catches"
 	cont "good #MON?"
 	done
 
-Route32UnusedFisher2SeenText:
+Route32UnusedFisher2SeenText: ; unreferenced
 	text "Heh, I'm on a roll"
 	line "today. How about a"
 	cont "battle, kid?"
 	done
 
-Route32UnusedFisher2BeatenText:
+Route32UnusedFisher2BeatenText: ; unreferenced
 	text "Oof. I wasn't"
 	line "lucky that time."
 	done
 
-Route32UnusedFisher2AfterText:
+Route32UnusedFisher2AfterText: ; unreferenced
 	text "You have to have a"
 	line "good ROD if you"
 
 	para "want to catch good"
 	line "#MON."
 	done
-
-; --- end a segment of unused texts
 
 FisherHenrySeenText:
 	text "My #MON?"
@@ -835,8 +830,7 @@ BirdKeeperPeterAfterText:
 	cont "in VIOLET CITY."
 	done
 
-Route32UnusedText:
-; unused
+Route32UnusedText: ; unreferenced
 	text "The fishermen"
 	line "yelled at me for"
 	cont "bugging them…"
@@ -936,7 +930,7 @@ Route32_MapEvents:
 	warp_event  6, 79, UNION_CAVE_1F, 4
 
 	def_coord_events
-	coord_event 18,  8, SCENE_DEFAULT, Route32CooltrainerMStopsYouScene
+	coord_event 18,  8, SCENE_ROUTE32_COOLTRAINER_M_BLOCKS, Route32CooltrainerMStopsYouScene
 	coord_event  7, 71, SCENE_ROUTE32_OFFER_SLOWPOKETAIL, Route32WannaBuyASlowpokeTailScript
 
 	def_bg_events

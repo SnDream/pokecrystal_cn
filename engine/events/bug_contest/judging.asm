@@ -5,21 +5,21 @@ _BugContestJudging:
 	ld a, [wBugContestThirdPlaceWinnerID]
 	call LoadContestantName
 	ld a, [wBugContestThirdPlaceMon]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, ContestJudging_ThirdPlaceText
 	call PrintText
 	ld a, [wBugContestSecondPlaceWinnerID]
 	call LoadContestantName
 	ld a, [wBugContestSecondPlaceMon]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, ContestJudging_SecondPlaceText
 	call PrintText
 	ld a, [wBugContestFirstPlaceWinnerID]
 	call LoadContestantName
 	ld a, [wBugContestFirstPlaceMon]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld hl, ContestJudging_FirstPlaceText
 	call PrintText
@@ -68,7 +68,8 @@ ContestJudging_ThirdPlaceScoreText:
 
 LoadContestantName:
 ; If a = 1, get your name.
-	dec a ; BUG_CONTEST_PLAYER
+	assert BUG_CONTEST_PLAYER == 1
+	dec a
 	jr z, .player
 ; Find the pointer for the trainer class of the Bug Catching Contestant whose ID is in a.
 	ld c, a

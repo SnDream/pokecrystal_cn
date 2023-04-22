@@ -3,7 +3,7 @@
 	const DEBUGROOMMENU_PAGE_1 ; 0
 	const DEBUGROOMMENU_PAGE_2 ; 1
 	const DEBUGROOMMENU_PAGE_3 ; 2
-DEBUGROOMMENU_NUM_PAGES EQU const_value
+DEF DEBUGROOMMENU_NUM_PAGES EQU const_value
 
 	; _DebugRoom.Strings and _DebugRoom.Jumptable indexes
 	const_def
@@ -539,7 +539,7 @@ DebugRoomMenu_DecorateAll:
 	call DebugRoom_SaveChecksum
 	ret
 
-paged_value: MACRO
+MACRO paged_value
 	dw \1 ; value address
 	db \2 ; min value
 	db \3 ; max value
@@ -549,7 +549,7 @@ paged_value: MACRO
 	db \7 ; is hex value?
 ENDM
 
-PAGED_VALUE_SIZE EQU 10
+DEF PAGED_VALUE_SIZE EQU 10
 
 DebugRoom_EditPagedValues:
 	xor a
@@ -574,9 +574,9 @@ DebugRoom_EditPagedValues:
 	ld a, [hli]
 	ld [wDebugRoomPageCount], a
 	ld a, l
-	ld [wDebugRoomPagedValuesPtr], a
+	ld [wDebugRoomPagesPointer], a
 	ld a, h
-	ld [wDebugRoomPagedValuesPtr+1], a
+	ld [wDebugRoomPagesPointer+1], a
 	ld hl, hInMenu
 	ld a, [hl]
 	push af
@@ -672,7 +672,7 @@ DebugRoom_PageString:
 	db " P  @"
 
 DebugRoom_IncrementPagedValue:
-	call DebugRoom_GetCurPagedValuePtr
+	call DebugRoom_GetCurPagedValuePointer
 	ld e, [hl] ; de = value address
 	inc hl
 	ld d, [hl]
@@ -687,7 +687,7 @@ DebugRoom_IncrementPagedValue:
 	ret
 
 DebugRoom_DecrementPagedValue:
-	call DebugRoom_GetCurPagedValuePtr
+	call DebugRoom_GetCurPagedValuePointer
 	ld e, [hl] ; de = value address
 	inc hl
 	ld d, [hl]
@@ -712,7 +712,7 @@ DebugRoom_NextPage:
 	ld [wDebugRoomCurPage], a
 	call DebugRoom_PrintPage
 	ld a, [wDebugRoomCurPage]
-	call DebugRoom_GetNthPagePtr
+	call DebugRoom_GetNthPagePointer
 	ld a, [wDebugRoomCurValue]
 	cp [hl]
 	jr c, .skip
@@ -734,7 +734,7 @@ DebugRoom_PrevPage:
 	ld [wDebugRoomCurPage], a
 	call DebugRoom_PrintPage
 	ld a, [wDebugRoomCurPage]
-	call DebugRoom_GetNthPagePtr
+	call DebugRoom_GetNthPagePointer
 	ld a, [wDebugRoomCurValue]
 	cp [hl]
 	jr c, .skip
@@ -750,7 +750,7 @@ DebugRoom_NextPagedValue:
 	ld a, " "
 	call DebugRoom_ShowHideCursor
 	ld a, [wDebugRoomCurPage]
-	call DebugRoom_GetNthPagePtr
+	call DebugRoom_GetNthPagePointer
 	ld a, [wDebugRoomCurValue]
 	inc a
 	cp [hl] ; incremented value < paged_value count?
@@ -779,15 +779,15 @@ DebugRoom_PrevPagedValue:
 	dec a
 	jr DebugRoom_UpdateValueCursor
 
-DebugRoom_GetNthPagePtr:
+DebugRoom_GetNthPagePointer:
 ; Input: a = page index
 ; Output: hl = pointer to paged_data list
 	ld h, 0
 	ld l, a
 	add hl, hl
-	ld a, [wDebugRoomPagedValuesPtr]
+	ld a, [wDebugRoomPagesPointer]
 	ld e, a
-	ld a, [wDebugRoomPagedValuesPtr+1]
+	ld a, [wDebugRoomPagesPointer+1]
 	ld d, a
 	add hl, de
 	ld a, [hli]
@@ -795,10 +795,10 @@ DebugRoom_GetNthPagePtr:
 	ld l, a
 	ret
 
-_DebugRoom_GetPageBValueCPtr:
+_DebugRoom_GetPageBValueCPointer:
 	push bc
 	ld a, b
-	call DebugRoom_GetNthPagePtr
+	call DebugRoom_GetNthPagePointer
 	pop bc
 	inc hl
 	ld a, c
@@ -806,12 +806,12 @@ _DebugRoom_GetPageBValueCPtr:
 	call AddNTimes
 	ret
 
-DebugRoom_GetCurPagedValuePtr:
+DebugRoom_GetCurPagedValuePointer:
 	ld a, [wDebugRoomCurPage]
 	ld b, a
 	ld a, [wDebugRoomCurValue]
 	ld c, a
-	jr _DebugRoom_GetPageBValueCPtr
+	jr _DebugRoom_GetPageBValueCPointer
 
 DebugRoom_ShowHideCursor:
 	push af
@@ -840,9 +840,9 @@ DebugRoom_InitializePagedValues:
 	ld h, 0
 	ld l, a
 	add hl, hl
-	ld a, [wDebugRoomPagedValuesPtr]
+	ld a, [wDebugRoomPagesPointer]
 	ld e, a
-	ld a, [wDebugRoomPagedValuesPtr+1]
+	ld a, [wDebugRoomPagesPointer+1]
 	ld d, a
 	add hl, de
 	ld a, [hli]
@@ -863,9 +863,9 @@ DebugRoom_InitializePagedValues:
 	ld h, 0
 	ld l, b
 	add hl, hl
-	ld a, [wDebugRoomPagedValuesPtr]
+	ld a, [wDebugRoomPagesPointer]
 	ld e, a
-	ld a, [wDebugRoomPagedValuesPtr+1]
+	ld a, [wDebugRoomPagesPointer+1]
 	ld d, a
 	add hl, de
 	ld a, [hli]
@@ -900,9 +900,9 @@ DebugRoom_PrintPage:
 	ld h, 0
 	ld l, a
 	add hl, hl
-	ld a, [wDebugRoomPagedValuesPtr]
+	ld a, [wDebugRoomPagesPointer]
 	ld e, a
-	ld a, [wDebugRoomPagedValuesPtr+1]
+	ld a, [wDebugRoomPagesPointer+1]
 	ld d, a
 	add hl, de
 	ld a, [hli]
@@ -930,9 +930,9 @@ DebugRoom_PrintPagedValue:
 	ld h, 0
 	ld l, b
 	add hl, hl
-	ld a, [wDebugRoomPagedValuesPtr]
+	ld a, [wDebugRoomPagesPointer]
 	ld e, a
-	ld a, [wDebugRoomPagedValuesPtr+1]
+	ld a, [wDebugRoomPagesPointer+1]
 	ld d, a
 	add hl, de
 	ld a, [hli]
@@ -1086,7 +1086,7 @@ DebugRoom_SaveItem:
 	done
 
 DebugRoom_PrintItemName:
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	push bc
 	call GetItemName
 	pop hl
@@ -1234,19 +1234,19 @@ DebugRoom_SavePokemon:
 	done
 
 DebugRoom_PrintPokemonName:
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	push bc
 	call GetPokemonName
 	jr _DebugRoom_FinishGetName
 
 DebugRoom_PrintItemName2:
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	push bc
 	call GetItemName
 	jr _DebugRoom_FinishGetName
 
 DebugRoom_PrintMoveName:
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	push bc
 	call GetMoveName
 	jr _DebugRoom_FinishGetName
@@ -1335,9 +1335,9 @@ DebugRoom_BoxStructStrings:
 .Move4:     db "招式4@"
 .ID0:       db "ID[0]@"
 .ID1:       db "ID[1]@"
-.BaseExp0:  db "经验值[0]@"
-.BaseExp1:  db "经验值[1]@"
-.BaseExp2:  db "经验值[2]@"
+.BaseExp0:  db "经验值[0]@" ; unreferenced
+.BaseExp1:  db "经验值[1]@" ; unreferenced
+.BaseExp2:  db "经验值[2]@" ; unreferenced
 .HPExp0:    db "HP基础点数[0]@"
 .HPExp1:    db "HP基础点数[1]@"
 .AttkExp0:  db "攻击基础点数[0]@"
@@ -1362,20 +1362,11 @@ DebugRoom_BoxStructStrings:
 .SendBox:   db "送到盒子@"
 
 DebugRoom_BoxAddresses:
-	dba sBox1
-	dba sBox2
-	dba sBox3
-	dba sBox4
-	dba sBox5
-	dba sBox6
-	dba sBox7
-	dba sBox8
-	dba sBox9
-	dba sBox10
-	dba sBox11
-	dba sBox12
-	dba sBox13
-	dba sBox14
+	table_width 3, DebugRoom_BoxAddresses
+for n, 1, NUM_BOXES + 1
+	dba sBox{d:n}
+endr
+	assert_table_length NUM_BOXES
 
 DebugRoomMenu_RTCEdit:
 	ld hl, .PagedValuesHeader

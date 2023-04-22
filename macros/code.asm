@@ -1,21 +1,17 @@
 ; Syntactic sugar macros
 
-lb: MACRO ; r, hi, lo
+MACRO lb ; r, hi, lo
 	ld \1, ((\2) & $ff) << 8 | ((\3) & $ff)
 ENDM
 
-ln: MACRO ; r, hi, lo
+MACRO ln ; r, hi, lo
 	ld \1, ((\2) & $f) << 4 | ((\3) & $f)
 ENDM
 
 ; Design patterns
 
-jumptable: MACRO
-if !STRCMP("\2", "hl")
-	ld a, [hl]
-else
+MACRO jumptable
 	ld a, [\2]
-endc
 	ld e, a
 	ld d, 0
 	ld hl, \1
@@ -27,9 +23,9 @@ endc
 	jp hl
 ENDM
 
-maskbits: MACRO
-; masks just enough bits to cover the first argument
-; the second argument is an optional shift amount
+MACRO maskbits
+; masks just enough bits to cover values 0 to \1 - 1
+; \2 is an optional shift amount
 ; e.g. "maskbits 26" becomes "and %00011111" (since 26 - 1 = %00011001)
 ; and "maskbits 3, 2" becomes "and %00001100" (since "maskbits 3" becomes %00000011)
 ; example usage in rejection sampling:
@@ -38,20 +34,21 @@ maskbits: MACRO
 ; 	maskbits 26
 ; 	cp 26
 ; 	jr nc, .loop
-x = 1
-rept 8
-if x + 1 < (\1)
-x = x << 1 | 1
-endc
-endr
-if _NARG == 2
-	and x << (\2)
-else
-	and x
-endc
+	assert 0 < (\1) && (\1) <= $100, "bitmask must be 8-bit"
+	DEF x = 1
+	rept 8
+		if x + 1 < (\1)
+			DEF x = (x << 1) | 1
+		endc
+	endr
+	if _NARG == 2
+		and x << (\2)
+	else
+		and x
+	endc
 ENDM
 
-calc_sine_wave: MACRO
+MACRO calc_sine_wave
 ; input: a = a signed 6-bit value
 ; output: a = d * sin(a * pi/32)
 	and %111111

@@ -63,6 +63,7 @@ RunScriptCommand:
 
 ScriptCommandTable:
 ; entries correspond to *_command constants (see macros/scripts/events.asm)
+	table_width 2, ScriptCommandTable
 	dw Script_scall                      ; 00
 	dw Script_farscall                   ; 01
 	dw Script_memcall                    ; 02
@@ -137,7 +138,7 @@ ScriptCommandTable:
 	dw Script_opentext                   ; 47
 	dw Script_refreshscreen              ; 48
 	dw Script_closetext                  ; 49
-	dw Script_writeunusedbytebuffer      ; 4a
+	dw Script_writeunusedbyte            ; 4a
 	dw Script_farwritetext               ; 4b
 	dw Script_writetext                  ; 4c
 	dw Script_repeattext                 ; 4d
@@ -204,7 +205,7 @@ ScriptCommandTable:
 	dw Script_newloadmap                 ; 8a
 	dw Script_pause                      ; 8b
 	dw Script_deactivatefacing           ; 8c
-	dw Script_prioritysjump              ; 8d
+	dw Script_sdefer                     ; 8d
 	dw Script_warpcheck                  ; 8e
 	dw Script_stopandsjump               ; 8f
 	dw Script_endcallback                ; 90
@@ -233,6 +234,7 @@ ScriptCommandTable:
 	dw Script_getname                    ; a7
 	dw Script_wait                       ; a8
 	dw Script_checksave                  ; a9
+	assert_table_length NUM_EVENT_COMMANDS
 
 StartScript:
 	ld hl, wScriptFlags
@@ -387,6 +389,7 @@ Script_yesorno:
 	ld a, TRUE
 .no
 	ld [wScriptVar], a
+	vc_hook Unknown_yesorno_ret
 	ret
 
 Script_loadmenu:
@@ -434,7 +437,7 @@ Script__2dmenu:
 	ld a, [wScriptBank]
 	ld hl, _2DMenu
 	rst FarCall
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	jr nc, .ok
 	xor a
 .ok
@@ -458,11 +461,11 @@ Script_verbosegiveitem:
 	ld de, GiveItemScript
 	jp ScriptCall
 
-ret_96f76:
+GiveItemScript_DummyFunction:
 	ret
 
 GiveItemScript:
-	callasm ret_96f76
+	callasm GiveItemScript_DummyFunction
 	writetext .ReceivedItemText
 	iffalse .Full
 	waitsfx
@@ -490,7 +493,7 @@ Script_verbosegiveitemvar:
 	call GetScriptByte
 	call GetVarAction
 	ld a, [de]
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	call ReceiveItem
 	ld a, TRUE
@@ -534,7 +537,7 @@ Script_pocketisfull:
 
 Script_specialsound:
 	farcall CheckItemPocket
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	cp TM_HM
 	ld de, SFX_GET_TM
 	jr z, .play
@@ -546,7 +549,7 @@ Script_specialsound:
 
 GetPocketName:
 	farcall CheckItemPocket
-	ld a, [wItemAttributeParamBuffer]
+	ld a, [wItemAttributeValue]
 	dec a
 	ld hl, ItemPocketNames
 	maskbits NUM_POCKETS
@@ -565,7 +568,7 @@ INCLUDE "data/items/pocket_names.asm"
 
 CurItemName:
 	ld a, [wCurItem]
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ret
 
@@ -771,7 +774,7 @@ Script_musicfadeout:
 	call GetScriptByte
 	ld [wMusicFadeID + 1], a
 	call GetScriptByte
-	and $ff ^ (1 << MUSIC_FADE_IN_F)
+	and ~(1 << MUSIC_FADE_IN_F)
 	ld [wMusicFade], a
 	ret
 
@@ -965,7 +968,7 @@ ApplyObjectFacing:
 Script_variablesprite:
 	call GetScriptByte
 	ld e, a
-	ld d, $0
+	ld d, 0
 	ld hl, wVariableSprites
 	add hl, de
 	call GetScriptByte
@@ -976,7 +979,7 @@ Script_appear:
 	call GetScriptByte
 	call GetScriptObject
 	call UnmaskCopyMapObjectStruct
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld b, 0 ; clear
 	call ApplyEventActionAppearDisappear
 	ret
@@ -989,7 +992,7 @@ Script_disappear:
 	ldh a, [hLastTalked]
 .ok
 	call DeleteObjectStruct
-	ldh a, [hMapObjectIndexBuffer]
+	ldh a, [hMapObjectIndex]
 	ld b, 1 ; set
 	call ApplyEventActionAppearDisappear
 	farcall _UpdateSprites
@@ -1171,7 +1174,7 @@ Script_startbattle:
 	call BufferScreen
 	predef StartBattle
 	ld a, [wBattleResult]
-	and $ff ^ BATTLERESULT_BITMASK
+	and ~BATTLERESULT_BITMASK
 	ld [wScriptVar], a
 	ret
 
@@ -1187,7 +1190,7 @@ Script_reloadmapafterbattle:
 	ld d, [hl]
 	ld [hl], 0
 	ld a, [wBattleResult]
-	and $ff ^ BATTLERESULT_BITMASK
+	and ~BATTLERESULT_BITMASK
 	cp LOSE
 	jr nz, .notblackedout
 	ld b, BANK(Script_BattleWhiteout)
@@ -1251,11 +1254,7 @@ Script_memcall:
 	; fallthrough
 
 ScriptCall:
-; Bug: The script stack has a capacity of 5 scripts, yet there is
-; nothing to stop you from pushing a sixth script.  The high part
-; of the script address can then be overwritten by modifications
-; to wScriptDelay, causing the script to return to the rst/interrupt
-; space.
+; BUG: ScriptCall can overflow wScriptStack and crash (see docs/bugs_and_glitches.md)
 
 	push de
 	ld hl, wScriptStackSize
@@ -1383,7 +1382,7 @@ StdScript:
 	ld b, a
 	inc hl
 	ld a, BANK(StdScripts)
-	call GetFarHalfword
+	call GetFarWord
 	ret
 
 SkipTwoScriptBytes:
@@ -1400,13 +1399,13 @@ ScriptJump:
 	ld [wScriptPos + 1], a
 	ret
 
-Script_prioritysjump:
+Script_sdefer:
 	ld a, [wScriptBank]
-	ld [wPriorityScriptBank], a
+	ld [wDeferredScriptBank], a
 	call GetScriptByte
-	ld [wPriorityScriptAddr], a
+	ld [wDeferredScriptAddr], a
 	call GetScriptByte
-	ld [wPriorityScriptAddr + 1], a
+	ld [wDeferredScriptAddr + 1], a
 	ld hl, wScriptFlags
 	set 3, [hl]
 	ret
@@ -1591,7 +1590,7 @@ Script_getmonname:
 	jr nz, .gotit
 	ld a, [wScriptVar]
 .gotit
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	ld de, wStringBuffer1
 
@@ -1604,7 +1603,7 @@ GetStringBuffer:
 
 CopyConvertedText:
 	ld hl, wStringBuffer3
-	ld bc, wStringBuffer4 - wStringBuffer3
+	ld bc, STRING_BUFFER_LENGTH
 	call AddNTimes
 	call CopyName2
 	ret
@@ -1615,7 +1614,7 @@ Script_getitemname:
 	jr nz, .ok
 	ld a, [wScriptVar]
 .ok
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetItemName
 	ld de, wStringBuffer1
 	jr GetStringBuffer
@@ -1647,7 +1646,7 @@ Script_gettrainername:
 
 Script_getname:
 	call GetScriptByte
-	ld [wNamedObjectTypeBuffer], a
+	ld [wNamedObjectType], a
 
 ContinueToGetName:
 	call GetScriptByte
@@ -1658,7 +1657,7 @@ ContinueToGetName:
 
 Script_gettrainerclassname:
 	ld a, TRAINER_NAME
-	ld [wNamedObjectTypeBuffer], a
+	ld [wNamedObjectType], a
 	jr ContinueToGetName
 
 Script_getmoney:
@@ -1717,7 +1716,7 @@ Script_givepokemail:
 	push bc
 	inc hl
 	ld bc, MAIL_MSG_LENGTH + 1 ; for full length msg
-	ld de, wd002
+	ld de, wMonMailMessageBuffer
 	ld a, [wScriptBank]
 	call FarCopyBytes
 	pop bc
@@ -1742,7 +1741,7 @@ Script_giveitem:
 .ok
 	ld [wCurItem], a
 	call GetScriptByte
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld hl, wNumItems
 	call ReceiveItem
 	jr nc, .full
@@ -1760,7 +1759,7 @@ Script_takeitem:
 	call GetScriptByte
 	ld [wCurItem], a
 	call GetScriptByte
-	ld [wItemQuantityChangeBuffer], a
+	ld [wItemQuantityChange], a
 	ld a, -1
 	ld [wCurItemQuantity], a
 	ld hl, wNumItems
@@ -2187,8 +2186,7 @@ Script_warpcheck:
 	farcall EnableEvents
 	ret
 
-Script_enableevents:
-; unused
+Script_enableevents: ; unreferenced
 	farcall EnableEvents
 	ret
 
@@ -2213,12 +2211,13 @@ Script_refreshscreen:
 	call GetScriptByte
 	ret
 
-Script_writeunusedbytebuffer:
+Script_writeunusedbyte:
 	call GetScriptByte
-	ld [wUnusedScriptByteBuffer], a
+	ld [wUnusedScriptByte], a
 	ret
 
-	db closetext_command ; unused
+UnusedClosetextScript: ; unreferenced
+	closetext
 
 Script_closetext:
 	call _OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
@@ -2330,13 +2329,13 @@ Script_endall:
 	ret
 
 Script_halloffame:
-	ld hl, wGameTimerPause
-	res GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
+	ld hl, wGameTimerPaused
+	res GAME_TIMER_PAUSED_F, [hl]
 	farcall StubbedTrainerRankings_HallOfFame
 	farcall StubbedTrainerRankings_HallOfFame2
 	farcall HallOfFame
-	ld hl, wGameTimerPause
-	set GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
+	ld hl, wGameTimerPaused
+	set GAME_TIMER_PAUSED_F, [hl]
 	jr ReturnFromCredits
 
 Script_credits:
@@ -2367,10 +2366,10 @@ Script_checksave:
 	ld [wScriptVar], a
 	ret
 
-; unused
+Script_checkver_duplicate: ; unreferenced
 	ld a, [.gs_version]
 	ld [wScriptVar], a
 	ret
 
-.gs_version
+.gs_version:
 	db GS_VERSION

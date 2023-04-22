@@ -10,20 +10,20 @@ _PlayerDecorationMenu:
 	push af
 	ld hl, .MenuHeader
 	call LoadMenuHeader
-	xor a
-	ld [wBuffer5], a
-	ld a, $1
-	ld [wBuffer6], a
+	xor a ; FALSE
+	ld [wChangedDecorations], a
+	ld a, $1 ; bed
+	ld [wCurDecorationCategory], a
 .top_loop
-	ld a, [wBuffer6]
-	ld [wMenuCursorBuffer], a
+	ld a, [wCurDecorationCategory]
+	ld [wMenuCursorPosition], a
 	call .FindCategoriesWithOwnedDecos
 	call DoNthMenu
 	ld a, [wMenuCursorY]
-	ld [wBuffer6], a
+	ld [wCurDecorationCategory], a
 	jr c, .exit_menu
 	ld a, [wMenuSelection]
-	ld hl, .pointers
+	ld hl, .category_pointers
 	call MenuJumptable
 	jr nc, .top_loop
 
@@ -31,7 +31,7 @@ _PlayerDecorationMenu:
 	call ExitMenu
 	pop af
 	ld [wWhichIndexSet], a
-	ld a, [wBuffer5]
+	ld a, [wChangedDecorations]
 	ld c, a
 	ret
 
@@ -44,38 +44,40 @@ _PlayerDecorationMenu:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_WRAP ; flags
 	db 0 ; items
-	dw wd002
+	dw wNumOwnedDecoCategories
 	dw PlaceNthMenuStrings
-	dw .pointers
+	dw .category_pointers
 
-.pointers
-	dw DecoBedMenu, .bed
-	dw DecoCarpetMenu, .carpet
-	dw DecoPlantMenu, .plant
-	dw DecoPosterMenu, .poster
-	dw DecoConsoleMenu, .game
+.category_pointers:
+	table_width 2 + 2, _PlayerDecorationMenu.category_pointers
+	dw DecoBedMenu,      .bed
+	dw DecoCarpetMenu,   .carpet
+	dw DecoPlantMenu,    .plant
+	dw DecoPosterMenu,   .poster
+	dw DecoConsoleMenu,  .game
 	dw DecoOrnamentMenu, .ornament
-	dw DecoBigDollMenu, .big_doll
-	dw DecoExitMenu, .exit
+	dw DecoBigDollMenu,  .big_doll
+	dw DecoExitMenu,     .exit
+	assert_table_length NUM_DECO_CATEGORIES + 1
 
-.bed      db "床@"
-.carpet   db "绒毯@"
-.plant    db "盆栽@"
-.poster   db "海报@"
-.game     db "游戏机@"
-.ornament db "摆设@"
-.big_doll db "大号布偶@"
-.exit     db "结束@"
+.bed:      db "床@"
+.carpet:   db "绒毯@"
+.plant:    db "盆栽@"
+.poster:   db "海报@"
+.game:     db "游戏机@"
+.ornament: db "摆设@"
+.big_doll: db "大号布偶@"
+.exit:     db "结束@"
 
 .FindCategoriesWithOwnedDecos:
 	xor a
 	ld [wWhichIndexSet], a
 	call .ClearStringBuffer2
-	call .FindOwndDecos
+	call .FindOwnedDecos
 	ld a, 7
 	call .AppendToStringBuffer2
 	ld hl, wStringBuffer2
-	ld de, wd002
+	ld de, wDecoNameBuffer
 	ld bc, ITEM_NAME_LENGTH
 	call CopyBytes
 	ret
@@ -98,8 +100,8 @@ _PlayerDecorationMenu:
 	ld [hl], a
 	ret
 
-.FindOwndDecos:
-	ld hl, .dw
+.FindOwnedDecos:
+	ld hl, .owned_pointers
 .loop
 	ld a, [hli]
 	ld e, a
@@ -121,22 +123,25 @@ _PlayerDecorationMenu:
 .done
 	ret
 
-.dw
-	dwb FindOwnedBeds, 0 ; bed
-	dwb FindOwnedCarpets, 1 ; carpet
-	dwb FindOwnedPlants, 2 ; plant
-	dwb FindOwnedPosters, 3 ; poster
-	dwb FindOwnedConsoles, 4 ; game console
+.owned_pointers:
+	table_width 3, _PlayerDecorationMenu.owned_pointers
+	dwb FindOwnedBeds,      0 ; bed
+	dwb FindOwnedCarpets,   1 ; carpet
+	dwb FindOwnedPlants,    2 ; plant
+	dwb FindOwnedPosters,   3 ; poster
+	dwb FindOwnedConsoles,  4 ; game console
 	dwb FindOwnedOrnaments, 5 ; ornament
-	dwb FindOwnedBigDolls, 6 ; big doll
+	dwb FindOwnedBigDolls,  6 ; big doll
+	assert_table_length NUM_DECO_CATEGORIES
 	dw 0 ; end
 
 Deco_FillTempWithMinusOne:
 	xor a
-	ld hl, wd002
+	ld hl, wNumOwnedDecoCategories
 	ld [hli], a
+	assert wNumOwnedDecoCategories + 1 == wOwnedDecoCategories
 	ld a, -1
-	ld bc, $10
+	ld bc, 16
 	call ByteFill
 	ret
 
@@ -161,10 +166,11 @@ CheckAllDecorationFlags:
 	ret
 
 AppendDecoIndex:
-	ld hl, wd002
+	ld hl, wNumOwnedDecoCategories
 	inc [hl]
+	assert wNumOwnedDecoCategories + 1 == wOwnedDecoCategories
 	ld e, [hl]
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld [hl], a
 	ret
@@ -176,7 +182,7 @@ FindOwnedDecosInCategory:
 	pop hl
 	call CheckAllDecorationFlags
 	pop bc
-	ld a, [wd002]
+	ld a, [wNumOwnedDecoCategories]
 	and a
 	ret z
 
@@ -198,7 +204,7 @@ FindOwnedBeds:
 	ld c, BEDS
 	jp FindOwnedDecosInCategory
 
-.beds
+.beds:
 	db DECO_FEATHERY_BED ; 2
 	db DECO_PINK_BED ; 3
 	db DECO_POLKADOT_BED ; 4
@@ -216,7 +222,7 @@ FindOwnedCarpets:
 	ld c, CARPETS
 	jp FindOwnedDecosInCategory
 
-.carpets
+.carpets:
 	db DECO_RED_CARPET ; 7
 	db DECO_BLUE_CARPET ; 8
 	db DECO_YELLOW_CARPET ; 9
@@ -234,7 +240,7 @@ FindOwnedPlants:
 	ld c, PLANTS
 	jp FindOwnedDecosInCategory
 
-.plants
+.plants:
 	db DECO_MAGNAPLANT ; c
 	db DECO_TROPICPLANT ; d
 	db DECO_JUMBOPLANT ; e
@@ -251,7 +257,7 @@ FindOwnedPosters:
 	ld c, POSTERS
 	jp FindOwnedDecosInCategory
 
-.posters
+.posters:
 	db DECO_TOWN_MAP ; 10
 	db DECO_PIKACHU_POSTER ; 11
 	db DECO_CLEFAIRY_POSTER ; 12
@@ -269,7 +275,7 @@ FindOwnedConsoles:
 	ld c, CONSOLES
 	jp FindOwnedDecosInCategory
 
-.consoles
+.consoles:
 	db DECO_FAMICOM ; 15
 	db DECO_SNES ; 16
 	db DECO_N64 ; 17
@@ -287,7 +293,7 @@ FindOwnedOrnaments:
 	ld c, DOLLS
 	jp FindOwnedDecosInCategory
 
-.ornaments
+.ornaments:
 	db DECO_PIKACHU_DOLL ; 1e
 	db DECO_SURF_PIKACHU_DOLL ; 1f
 	db DECO_CLEFAIRY_DOLL ; 20
@@ -324,7 +330,7 @@ FindOwnedBigDolls:
 	ld c, BIG_DOLLS
 	jp FindOwnedDecosInCategory
 
-.big_dolls
+.big_dolls:
 	db DECO_BIG_SNORLAX_DOLL ; 1a
 	db DECO_BIG_ONIX_DOLL ; 1b
 	db DECO_BIG_LAPRAS_DOLL ; 1c
@@ -335,7 +341,7 @@ DecoExitMenu:
 	ret
 
 PopulateDecoCategoryMenu:
-	ld a, [wd002]
+	ld a, [wNumOwnedDecoCategories]
 	and a
 	jr z, .empty
 	cp 8
@@ -353,9 +359,10 @@ PopulateDecoCategoryMenu:
 	ret
 
 .beyond_eight
-	ld hl, wd002
+	ld hl, wNumOwnedDecoCategories
 	ld e, [hl]
 	dec [hl]
+	assert wNumOwnedDecoCategories + 1 == wOwnedDecoCategories
 	ld d, 0
 	add hl, de
 	ld [hl], -1
@@ -369,7 +376,7 @@ PopulateDecoCategoryMenu:
 	ld [wMenuScrollPosition], a
 	call ScrollingMenu
 	ld a, [wMenuJoypad]
-	cp 2
+	cp B_BUTTON
 	jr z, .no_action_2
 	call DoDecorationAction2
 
@@ -395,7 +402,7 @@ PopulateDecoCategoryMenu:
 .NonscrollingMenuData:
 	db STATICMENU_CURSOR | STATICMENU_WRAP ; flags
 	db 0 ; items
-	dw wd002
+	dw wDecoNameBuffer
 	dw DecorationMenuFunction
 	dw DecorationAttributes
 
@@ -409,14 +416,14 @@ PopulateDecoCategoryMenu:
 	db SCROLLINGMENU_DISPLAY_ARROWS ; flags
 	db 8, 0 ; rows, columns
 	db SCROLLINGMENU_ITEMS_NORMAL ; item format
-	dbw 0, wd002 ; text pointer
+	dbw 0, wNumOwnedDecoCategories
 	dba DecorationMenuFunction
-	dbw 0, 0
-	dbw 0, 0
+	dbw 0, NULL
+	dbw 0, NULL
 
 GetDecorationData:
 	ld hl, DecorationAttributes
-	ld bc, 6
+	ld bc, DECOATTR_STRUCT_LENGTH
 	call AddNTimes
 	ret
 
@@ -440,7 +447,7 @@ DecorationMenuFunction:
 DoDecorationAction2:
 	ld a, [wMenuSelection]
 	call GetDecorationData
-	ld de, 2 ; function 2
+	ld de, DECOATTR_ACTION
 	add hl, de
 	ld a, [hl]
 	ld hl, .DecoActions
@@ -448,6 +455,7 @@ DoDecorationAction2:
 	ret
 
 .DecoActions:
+	table_width 2, DoDecorationAction2.DecoActions
 	dw DecoAction_nothing
 	dw DecoAction_setupbed
 	dw DecoAction_putawaybed
@@ -463,10 +471,11 @@ DoDecorationAction2:
 	dw DecoAction_putawaybigdoll
 	dw DecoAction_setupornament
 	dw DecoAction_putawayornament
+	assert_table_length NUM_DECO_ACTIONS + 1
 
 GetDecorationFlag:
 	call GetDecorationData
-	ld de, 3 ; event flag
+	ld de, DECOATTR_EVENT_FLAG
 	add hl, de
 	ld a, [hli]
 	ld d, [hl]
@@ -483,7 +492,7 @@ DecorationFlagAction:
 GetDecorationSprite:
 	ld a, c
 	call GetDecorationData
-	ld de, 5 ; sprite
+	ld de, DECOATTR_SPRITE
 	add hl, de
 	ld a, [hl]
 	ld c, a
@@ -494,8 +503,8 @@ INCLUDE "data/decorations/attributes.asm"
 INCLUDE "data/decorations/names.asm"
 
 GetDecoName:
-	ld a, [hli]
-	ld e, [hl]
+	ld a, [hli] ; DECOATTR_TYPE
+	ld e, [hl] ; DECOATTR_NAME
 	ld bc, wStringBuffer2
 	push bc
 	ld hl, .NameFunctions
@@ -504,6 +513,7 @@ GetDecoName:
 	ret
 
 .NameFunctions:
+	table_width 2, GetDecoName.NameFunctions
 	dw .invalid
 	dw .plant
 	dw .bed
@@ -511,37 +521,38 @@ GetDecoName:
 	dw .poster
 	dw .doll
 	dw .bigdoll
+	assert_table_length NUM_DECO_TYPES + 1
 
-.invalid
+.invalid:
 	ret
 
-.plant
+.plant:
 	ld a, e
 	jr .getdeconame
 
-.bed
+.bed:
 	call .plant
 	ld a, _BED
 	jr .getdeconame
 
-.carpet
+.carpet:
 	call .plant
 	ld a, _CARPET
 	jr .getdeconame
 
-.poster
+.poster:
 	ld a, e
 	call .getpokename
 	ld a, _POSTER
 	jr .getdeconame
 
-.doll
+.doll:
 	ld a, e
 	call .getpokename
 	ld a, _DOLL
 	jr .getdeconame
 
-.bigdoll
+.bigdoll:
 	push de
 	ld a, BIG_
 	call .getdeconame
@@ -549,25 +560,25 @@ GetDecoName:
 	ld a, e
 	jr .getpokename
 
-.unused
+.unused: ; unreferenced
 	push de
 	call .getdeconame
 	pop de
 	ld a, e
 	jr .getdeconame
 
-.getpokename
+.getpokename:
 	push bc
-	ld [wNamedObjectIndexBuffer], a
+	ld [wNamedObjectIndex], a
 	call GetPokemonName
 	pop bc
 	jr .copy
 
-.getdeconame
+.getdeconame:
 	call ._getdeconame
 	jr .copy
 
-._getdeconame
+._getdeconame:
 	push bc
 	ld hl, DecorationNames
 	call GetNthString
@@ -576,7 +587,7 @@ GetDecoName:
 	pop bc
 	ret
 
-.copy
+.copy:
 	ld h, b
 	ld l, c
 	call CopyName2
@@ -639,12 +650,12 @@ DecoAction_putawaybigdoll:
 
 DecoAction_TrySetItUp:
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wCurDecoration], a
 	push hl
 	call DecoAction_SetItUp
 	jr c, .failed
-	ld a, 1
-	ld [wBuffer5], a
+	ld a, TRUE
+	ld [wChangedDecorations], a
 	pop hl
 	ld a, [wMenuSelection]
 	ld [hl], a
@@ -658,7 +669,7 @@ DecoAction_TrySetItUp:
 
 DecoAction_SetItUp:
 ; See if there's anything of the same type already out
-	ld a, [wBuffer1]
+	ld a, [wCurDecoration]
 	and a
 	jr z, .nothingthere
 ; See if that item is already out
@@ -670,7 +681,7 @@ DecoAction_SetItUp:
 	ld a, [wMenuSelection]
 	ld hl, wStringBuffer4
 	call GetDecorationName
-	ld a, [wBuffer1]
+	ld a, [wCurDecoration]
 	ld hl, wStringBuffer3
 	call GetDecorationName
 	ld hl, PutAwayAndSetUpText
@@ -696,16 +707,16 @@ DecoAction_SetItUp:
 DecoAction_TryPutItAway:
 ; If there is no item of that type already set, there is nothing to put away.
 	ld a, [hl]
-	ld [wBuffer1], a
+	ld [wCurDecoration], a
 	xor a
 	ld [hl], a
-	ld a, [wBuffer1]
+	ld a, [wCurDecoration]
 	and a
 	jr z, .nothingthere
 ; Put it away.
-	ld a, $1
-	ld [wBuffer5], a
-	ld a, [wBuffer1]
+	ld a, TRUE
+	ld [wChangedDecorations], a
+	ld a, [wCurDecoration]
 	ld [wMenuSelection], a
 	ld hl, wStringBuffer3
 	call GetDecorationName
@@ -726,8 +737,8 @@ DecoAction_setupornament:
 	jr c, .cancel
 	call DecoAction_SetItUp_Ornament
 	jr c, .cancel
-	ld a, $1
-	ld [wBuffer5], a
+	ld a, TRUE
+	ld [wChangedDecorations], a
 	jr DecoAction_FinishUp_Ornament
 
 .cancel
@@ -813,8 +824,8 @@ DecoAction_PutItAway_Ornament:
 	jr z, .nothingthere
 	ld hl, wStringBuffer3
 	call GetDecorationName
-	ld a, $1
-	ld [wBuffer5], a
+	ld a, TRUE
+	ld [wChangedDecorations], a
 	xor a
 	ld [wSelectedDecoration], a
 	ld hl, PutAwayTheDecoText
@@ -840,9 +851,9 @@ DecoAction_AskWhichSide:
 	call CopyMenuData
 	jr c, .nope
 	ld a, [wMenuCursorY]
-	cp 3
+	cp 3 ; cancel
 	jr z, .nope
-	ld [wBuffer2], a
+	ld [wSelectedDecorationSide], a
 	call QueryWhichSide
 	ld a, [hl]
 	ld [wSelectedDecoration], a
@@ -858,9 +869,10 @@ DecoAction_AskWhichSide:
 QueryWhichSide:
 	ld hl, wDecoRightOrnament
 	ld de, wDecoLeftOrnament
-	ld a, [wBuffer2]
-	cp 1
+	ld a, [wSelectedDecorationSide]
+	cp 1 ; right side
 	ret z
+	; left side, swap hl and de
 	push hl
 	ld h, d
 	ld l, e
@@ -939,7 +951,7 @@ GetDecorationID:
 	pop hl
 	ret
 
-SetAllDecorationFlags:
+SetAllDecorationFlags: ; unreferenced
 	ld hl, DecorationIDs
 .loop
 	ld a, [hli]
@@ -958,17 +970,19 @@ INCLUDE "data/decorations/decorations.asm"
 
 DescribeDecoration::
 	ld a, b
-	ld hl, .JumpTable
+	ld hl, .Jumptable
 	rst JumpTable
 	ret
 
-.JumpTable:
+.Jumptable:
 ; entries correspond to DECODESC_* constants
+	table_width 2, DescribeDecoration.Jumptable
 	dw DecorationDesc_Poster
 	dw DecorationDesc_LeftOrnament
 	dw DecorationDesc_RightOrnament
 	dw DecorationDesc_GiantOrnament
 	dw DecorationDesc_Console
+	assert_table_length NUM_DECODESCS
 
 DecorationDesc_Poster:
 	ld a, [wDecoPoster]

@@ -31,8 +31,8 @@ MainMenu:
 	ld b, SCGB_DIPLOMA
 	call GetSGBLayout
 	call SetPalettes
-	ld hl, wGameTimerPause
-	res GAMETIMERPAUSE_TIMER_PAUSED_F, [hl]
+	ld hl, wGameTimerPaused
+	res GAME_TIMER_PAUSED_F, [hl]
 	call MainMenu_GetWhichMenu
 	ld [wWhichIndexSet], a
 	call MainMenu_PrintCurrentTimeAndDay
@@ -206,7 +206,7 @@ MainMenu_GetWhichMenu:
 	ld a, BANK(sNumDailyMysteryGiftPartnerIDs)
 	call OpenSRAM
 	ld a, [sNumDailyMysteryGiftPartnerIDs]
-	cp -1
+	cp -1 ; locked?
 	call CloseSRAM
 	jr nz, .mystery_gift
 	; This check makes no difference.
@@ -311,32 +311,32 @@ MainMenu_PrintCurrentTimeAndDay:
 	farcall PrintHour
 	; ld [hl], ":"
 	; inc hl
-	ld de, .hour
+	ld de, .hourString
 	call PlaceString
 	ld l, c
 	ld h, b
 	ld de, hMinutes
 	lb bc, PRINTNUM_LEADINGZEROS | 1, 2
 	call PrintNum
-	ld de, .min
+	ld de, .minString
 	call PlaceString
 	ret
 
-.hour
+.hourString:
 	db "时@"
-.min
+.minString: ; unreferenced
 	db "分@"
 
 .PrintTimeNotSet:
 	hlcoord 1, 16
-	ld de, .TimeNotSet
+	ld de, .TimeNotSetString
 	call PlaceString
 	ret
 
-.TimeNotSet:
+.TimeNotSetString:
 	db "时钟的时间 不明@"
 
-.MainMenuTimeUnknownText:
+.MainMenuTimeUnknownText: ; unreferenced
 	text_far _MainMenuTimeUnknownText
 	text_end
 

@@ -1,13 +1,15 @@
 ; item_attributes struct members (see data/items/attributes.asm)
-	const_def
-	const ITEMATTR_PRICE_LO
-	const ITEMATTR_PRICE_HI
-	const ITEMATTR_EFFECT
-	const ITEMATTR_PARAM
-	const ITEMATTR_PERMISSIONS
-	const ITEMATTR_POCKET
-	const ITEMATTR_HELP
-ITEMATTR_STRUCT_LENGTH EQU const_value
+rsreset
+DEF ITEMATTR_PRICE       rw
+rsset ITEMATTR_PRICE
+DEF ITEMATTR_PRICE_LO    rb
+DEF ITEMATTR_PRICE_HI    rb
+DEF ITEMATTR_EFFECT      rb
+DEF ITEMATTR_PARAM       rb
+DEF ITEMATTR_PERMISSIONS rb
+DEF ITEMATTR_POCKET      rb
+DEF ITEMATTR_HELP        rb
+DEF ITEMATTR_STRUCT_LENGTH EQU _RS
 
 ; item types
 	const_def 1
@@ -15,6 +17,7 @@ ITEMATTR_STRUCT_LENGTH EQU const_value
 	const KEY_ITEM ; 2
 	const BALL     ; 3
 	const TM_HM    ; 4
+DEF NUM_ITEM_TYPES EQU const_value - 1
 
 ; item menu types
 ; UseItem.dw indexes (see engine/items/pack.asm)
@@ -27,12 +30,12 @@ ITEMATTR_STRUCT_LENGTH EQU const_value
 	const ITEMMENU_CLOSE   ; 6
 
 ; item actions
-CANT_SELECT_F EQU 6
-CANT_TOSS_F   EQU 7
+DEF CANT_SELECT_F EQU 6
+DEF CANT_TOSS_F   EQU 7
 
-NO_LIMITS   EQU 0
-CANT_SELECT EQU 1 << CANT_SELECT_F
-CANT_TOSS   EQU 1 << CANT_TOSS_F
+DEF NO_LIMITS   EQU 0
+DEF CANT_SELECT EQU 1 << CANT_SELECT_F
+DEF CANT_TOSS   EQU 1 << CANT_TOSS_F
 
 ; pack pockets
 	const_def
@@ -40,20 +43,30 @@ CANT_TOSS   EQU 1 << CANT_TOSS_F
 	const BALL_POCKET     ; 1
 	const KEY_ITEM_POCKET ; 2
 	const TM_HM_POCKET    ; 3
-NUM_POCKETS EQU const_value
+DEF NUM_POCKETS EQU const_value
 
-MAX_ITEMS     EQU 20
-MAX_BALLS     EQU 12
-MAX_KEY_ITEMS EQU 25
-MAX_PC_ITEMS  EQU 50
+DEF MAX_ITEMS     EQU 20
+DEF MAX_BALLS     EQU 12
+DEF MAX_KEY_ITEMS EQU 25
+DEF MAX_PC_ITEMS  EQU 50
 
-MAX_ITEM_STACK EQU 99
+DEF MAX_ITEM_STACK EQU 99
 
 ; mail
-MAIL_LINE_LENGTH   EQU $10
-MAIL_MSG_LENGTH    EQU $20
-MAILBOX_CAPACITY   EQU 10
-MAIL_STRUCT_LENGTH EQU $2f ; mailmsg struct
+DEF MAIL_LINE_LENGTH      EQU $10
+DEF MAIL_MSG_LENGTH       EQU $20
+DEF MAILBOX_CAPACITY      EQU 10
+DEF MAIL_STRUCT_LENGTH    EQU $2f ; mailmsg struct
+DEF MAIL_STRUCT_LENGTH_JP EQU $2a ; mailmsg_jp struct
+
+; mail languages
+	const_def
+	const MAIL_LANG_ENGLISH
+	const MAIL_LANG_FRENCH
+	const MAIL_LANG_GERMAN
+	const MAIL_LANG_ITALIAN
+	const MAIL_LANG_SPANISH
+	const MAIL_LANG_CHINESE
 
 ; held item effects
 	const_def

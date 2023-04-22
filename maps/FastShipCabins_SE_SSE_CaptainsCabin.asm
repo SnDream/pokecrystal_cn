@@ -16,7 +16,7 @@ FastShipCabins_SE_SSE_CaptainsCabin_MapScripts:
 
 	def_callbacks
 
-.DummyScene: ; unreferenced
+FastShipCabins_SE_SSE_CaptainsCabinNoopScene: ; unreferenced
 	end
 
 SSAquaCaptain:
@@ -79,7 +79,7 @@ SSAquaGranddaughterBefore:
 	writetext SSAquaEntertainedGranddaughterText
 	promptbutton
 	setevent EVENT_VERMILION_PORT_SAILOR_AT_GANGWAY
-	setmapscene FAST_SHIP_1F, SCENE_DEFAULT
+	setmapscene FAST_SHIP_1F, SCENE_FASTSHIP1F_NOOP
 	sjump SSAquaMetalCoatAndDocking
 
 SSAquaGrandpa:
@@ -92,7 +92,7 @@ SSAquaGrandpa:
 	writetext SSAquaCantFindGranddaughterText
 	waitbutton
 	closetext
-	setmapscene FAST_SHIP_1F, SCENE_DEFAULT
+	setmapscene FAST_SHIP_1F, SCENE_FASTSHIP1F_NOOP
 	end
 
 SSAquaMetalCoatAndDocking:

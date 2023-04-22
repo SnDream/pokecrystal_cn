@@ -1,7 +1,7 @@
 ; Predef routines can be used with the "predef" and "predef_jump" macros.
 ; This preserves registers bc, de, hl and f.
 
-add_predef: MACRO
+MACRO add_predef
 \1Predef::
 	dab \1
 ENDM
@@ -83,4 +83,4 @@ PredefPointers::
 	add_predef HOF_AnimateFrontpic
 	add_predef PlaceLargeStatusString
 	add_predef ComputeShortHPBarPixels
-	dbw -1, InexplicablyEmptyFunction ; ???
+	dbw -1, DummyEndPredef ; pointless

@@ -1,68 +1,68 @@
 Function170000:
-	ld a, [$c62b]
+	ld a, [wOfferSpecies]
 	ld [wPlayerTrademonSpecies], a
-	ld hl, $c62e
+	ld hl, wOfferMonSender
 	ld de, wPlayerTrademonSenderName
-	ld bc, $0005
+	ld bc, NAME_LENGTH_JAPANESE - 1
 	call CopyBytes
-	ld a, $50
+	ld a, "@"
 	ld [de], a
-	ld hl, $c663
+	ld hl, wOfferMonOT
 	ld de, wPlayerTrademonOTName
-	ld bc, $0005
+	ld bc, NAME_LENGTH_JAPANESE - 1
 	call CopyBytes
-	ld a, $50
+	ld a, "@"
 	ld [de], a
-	ld hl, $c648
+	ld hl, wOfferMonDVs
 	ld a, [hli]
 	ld [wPlayerTrademonDVs], a
 	ld a, [hl]
 	ld [wPlayerTrademonDVs + 1], a
-	ld hl, $c639
+	ld hl, wOfferMonID
 	ld a, [hli]
 	ld [wPlayerTrademonID], a
 	ld a, [hl]
 	ld [wPlayerTrademonID + 1], a
-	ld bc, $c633
+	ld bc, wOfferMon
 	farcall GetCaughtGender
 	ld a, c
 	ld [wPlayerTrademonCaughtData], a
 	ld a, [wcd81]
 	ld [wc74e], a
-	ld hl, $c608
+	ld hl, wc608
 	ld de, $d800
-	ld bc, $008f
+	ld bc, TRADE_CORNER_REQUEST_LENGTH
 	call CopyBytes
 	ret
 
 Function17005a:
-	ld a, $5
+	ld a, BANK(sOfferMon)
 	call OpenSRAM
-	ld a, [$a824]
+	ld a, [sOfferSpecies]
 	ld [wOTTrademonSpecies], a
-	ld hl, $a827
+	ld hl, sOfferMonSender
 	ld de, wOTTrademonSenderName
 	ld bc, NAME_LENGTH_JAPANESE - 1
 	call CopyBytes
 	ld a, "@"
 	ld [de], a
-	ld hl, $a85c
+	ld hl, sOfferMonOT
 	ld de, wOTTrademonOTName
 	ld bc, NAME_LENGTH_JAPANESE - 1
 	call CopyBytes
 	ld a, "@"
 	ld [de], a
-	ld hl, $a841
+	ld hl, sOfferMonDVs
 	ld a, [hli]
 	ld [wOTTrademonDVs], a
 	ld a, [hl]
 	ld [wOTTrademonDVs + 1], a
-	ld hl, $a832
+	ld hl, sOfferMonID
 	ld a, [hli]
 	ld [wOTTrademonID], a
 	ld a, [hl]
 	ld [wOTTrademonID + 1], a
-	ld bc, $a82c
+	ld bc, sOfferMon
 	farcall GetCaughtGender
 	ld a, c
 	ld [wOTTrademonCaughtData], a
@@ -74,29 +74,29 @@ Function17005a:
 INCLUDE "engine/events/battle_tower/battle_tower.asm"
 
 Function170be4:
-	ld a, $5
+	ld a, BANK(s5_a894)
 	call OpenSRAM
 	xor a
-	ld hl, $a894
-	ld bc, $0008
+	ld hl, s5_a894
+	ld bc, 6 + 2
 	call ByteFill
 	call CloseSRAM
 	ret
 
 Clears5_a89a:
-	ld a, $5
+	ld a, BANK(s5_a89a)
 	call OpenSRAM
-	ld hl, $a89a
+	ld hl, s5_a89a
 	xor a
 	ld [hli], a
 	ld [hl], a
 	call CloseSRAM
 	ret
 
-Function170c06:
-	ld a, $5
+Function170c06: ; unreferenced
+	ld a, BANK(s5_a894)
 	call OpenSRAM
-	ld hl, $a894
+	ld hl, s5_a894
 	ld a, [wBattleResult]
 	and a ; WIN?
 	jr nz, .asm_170c15
@@ -105,10 +105,10 @@ Function170c06:
 .asm_170c15
 	inc hl
 	inc hl
-	ld a, [$a89b]
+	ld a, [s5_a89a + 1]
 	add [hl]
 	ld [hld], a
-	ld a, [$a89a]
+	ld a, [s5_a89a]
 	adc [hl]
 	ld [hli], a
 	jr nc, .asm_170c27
@@ -371,15 +371,15 @@ Function171a5d:
 	jp Function171c66
 
 .asm_171a6a
-	ld a, $0
-	call Function3e32
+	ld a, MOBILEAPI_00
+	call MobileAPI
 	ld [wMobileErrorCodeBuffer], a
 	ld a, l
 	ld [wMobileErrorCodeBuffer + 1], a
 	ld a, h
 	ld [wMobileErrorCodeBuffer + 2], a
-	ld a, $a
-	call Function3e32
+	ld a, MOBILEAPI_05
+	call MobileAPI
 	ldh a, [rSVBK]
 	push af
 	ld a, $1
@@ -407,18 +407,18 @@ String_171aa7:
 Function171ac9:
 	ld de, wcd81
 	ld hl, $5c
-	ld a, $2
-	call Function3e32
+	ld a, MOBILEAPI_01
+	call MobileAPI
 	jp Function171c66
 
 Function171ad7:
 	xor a
-	ld hl, $c608
+	ld hl, wc608
 	ld bc, $66
 	call ByteFill
-	ld de, $c608
-	ld a, $c
-	call Function3e32
+	ld de, wc608
+	ld a, MOBILEAPI_06
+	call MobileAPI
 	jp Function171c66
 
 Function171aec:
@@ -445,7 +445,7 @@ Function171aec:
 	jr nz, .asm_171b01
 	hlcoord 2, 7
 	ld a, $3
-	ld de, $c608
+	ld de, wc608
 .asm_171b1b
 	push af
 	push hl
@@ -515,16 +515,16 @@ Function171b4b:
 Function171b85:
 	ld hl, hJoyPressed
 	ld a, [hl]
-	and $2
+	and B_BUTTON
 	jp nz, Function171b9f
 	ld a, [hl]
-	and $1
+	and A_BUTTON
 	jp nz, Function171bbd
 	ld a, [hl]
-	and $40
+	and D_UP
 	jr nz, asm_171ba5
 	ld a, [hl]
-	and $80
+	and D_DOWN
 	jr nz, asm_171baf
 	ret
 
@@ -562,10 +562,10 @@ Function171bbd:
 Function171bcc:
 	ld hl, hJoyPressed
 	ld a, [hl]
-	and $2
+	and B_BUTTON
 	jp nz, Function171bdc
 	ld a, [hl]
-	and $1
+	and A_BUTTON
 	jp nz, Function171beb
 	ret
 
@@ -579,10 +579,10 @@ Function171bdc:
 	ret
 
 Function171beb:
-	ld a, $5
+	ld a, BANK(s5_aa4a)
 	call OpenSRAM
 	ld a, [wcd4a]
-	ld [$aa4a], a
+	ld [s5_aa4a], a
 	call CloseSRAM
 	ld hl, MenuHeader_171c6b
 	call LoadMenuHeader
@@ -652,7 +652,7 @@ Function171c87:
 	call DisableLCD
 	ld hl, AsciiFontGFX
 	ld de, vTiles2 tile $00
-	ld bc, $6e0
+	ld bc, $6e tiles
 	call CopyBytes
 	ld hl, PasswordSlowpokeLZ
 	ld de, vTiles0 tile $00
@@ -724,7 +724,7 @@ Function171d2b:
 	call DisableLCD
 	ld hl, AsciiFontGFX
 	ld de, vTiles2 tile $00
-	ld bc, $6e0
+	ld bc, $6e tiles
 	call CopyBytes
 	ld hl, PasswordSlowpokeLZ
 	ld de, vTiles0 tile $00
@@ -797,7 +797,7 @@ Function172e78:
 	call DisableLCD
 	ld hl, Stadium2N64GFX
 	ld de, vTiles2 tile $00
-	ld bc, $610
+	ld bc, $61 tiles
 	call CopyBytes
 	call EnableLCD
 	ld hl, Stadium2N64Tilemap
@@ -867,8 +867,8 @@ INCBIN "gfx/mobile/stadium2_n64.2bpp"
 
 Stadium2N64Tilemap:
 if DEF(_CRYSTAL11)
-; Crystal 1.1 corrupted this tilemap by treating $0a bytes as Unix newlines,
-; and converting them to $0d $0a Windows newlines.
+; BUG: Crystal 1.1 corrupted this tilemap by treating $0a bytes as
+; Unix newlines, and converting them to $0d $0a Windows newlines.
 ; INCBIN "gfx/mobile/stadium2_n64_corrupt.tilemap"
 INCBIN "gfx/mobile/stadium2_n64.tilemap"
 else

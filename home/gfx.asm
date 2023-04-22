@@ -1,5 +1,5 @@
-TILES_PER_CYCLE EQU 8
-MOBILE_TILES_PER_CYCLE EQU 6
+DEF TILES_PER_CYCLE EQU 8
+DEF MOBILE_TILES_PER_CYCLE EQU 6
 
 Get2bppViaHDMA::
 	ldh a, [rLCDC]
@@ -112,7 +112,7 @@ LoadFontsExtra::
 	farcall _LoadFontsExtra2
 	ret
 
-LoadFontsExtra2:
+LoadFontsExtra2: ; unreferenced
 	farcall _LoadFontsExtra2
 	ret
 
@@ -227,10 +227,10 @@ Request2bpp::
 	cp [hl]
 	jr nc, .cycle
 
-	ld [wRequested2bpp], a
+	ld [wRequested2bppSize], a
 .wait
 	call DelayFrame
-	ld a, [wRequested2bpp]
+	ld a, [wRequested2bppSize]
 	and a
 	jr nz, .wait
 
@@ -246,11 +246,11 @@ Request2bpp::
 
 .cycle
 	ldh a, [hTilesPerCycle]
-	ld [wRequested2bpp], a
+	ld [wRequested2bppSize], a
 
 .wait2
 	call DelayFrame
-	ld a, [wRequested2bpp]
+	ld a, [wRequested2bppSize]
 	and a
 	jr nz, .wait2
 
@@ -301,10 +301,10 @@ Request1bpp::
 	cp [hl]
 	jr nc, .cycle
 
-	ld [wRequested1bpp], a
+	ld [wRequested1bppSize], a
 .wait
 	call DelayFrame
-	ld a, [wRequested1bpp]
+	ld a, [wRequested1bppSize]
 	and a
 	jr nz, .wait
 
@@ -320,11 +320,11 @@ Request1bpp::
 
 .cycle
 	ldh a, [hTilesPerCycle]
-	ld [wRequested1bpp], a
+	ld [wRequested1bppSize], a
 
 .wait2
 	call DelayFrame
-	ld a, [wRequested1bpp]
+	ld a, [wRequested1bppSize]
 	and a
 	jr nz, .wait2
 

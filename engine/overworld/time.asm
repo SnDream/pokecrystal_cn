@@ -4,7 +4,7 @@ _InitializeStartDay:
 
 ClearDailyTimers:
 	xor a
-	ld [wLuckyNumberDayBuffer], a
+	ld [wLuckyNumberDayTimer], a
 	ld [wUnusedTwoDayTimer], a
 	ld [wDailyResetTimer], a
 	ret
@@ -203,7 +203,7 @@ CheckPokerusTick::
 	xor a
 	ret
 
-SetUnusedTwoDayTimer:
+SetUnusedTwoDayTimer: ; unreferenced
 	ld a, 2
 	ld hl, wUnusedTwoDayTimer
 	ld [hl], a
@@ -220,12 +220,12 @@ CheckUnusedTwoDayTimer:
 	call UpdateTimeRemaining
 	ret
 
-; unused
+UnusedSetSwarmFlag: ; unreferenced
 	ld hl, wDailyFlags1
 	set DAILYFLAGS1_FISH_SWARM_F, [hl]
 	ret
 
-; unused
+UnusedCheckSwarmFlag: ; unreferenced
 	and a
 	ld hl, wDailyFlags1
 	bit DAILYFLAGS1_FISH_SWARM_F, [hl]
@@ -235,7 +235,7 @@ CheckUnusedTwoDayTimer:
 
 RestartLuckyNumberCountdown:
 	call .GetDaysUntilNextFriday
-	ld hl, wLuckyNumberDayBuffer
+	ld hl, wLuckyNumberDayTimer
 	jp InitNDaysCountdown
 
 .GetDaysUntilNextFriday:
@@ -253,7 +253,7 @@ RestartLuckyNumberCountdown:
 	ret
 
 _CheckLuckyNumberShowFlag:
-	ld hl, wLuckyNumberDayBuffer
+	ld hl, wLuckyNumberDayTimer
 	jp CheckDayDependentEventHL
 
 DoMysteryGiftIfDayHasPassed:
@@ -261,23 +261,23 @@ DoMysteryGiftIfDayHasPassed:
 	call OpenSRAM
 	ld hl, sMysteryGiftTimer
 	ld a, [hli]
-	ld [wBuffer1], a
+	ld [wTempMysteryGiftTimer], a
 	ld a, [hl]
-	ld [wBuffer2], a
+	ld [wTempMysteryGiftTimer + 1], a
 	call CloseSRAM
 
-	ld hl, wBuffer1
+	ld hl, wTempMysteryGiftTimer
 	call CheckDayDependentEventHL
 	jr nc, .not_timed_out
-	ld hl, wBuffer1
+	ld hl, wTempMysteryGiftTimer
 	call InitOneDayCountdown
 	call CloseSRAM
-	farcall Function1050c8
+	farcall ResetDailyMysteryGiftLimitIfUnlocked
 
 .not_timed_out
 	ld a, BANK(sMysteryGiftTimer)
 	call OpenSRAM
-	ld hl, wBuffer1
+	ld hl, wTempMysteryGiftTimer
 	ld a, [hli]
 	ld [sMysteryGiftTimer], a
 	ld a, [hl]
@@ -308,7 +308,7 @@ UpdateTimeRemaining:
 	scf
 	ret
 
-GetSecondsSinceIfLessThan60:
+GetSecondsSinceIfLessThan60: ; unreferenced
 	ld a, [wDaysSince]
 	and a
 	jr nz, GetTimeElapsed_ExceedsUnitLimit
@@ -330,7 +330,7 @@ GetMinutesSinceIfLessThan60:
 	ld a, [wMinutesSince]
 	ret
 
-GetHoursSinceIfLessThan24:
+GetHoursSinceIfLessThan24: ; unreferenced
 	ld a, [wDaysSince]
 	and a
 	jr nz, GetTimeElapsed_ExceedsUnitLimit
@@ -349,7 +349,7 @@ CalcDaysSince:
 	xor a
 	jr _CalcDaysSince
 
-CalcHoursDaysSince:
+CalcHoursDaysSince: ; unreferenced
 	inc hl
 	xor a
 	jr _CalcHoursDaysSince
@@ -390,7 +390,7 @@ _CalcHoursDaysSince:
 	ld c, a
 	sbc [hl]
 	jr nc, .skip
-	add 24
+	add MAX_HOUR
 .skip
 	ld [hl], c ; current hours
 	dec hl
@@ -423,7 +423,7 @@ CopyDayToHL:
 	ld [hl], a
 	ret
 
-CopyDayHourToHL:
+CopyDayHourToHL: ; unreferenced
 	ld a, [wCurDay]
 	ld [hli], a
 	ldh a, [hHours]

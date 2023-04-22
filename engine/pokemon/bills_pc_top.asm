@@ -47,14 +47,14 @@ _BillsPC:
 	call LoadMenuHeader
 	ld a, $1
 .loop
-	ld [wMenuCursorBuffer], a
+	ld [wMenuCursorPosition], a
 	call SetPalettes
 	xor a
 	ld [wWhichIndexSet], a
 	ldh [hBGMapMode], a
 	call DoNthMenu
 	jr c, .cancel
-	ld a, [wMenuCursorBuffer]
+	ld a, [wMenuCursorPosition]
 	push af
 	ld a, [wMenuSelection]
 	ld hl, .Jumptable
@@ -266,7 +266,7 @@ LoadBoxMonListing: ; unreferenced
 	cp b
 	jr z, .same_box
 	ld a, b
-	ld hl, .BoxAddrs
+	ld hl, .BoxAddresses
 	ld bc, 3
 	call AddNTimes
 	ld a, [hli]
@@ -364,18 +364,9 @@ LoadBoxMonListing: ; unreferenced
 	call CloseSRAM
 	ret
 
-.BoxAddrs:
-	dba sBox1
-	dba sBox2
-	dba sBox3
-	dba sBox4
-	dba sBox5
-	dba sBox6
-	dba sBox7
-	dba sBox8
-	dba sBox9
-	dba sBox10
-	dba sBox11
-	dba sBox12
-	dba sBox13
-	dba sBox14
+.BoxAddresses:
+	table_width 3, LoadBoxMonListing.BoxAddresses
+for n, 1, NUM_BOXES + 1
+	dba sBox{d:n}
+endr
+	assert_table_length NUM_BOXES

@@ -4,9 +4,9 @@
 	const POKEGEARCARD_MAP   ; 1
 	const POKEGEARCARD_PHONE ; 2
 	const POKEGEARCARD_RADIO ; 3
-NUM_POKEGEAR_CARDS EQU const_value
+DEF NUM_POKEGEAR_CARDS EQU const_value
 
-PHONE_DISPLAY_HEIGHT EQU 4
+DEF PHONE_DISPLAY_HEIGHT EQU 4
 
 ; PokegearJumptable.Jumptable indexes
 	const_def
@@ -93,7 +93,7 @@ PokeGear:
 	ld [wJumptableIndex], a ; POKEGEARSTATE_CLOCKINIT
 	ld [wPokegearCard], a ; POKEGEARCARD_CLOCK
 	ld [wPokegearMapRegion], a ; JOHTO_REGION
-	ld [wcf66], a
+	ld [wUnusedPokegearByte], a
 	ld [wPokegearPhoneScrollPosition], a
 	ld [wPokegearPhoneCursorPosition], a
 	ld [wPokegearPhoneSelectedPerson], a
@@ -1032,11 +1032,9 @@ PokegearPhone_GetDPad:
 
 PokegearPhone_UpdateCursor:
 	ld a, " "
-x = 4
-rept PHONE_DISPLAY_HEIGHT
-	hlcoord 1, x
+for y, PHONE_DISPLAY_HEIGHT
+	hlcoord 1, 4 + y * 2
 	ld [hl], a
-x = x + 2
 endr
 	hlcoord 1, 4
 	ld a, [wPokegearPhoneCursorPosition]
@@ -1066,13 +1064,13 @@ PokegearPhone_UpdateDisplayList:
 	ld hl, wPhoneList
 	add hl, de
 	xor a
-	ld [wPokegearPhoneLoadNameBuffer], a
+	ld [wPokegearPhoneDisplayPosition], a
 .loop
 	ld a, [hli]
 	push hl
 	push af
 	hlcoord 2, 4
-	ld a, [wPokegearPhoneLoadNameBuffer]
+	ld a, [wPokegearPhoneDisplayPosition]
 	ld bc, 2 * SCREEN_WIDTH
 	call AddNTimes
 	ld d, h
@@ -1081,9 +1079,9 @@ PokegearPhone_UpdateDisplayList:
 	ld b, a
 	call GetCallerClassAndName
 	pop hl
-	ld a, [wPokegearPhoneLoadNameBuffer]
+	ld a, [wPokegearPhoneDisplayPosition]
 	inc a
-	ld [wPokegearPhoneLoadNameBuffer], a
+	ld [wPokegearPhoneDisplayPosition], a
 	cp PHONE_DISPLAY_HEIGHT
 	jr c, .loop
 	call PokegearPhone_UpdateCursor
@@ -1300,11 +1298,11 @@ PokegearPhoneContactSubmenu:
 	dw .Call
 	dw .Cancel
 
-; unused
+GetAMPMHours: ; unreferenced
 	ldh a, [hHours]
-	cp 12
+	cp NOON_HOUR
 	jr c, .am
-	sub 12
+	sub NOON_HOUR
 	ld [wTempByteValue], a
 	scf
 	ret
@@ -1394,7 +1392,7 @@ INCBIN "gfx/pokegear/clock.tilemap.rle"
 _UpdateRadioStation:
 	jr UpdateRadioStation
 
-; called from engine/sprite_anims.asm
+; called from engine/gfx/sprite_anims.asm
 
 AnimateTuningKnob:
 	push bc
@@ -1471,7 +1469,7 @@ UpdateRadioStation:
 	ldh [hBGMapMode], a
 	ret
 
-; unused
+LoadPokegearRadioChannelPointer: ; unreferenced
 	ld [wPokegearRadioChannelBank], a
 	ld a, [hli]
 	ld [wPokegearRadioChannelAddr], a
@@ -1575,7 +1573,7 @@ RadioChannels:
 	jr z, .johto
 	cp KANTO_LANDMARK
 	jr c, .johto
-.kanto
+; kanto
 	and a
 	ret
 
@@ -1747,6 +1745,7 @@ Radio_BackUpFarCallParams:
 NoRadioStation:
 	call NoRadioMusic
 	call NoRadioName
+; no radio channel
 	xor a
 	ld [wPokegearRadioChannelBank], a
 	ld [wPokegearRadioChannelAddr], a
@@ -2006,7 +2005,7 @@ PlayRadio:
 .PlayStation:
 	ld a, ENTER_MAP_MUSIC
 	ld [wPokegearRadioMusicPlaying], a
-	ld hl, .StationPointers
+	ld hl, PlayRadioStationPointers
 	ld d, 0
 	add hl, de
 	add hl, de
@@ -2047,9 +2046,10 @@ PlayRadio:
 	call WaitBGMap
 	ret
 
-.StationPointers:
+PlayRadioStationPointers:
 ; entries correspond to MAPRADIO_* constants
-	dw .OakOrPnP
+	table_width 2, PlayRadioStationPointers
+	dw LoadStation_PokemonChannel
 	dw LoadStation_OaksPokemonTalk
 	dw LoadStation_PokedexShow
 	dw LoadStation_PokemonMusic
@@ -2058,8 +2058,9 @@ PlayRadio:
 	dw LoadStation_PlacesAndPeople
 	dw LoadStation_LetsAllSing
 	dw LoadStation_RocketRadio
+	assert_table_length NUM_MAP_RADIO_STATIONS
 
-.OakOrPnP:
+LoadStation_PokemonChannel:
 	call IsInJohto
 	and a
 	jr nz, .kanto
@@ -2069,7 +2070,7 @@ PlayRadio:
 	jp z, LoadStation_PokedexShow
 	jp LoadStation_OaksPokemonTalk
 
-.kanto
+.kanto:
 	jp LoadStation_PlacesAndPeople
 
 PokegearMap:
@@ -2102,7 +2103,7 @@ _FlyMap:
 	lb bc, BANK(FlyMapLabelBorderGFX), 6
 	call Request1bpp
 	call FlyMap
-	call ret_91c8f
+	call Pokegear_DummyFunction
 	ld b, SCGB_POKEGEAR_PALS
 	call GetSGBLayout
 	call SetPalettes
@@ -2316,7 +2317,7 @@ HasVisitedSpawn:
 
 INCLUDE "data/maps/flypoints.asm"
 
-ret_91c8f:
+Pokegear_DummyFunction:
 	ret
 
 FlyMap:
@@ -2338,7 +2339,7 @@ FlyMap:
 ; The first 46 locations are part of Johto. The rest are in Kanto.
 	cp KANTO_LANDMARK
 	jr nc, .KantoFlyMap
-.JohtoFlyMap:
+; Johto fly map
 ; Note that .NoKanto should be modified in tandem with this branch
 	push af
 	ld a, JOHTO_FLYPOINT ; first Johto flypoint
@@ -2514,8 +2515,8 @@ Pokedex_GetArea:
 
 .copy_sprites
 	hlcoord 0, 0
-	ld de, wVirtualOAM
-	ld bc, wVirtualOAMEnd - wVirtualOAM
+	ld de, wShadowOAM
+	ld bc, wShadowOAMEnd - wShadowOAM
 	call CopyBytes
 	ret
 
@@ -2570,7 +2571,7 @@ Pokedex_GetArea:
 	ld e, a
 	farcall FindNest ; load nest landmarks into wTilemap[0,0]
 	decoord 0, 0
-	ld hl, wVirtualOAMSprite00
+	ld hl, wShadowOAMSprite00
 .nestloop
 	ld a, [de]
 	and a
@@ -2597,9 +2598,9 @@ Pokedex_GetArea:
 	jr .nestloop
 
 .done_nest
-	ld hl, wVirtualOAM
+	ld hl, wShadowOAM
 	decoord 0, 0
-	ld bc, wVirtualOAMEnd - wVirtualOAM
+	ld bc, wShadowOAMEnd - wShadowOAM
 	call CopyBytes
 	ret
 
@@ -2612,7 +2613,7 @@ Pokedex_GetArea:
 	ld c, e
 	ld b, d
 	ld de, .PlayerOAM
-	ld hl, wVirtualOAMSprite00
+	ld hl, wShadowOAMSprite00
 .ShowPlayerLoop:
 	ld a, [de]
 	cp $80
@@ -2641,8 +2642,8 @@ Pokedex_GetArea:
 	jr .ShowPlayerLoop
 
 .clear_oam
-	ld hl, wVirtualOAMSprite04
-	ld bc, wVirtualOAMEnd - wVirtualOAMSprite04
+	ld hl, wShadowOAMSprite04
+	ld bc, wShadowOAMEnd - wShadowOAMSprite04
 	xor a
 	call ByteFill
 	ret
@@ -2664,7 +2665,7 @@ Pokedex_GetArea:
 	jr z, .johto
 	cp KANTO_LANDMARK
 	jr c, .johto
-.kanto
+; kanto
 	ld a, [wTownMapCursorLandmark]
 	and a
 	jr z, .clear
@@ -2679,8 +2680,8 @@ Pokedex_GetArea:
 	ret
 
 .clear
-	ld hl, wVirtualOAM
-	ld bc, wVirtualOAMEnd - wVirtualOAM
+	ld hl, wShadowOAM
+	ld bc, wShadowOAMEnd - wShadowOAM
 	xor a
 	call ByteFill
 	scf
@@ -2806,7 +2807,7 @@ TownMapMon:
 	ld a, [wCurPartyMon]
 	ld hl, wPartySpecies
 	ld e, a
-	ld d, $0
+	ld d, 0
 	add hl, de
 	ld a, [hl]
 	ld [wTempIconSpecies], a
@@ -2834,7 +2835,7 @@ TownMapPlayerIcon:
 	ld c, 4 ; # tiles
 	call Request2bpp
 ; Walking icon
-	ld hl, $c0
+	ld hl, 12 tiles
 	add hl, de
 	ld d, h
 	ld e, l
