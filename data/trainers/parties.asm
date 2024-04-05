@@ -3284,7 +3284,7 @@ PokefanMGroup:
 	db -1 ; end
 
 	; POKEFANM (13)
-	db "冠@", TRAINERTYPE_ITEM
+	db "宏树@", TRAINERTYPE_ITEM
 	db 35, PHANPY,     BERRY
 	db -1 ; end
 
@@ -3312,17 +3312,17 @@ KimonoGirlGroup:
 	db -1 ; end
 
 	; KIMONO_GIRL (4)
-	db "玉绪@", TRAINERTYPE_NORMAL
+	db "小玉@", TRAINERTYPE_NORMAL
 	db 17, UMBREON
 	db -1 ; end
 
 	; KIMONO_GIRL (5)
-	db "桃桃@", TRAINERTYPE_NORMAL
+	db "小桃@", TRAINERTYPE_NORMAL
 	db 17, VAPOREON
 	db -1 ; end
 
 	; KIMONO_GIRL (6)
-	db "五月@", TRAINERTYPE_NORMAL
+	db "小娟@", TRAINERTYPE_NORMAL
 	db 17, JOLTEON
 	db -1 ; end
 

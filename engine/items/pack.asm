@@ -320,7 +320,7 @@ MenuHeader_UsableKeyItem:
 	db "使用@"
 	db "携带@"
 	db "丢弃@"
-	db "快捷@"
+	db "登录@"
 	db "放弃@"
 
 Jumptable_UseGiveTossRegisterQuit:
@@ -376,7 +376,7 @@ MenuHeader_UnusableKeyItem:
 	db STATICMENU_CURSOR ; | STATICMENU_NO_TOP_SPACING ; flags
 	db 3 ; items
 	db "使用@"
-	db "快捷@"
+	db "登录@"
 	db "放弃@"
 
 Jumptable_UseRegisterQuit:
@@ -395,7 +395,7 @@ MenuHeader_HoldableKeyItem:
 	db 4 ; items
 	db "携带@"
 	db "丢弃@"
-	db "快捷@"
+	db "登录@"
 	db "放弃@"
 
 Jumptable_GiveTossRegisterQuit:
