@@ -68,7 +68,7 @@ _UnownPrinter:
 
 	ld b, SCGB_TRAINER_OR_MON_FRONTPIC_PALS
 	call GetSGBLayout
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 
 .joy_loop
 	call JoyTextDelay
@@ -80,7 +80,7 @@ _UnownPrinter:
 	ldh a, [hJoyPressed]
 	vc_patch Forbid_printing_Unown
 if DEF(_CRYSTAL11_VC)
-	and 0
+	and NO_INPUT
 else
 	and A_BUTTON
 endc

@@ -425,8 +425,8 @@ TrainerHouse:
 	jp CloseSRAM
 
 SetGSBallEvent:
-	ld a, BANK(sMobileEventIndex)
+	ld a, BANK(sGSBallFlag)
 	call OpenSRAM
-	ld a, MOBILE_EVENT_OBJECT_GS_BALL
-	ld [sMobileEventIndex], a
+	ld a, GS_BALL_AVAILABLE
+	ld [sGSBallFlag], a
 	jp CloseSRAM

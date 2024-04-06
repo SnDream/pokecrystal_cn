@@ -769,7 +769,7 @@ CGBCopyBattleObjectPals: ; unreferenced
 	dec c
 	jr nz, .loop
 	ld hl, BattleObjectPals
-	ld de, wOBPals1 palette 2
+	ld de, wOBPals1 palette PAL_BATTLE_OB_GRAY
 	ld bc, 2 palettes
 	ld a, BANK(wOBPals1)
 	call FarCopyWRAM
@@ -922,7 +922,7 @@ InitCGBPals::
 	ldh [rVBK], a
 	ld a, 1 << rBGPI_AUTO_INCREMENT
 	ldh [rBGPI], a
-	ld c, 4 * 8
+	ld c, 4 * TILE_WIDTH
 .bgpals_loop
 	ld a, LOW(PALRGB_WHITE)
 	ldh [rBGPD], a
@@ -932,7 +932,7 @@ InitCGBPals::
 	jr nz, .bgpals_loop
 	ld a, 1 << rOBPI_AUTO_INCREMENT
 	ldh [rOBPI], a
-	ld c, 4 * 8
+	ld c, 4 * TILE_WIDTH
 .obpals_loop
 	ld a, LOW(PALRGB_WHITE)
 	ldh [rOBPD], a
@@ -1019,8 +1019,8 @@ PushSGBBorder:
 	ret
 
 SGB_ClearVRAM:
-	ld hl, VRAM_Begin
-	ld bc, VRAM_End - VRAM_Begin
+	ld hl, STARTOF(VRAM)
+	ld bc, SIZEOF(VRAM)
 	xor a
 	call ByteFill
 	ret
@@ -1240,7 +1240,7 @@ LoadMapPals:
 
 	; Which palette group is based on whether we're outside or inside
 	ld a, [wEnvironment]
-	and 7
+	maskbits NUM_ENVIRONMENTS + 1
 	ld e, a
 	ld d, 0
 	ld hl, EnvironmentColorsPointers

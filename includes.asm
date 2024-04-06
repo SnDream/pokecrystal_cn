@@ -1,6 +1,6 @@
-INCLUDE "charmap_w.asm"
-INCLUDE "charmap_cn.asm"
-INCLUDE "charmap.asm"
+INCLUDE "macros/charmap_w.asm"
+INCLUDE "constants/charmap_cn.asm"
+INCLUDE "constants/charmap.asm"
 
 INCLUDE "macros/asserts.asm"
 INCLUDE "macros/const.asm"

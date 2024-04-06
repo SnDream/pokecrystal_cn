@@ -291,7 +291,7 @@ PrintPartyMonPage1:
 	call WaitBGMap
 	ld b, SCGB_STATS_SCREEN_HP_PALS
 	call GetSGBLayout
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	xor a ; DFS_VRAM_LIMIT_NOLIMIT
 	ld [wDFSVramLimit], a
 	ret
@@ -344,7 +344,7 @@ PrintPartyMonPage1:
 	; call WaitBGMap
 	; ld b, SCGB_STATS_SCREEN_HP_PALS
 	; call GetSGBLayout
-	; call SetPalettes
+	; call SetDefaultBGPAndOBP
 	; ret
 
 .PrintTempMonStats:

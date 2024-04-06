@@ -137,7 +137,7 @@ StatsScreen_WaitAnim:
 .finish
 	ld hl, wcf64
 	res 5, [hl]
-	farcall OpenAndCloseMenu_HDMATransferTilemapAndAttrmap
+	farcall _HDMATransferTilemapAndAttrmap_Menu
 	ret
 
 StatsScreen_SetJumptableIndex:
@@ -673,7 +673,7 @@ StatsScreen_LoadGFX:
 	ld hl, wStatsScreenFlags
 	bit 4, [hl]
 	jr nz, .place_frontpic
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	ret
 
 .place_frontpic
@@ -1017,16 +1017,16 @@ StatsScreen_PlaceFrontpic:
 
 .egg
 	call .AnimateEgg
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	ret
 
 .no_cry
 	call .AnimateMon
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	ret
 
 .cry
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	call .AnimateMon
 	ld a, [wCurPartySpecies]
 	call PlayMonCry2
@@ -1223,7 +1223,7 @@ endc
 	call PlaceString
 	ld hl, wStatsScreenFlags
 	set 5, [hl]
-	call SetPalettes ; pals
+	call SetDefaultBGPAndOBP
 	call DelayFrame
 	hlcoord 0, 1
 	call PrepMonFrontpic

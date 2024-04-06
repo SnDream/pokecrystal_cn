@@ -6,10 +6,10 @@
 	charmap_w "<PLAY_G>",  $14 ; "<PLAYER>くん" or "<PLAYER>ちゃん"; same as "<PLAYER>" in English
 	charmap_w "<MOBILE>",  $15
 	charmap_w "<CR>",      $16
-	charmap_w "¯",         $7f ; soft linebreak
+	charmap_w "<BSP>",     $1f ; breakable space (usually " ", or "<LF>" on the Town Map)
 	charmap_w "<LF>",      $22
 	charmap_w "<POKE>",    $24 ; "<PO><KE>"
-	charmap_w "%",         $25 ; soft linebreak in landmark names
+	charmap_w "<WBR>",     $25 ; word-break opportunity (usually skipped, or "<LF>" on the Town Map)
 	charmap_w "<RED>",     $38 ; wRedsName
 	charmap_w "<GREEN>",   $39 ; wGreensName
 	charmap_w "<ENEMY>",   $3f
@@ -191,7 +191,7 @@
 	charmap_w "▶",         $ed
 	charmap_w "▼",         $ee
 	charmap_w "♂",         $ef
-	charmap_w "¥",         $f0
+	charmap_w "¥",         $f0 ; Poké Dollar sign
 	charmap_w "×",         $f1
 	charmap_w "<DOT>",     $f2 ; decimal point; same as "." in English
 	charmap_w "/",         $f3

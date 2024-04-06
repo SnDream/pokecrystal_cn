@@ -58,7 +58,7 @@ ReadAnyMail:
 	ld a, [wCurMailIndex]
 	ld e, a
 	farcall LoadMailPalettes
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	xor a
 	ldh [hJoyPressed], a
 	call .loop
@@ -74,7 +74,7 @@ ReadAnyMail:
 	jr z, .loop
 	vc_patch Forbid_printing_mail
 if DEF(_CRYSTAL11_VC)
-	and 0
+	and NO_INPUT
 else
 	and START
 endc

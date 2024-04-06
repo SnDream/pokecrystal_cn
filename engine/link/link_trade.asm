@@ -27,7 +27,7 @@ TestMobileTradeBorderTilemap: ; unreferenced
 	farcall LoadMobileTradeBorderTilemap ; useless to farcall
 	ld b, SCGB_DIPLOMA
 	call GetSGBLayout
-	call SetPalettes
+	call SetDefaultBGPAndOBP
 	call WaitBGMap
 	call JoyWaitAorB
 	call Call_ExitMenu
@@ -157,15 +157,15 @@ LinkTextbox:
 	call _LinkTextbox
 	ret
 
-PrintWaitingTextAndSyncAndExchangeNybble:
+PlaceWaitingTextAndSyncAndExchangeNybble:
 	call LoadStandardMenuHeader
-	call .PrintWaitingText
+	call .PlaceWaitingText
 	farcall WaitLinkTransfer
 	call Call_ExitMenu
 	call WaitBGMap2
 	ret
 
-.PrintWaitingText:
+.PlaceWaitingText:
 	hlcoord 4, 9
 	ld b, 2
 	ld c, 9

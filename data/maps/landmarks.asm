@@ -131,7 +131,7 @@ WhirlIslandsName:    db_w "漩涡岛@"
 MtMortarName:        db_w "擂钵山@"
 DragonsDenName:      db_w "龙穴@"
 IcePathName:         db_w "冰雪小径@"
-NotApplicableName:   db_w "鬼屋@"      ; "オバケやしき" ("HAUNTED HOUSE") in Japanese
+NotApplicableName:   db_w "鬼屋@"; unreferenced ; "オバケやしき" ("HAUNTED HOUSE") in Japanese
 PalletTownName:      db_w "真新镇@"
 ViridianCityName:    db_w "常青市@"
 PewterCityName:      db_w "深灰市@"

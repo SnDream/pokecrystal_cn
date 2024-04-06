@@ -57,10 +57,10 @@ WhichComputeHPBarPixels:
 	jr nz, ComputeHPBarPixels
 
 ComputeShortHPBarPixels:
-; e = bc * (6 * 8) / de
+; e = bc * HP_BAR_SHORT_LENGTH_PX / de
 	ld a, b
 	or c
-	jr z, ComputeHPBarPixels_shortentry.zero
+	jr z, ComputeHPBarPixels.zero
 	push hl
 	xor a
 	ld [hMultiplicand + 0], a
@@ -68,14 +68,14 @@ ComputeShortHPBarPixels:
 	ld [hMultiplicand + 1], a
 	ld a, c
 	ld [hMultiplicand + 2], a
-	ld a, 4 * 8
-	jr ComputeHPBarPixels_shortentry
+	ld a, HP_BAR_SHORT_LENGTH_PX
+	jr ComputeHPBarPixels.shortentry
 
 ComputeHPBarPixels:
-; e = bc * (6 * 8) / de
+; e = bc * HP_BAR_LENGTH_PX / de
 	ld a, b
 	or c
-	jr z, ComputeHPBarPixels_shortentry.zero
+	jr z, .zero
 	push hl
 	xor a
 	ldh [hMultiplicand + 0], a
@@ -83,8 +83,8 @@ ComputeHPBarPixels:
 	ldh [hMultiplicand + 1], a
 	ld a, c
 	ldh [hMultiplicand + 2], a
-	ld a, 6 * 8
-ComputeHPBarPixels_shortentry:
+	ld a, HP_BAR_LENGTH_PX
+.shortentry:
 	ldh [hMultiplier], a
 	call Multiply
 	; We need de to be under 256 because hDivisor is only 1 byte.
