@@ -64,14 +64,14 @@ RandyScript:
 
 GiftSpearowMail:
 	db FLOWER_MAIL
-	db   "其实，黑暗洞穴还"
+	db_w "其实，黑暗洞穴还"
 	next "能通往其他道路。@"
 
 GiftSpearowName:
-	db "邮侠@"
+	db_w "邮侠@"
 
 GiftSpearowOTName:
-	db "裕司@"
+	db_w "裕司@"
 
 	db 0 ; unused
 

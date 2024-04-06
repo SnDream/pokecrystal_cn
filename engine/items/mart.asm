@@ -812,7 +812,7 @@ MartSellPriceText:
 	text_end
 
 UnusedDummyString: ; unreferenced
-	db "<！>ダミー<！>@" ; "!Dummy!"
+	db_w "<！>ダミー<！>@" ; "!Dummy!"
 
 MartWelcomeText:
 	text_far _MartWelcomeText
@@ -827,9 +827,9 @@ MenuHeader_BuySell:
 .MenuData
 	db STATICMENU_CURSOR ; strings
 	db 3 ; items
-	db "购买@"
-	db "出售@"
-	db "什么也不需要@"
+	db_w "购买@"
+	db_w "出售@"
+	db_w "什么也不需要@"
 
 MartThanksText:
 	text_far _MartThanksText

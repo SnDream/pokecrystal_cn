@@ -308,7 +308,7 @@ OakTimeWhatTimeIsItText:
 	text_end
 
 String_oclock:
-	db "时@"
+	db_w "时@"
 
 OakTimeWhatHoursText:
 	; What?@ @
@@ -328,7 +328,7 @@ OakTimeHowManyMinutesText:
 	text_end
 
 String_min:
-	db "分@"
+	db_w "分@"
 
 OakTimeWhoaMinutesText:
 	; Whoa!@ @
@@ -392,7 +392,7 @@ OakText_ResponseToSetTime:
 	text_end
 
 .colon
-	db ":@"
+	db_w ":@"
 
 TimeSetBackgroundGFX:
 INCBIN "gfx/new_game/timeset_bg.1bpp"
@@ -535,13 +535,13 @@ SetDayOfWeek:
 	dw .Saturday
 	dw .Sunday
 
-.Sunday:    db "星期日@"
-.Monday:    db "星期一@"
-.Tuesday:   db "星期二@"
-.Wednesday: db "星期三@"
-.Thursday:  db "星期四@"
-.Friday:    db "星期五@"
-.Saturday:  db "星期六@"
+.Sunday:    db_w "星期日@"
+.Monday:    db_w "星期一@"
+.Tuesday:   db_w "星期二@"
+.Wednesday: db_w "星期三@"
+.Thursday:  db_w "星期四@"
+.Friday:    db_w "星期五@"
+.Saturday:  db_w "星期六@"
 
 .OakTimeWhatDayIsItText:
 	text_far _OakTimeWhatDayIsItText
@@ -725,9 +725,9 @@ GetTimeOfDayString:
 	ld de, .day_string
 	ret
 
-.nite_string: db "夜晚@"
-.morn_string: db "清晨@"
-.day_string:  db "白天@"
+.nite_string: db_w "夜晚@"
+.morn_string: db_w "清晨@"
+.day_string:  db_w "白天@"
 
 AdjustHourForAMorPM:
 ; Convert the hour stored in c (0-23) to a 1-12 value

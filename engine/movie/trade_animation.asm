@@ -939,7 +939,7 @@ TrademonStats_MonTemplate:
 	ret
 
 .OTMonData:
-	db   "─── №."
+	db_w "─── №."
 	next ""
 	next "初训家/"
 	next "<ID>№.@"
@@ -960,7 +960,7 @@ TrademonStats_Egg:
 	ret
 
 .EggData:
-	db   "蛋"
+	db_w "蛋"
 	next "初训家/?????"
 	next "<ID>№.?????@"
 
@@ -1003,7 +1003,7 @@ TrademonStats_PrintOTName:
 	ret
 
 .Gender:
-	db " ", "♂", "♀"
+	db_w " ", "♂", "♀"
 
 TrademonStats_PrintTrademonID:
 	hlcoord 7, 6

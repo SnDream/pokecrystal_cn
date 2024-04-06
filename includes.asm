@@ -1,3 +1,5 @@
+INCLUDE "charmap_w.asm"
+INCLUDE "charmap_cn.asm"
 INCLUDE "charmap.asm"
 
 INCLUDE "macros/asserts.asm"

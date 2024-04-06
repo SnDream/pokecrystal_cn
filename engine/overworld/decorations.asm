@@ -60,14 +60,14 @@ _PlayerDecorationMenu:
 	dw DecoExitMenu,     .exit
 	assert_table_length NUM_DECO_CATEGORIES + 1
 
-.bed:      db "床@"
-.carpet:   db "绒毯@"
-.plant:    db "盆栽@"
-.poster:   db "海报@"
-.game:     db "游戏机@"
-.ornament: db "摆设@"
-.big_doll: db "大号布偶@"
-.exit:     db "结束@"
+.bed:      db_w "床@"
+.carpet:   db_w "绒毯@"
+.plant:    db_w "盆栽@"
+.poster:   db_w "海报@"
+.game:     db_w "游戏机@"
+.ornament: db_w "摆设@"
+.big_doll: db_w "大号布偶@"
+.exit:     db_w "结束@"
 
 .FindCategoriesWithOwnedDecos:
 	xor a
@@ -888,9 +888,9 @@ DecoSideMenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 3 ; items
-	db "右边@"
-	db "左边@"
-	db "放弃@"
+	db_w "右边@"
+	db_w "左边@"
+	db_w "放弃@"
 
 PutAwayTheDecoText:
 	text_far _PutAwayTheDecoText

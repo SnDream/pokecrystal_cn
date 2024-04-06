@@ -1,7 +1,7 @@
-	db "球@" ; species name
+	db_w "球@" ; species name
 	dbw 5, 104 ; height, weight
 
-	db   "调查过身体的成分之后，"
+	db_w "调查过身体的成分之后，"
 	next "发现它是由自然界中"
 	next "不存在的物质组成的。@"
 

@@ -84,11 +84,11 @@ DisplayCaughtContestMonStats:
 	ret
 
 .Health:
-	db "体力@"
+	db_w "体力@"
 .Stock:
-	db "持有宝可梦@"
+	db_w "持有宝可梦@"
 .This:
-	db "新捉宝可梦@"
+	db_w "新捉宝可梦@"
 
 ContestAskSwitchText:
 	text_far _ContestAskSwitchText

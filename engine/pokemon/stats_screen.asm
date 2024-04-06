@@ -233,7 +233,7 @@ if DEF(_DEBUG)
 	jp StatsScreen_JoypadAction
 
 .HatchSoonString:
-	db "▶即将孵化！　@"
+	db_w "▶即将孵化！　@"
 endc
 
 StatsScreen_LoadPage:
@@ -843,23 +843,23 @@ LoadPinkPage:
 	ret
 
 .Status_Type:
-	db   "状态/"
+	db_w "状态/"
 	next "属性/@"
 
 .OK_str:
-	db "正常@"
+	db_w "正常@"
 
 .ExpPointStr:
-	db " 经验值@" ; 后面又半个空格 应该不需要再给
+	db_w " 经验值@" ; 后面又半个空格 应该不需要再给
 
 .LevelUpStr:
-	db "还需@"
+	db_w "还需@"
 
 .ToStr:
-	db "到@"
+	db_w "到@"
 
 .PkrsStr:
-	db "宝可病毒@"
+	db_w "宝可病毒@"
 
 LoadGreenPage:
 	ld de, .Item
@@ -926,13 +926,13 @@ LoadGreenPage:
 	ret
 
 .Item:
-	db "持有@"
+	db_w "持有@"
 
 .ThreeDashes:
-	db "无@"
+	db_w "无@"
 
 .Move:
-	db " 可用招式 @"
+	db_w " 可用招式 @"
 
 LoadBluePage:
 	call .PlaceOTInfo
@@ -1001,10 +1001,10 @@ LoadBluePage:
 	dw wBufferMonOT
 
 IDNoString:
-	db "<ID>№/@"
+	db_w "<ID>№/@"
 
 OTString:
-	db "初训家/@"
+	db_w "初训家/@"
 
 StatsScreen_PlaceFrontpic:
 	ld hl, wTempMonDVs
@@ -1203,7 +1203,7 @@ if DEF(_DEBUG)
 	jr .placed_push_start
 
 .PushStartString:
-	db "▶按START键。@"
+	db_w "▶按START键。@"
 
 .placed_push_start
 endc
@@ -1240,28 +1240,28 @@ endc
 	ret
 
 EggString:
-	db "蛋@"
+	db_w "蛋@"
 
 FiveQMarkString:
-	db "?????@"
+	db_w "?????@"
 
 EggSoonString:
-	db   "能听到从里面传来"
+	db_w "能听到从里面传来"
 	next "的声音！好像快要"
 	next "孵出来了！@"
 
 EggCloseString:
-	db   "好像偶尔在动。"
+	db_w "好像偶尔在动。"
 	next "再过一点时间才会"
 	next "孵出来吧？@"
 
 EggMoreTimeString:
-	db   "会孵出来什么呢？"
+	db_w "会孵出来什么呢？"
 	next "好像还要过段时间"
 	next "才会孵出来。@"
 
 EggALotMoreTimeString:
-	db   "这只蛋孵出来"
+	db_w "这只蛋孵出来"
 	next "好像需要很长一段"
 	next "时间。@"
 

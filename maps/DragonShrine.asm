@@ -272,9 +272,9 @@ DragonShrineQuestion1_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
-	db "伙伴@"
-	db "部下@"
-	db "朋友@"
+	db_w "伙伴@"
+	db_w "部下@"
+	db_w "朋友@"
 
 DragonShrineQuestion2_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -285,9 +285,9 @@ DragonShrineQuestion2_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
-	db "策略@"
-	db "培养@"
-	db "诡计@"
+	db_w "策略@"
+	db_w "培养@"
+	db_w "诡计@"
 
 DragonShrineQuestion3_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -298,9 +298,9 @@ DragonShrineQuestion3_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
-	db "强大的@"
-	db "弱小的@"
-	db "任何人@"
+	db_w "强大的@"
+	db_w "弱小的@"
+	db_w "任何人@"
 
 DragonShrineQuestion4_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -311,9 +311,9 @@ DragonShrineQuestion4_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
-	db "爱@"
-	db "武力@"
-	db "知识@"
+	db_w "爱@"
+	db_w "武力@"
+	db_w "知识@"
 
 DragonShrineQuestion5_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -324,9 +324,9 @@ DragonShrineQuestion5_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR | STATICMENU_DISABLE_B ; flags
 	db 3 ; items
-	db "强大的@"
-	db "都重要@"
-	db "弱小的@"
+	db_w "强大的@"
+	db_w "都重要@"
+	db_w "弱小的@"
 
 DragonShrinePlayerWalkInMovement:
 	slow_step UP

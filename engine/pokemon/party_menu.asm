@@ -123,7 +123,7 @@ PlacePartyNicknames:
 	ret
 
 .CancelString:
-	db "取消@"
+	db_w "取消@"
 
 PlacePartyHPBar:
 	xor a
@@ -354,10 +354,10 @@ PlacePartyMonTMHMCompatibility:
 	ret
 
 .string_able
-	db "能学习@"
+	db_w "能学习@"
 
 .string_not_able
-	db "不能学@"
+	db_w "不能学@"
 
 PlacePartyMonEvoStoneCompatibility:
 	ld a, [wPartyCount]
@@ -436,9 +436,9 @@ PlacePartyMonEvoStoneCompatibility:
 	ret
 
 .string_able
-	db "能使用@"
+	db_w "能使用@"
 .string_not_able
-	db "不能使用@"
+	db_w "不能使用@"
 
 PlacePartyMonGender:
 	ld a, [wPartyCount]
@@ -480,13 +480,13 @@ PlacePartyMonGender:
 	ret
 
 .male
-	db "♂…雄性@"
+	db_w "♂…雄性@"
 
 .female
-	db "♀…雌性@"
+	db_w "♀…雌性@"
 
 .unknown
-	db " …未知@"
+	db_w " …未知@"
 
 PlacePartyMonMobileBattleSelection:
 	ld a, [wPartyCount]
@@ -557,13 +557,13 @@ PlacePartyMonMobileBattleSelection:
 	jr .loop2
 
 .String_Banme:
-	db "<　>ばんめ<　><　>@" ; Place
+	db_w "<　>ばんめ<　><　>@" ; Place
 .String_Sanka_Shinai:
-	db "さんかしない@" ; Cancel
+	db_w "さんかしない@" ; Cancel
 .String_Kettei_Yameru:
-	db "けってい<　><　>やめる@" ; Quit
+	db_w "けってい<　><　>やめる@" ; Quit
 .Strings_1_2_3:
-	db "<１>@", "<２>@", "<３>@" ; 1st, 2nd, 3rd
+	db_w "<１>@", "<２>@", "<３>@" ; 1st, 2nd, 3rd
 
 PartyMenuCheckEgg:
 	ld a, LOW(wPartySpecies)
@@ -759,31 +759,31 @@ PartyMenuStrings:
 	dw ToWhichPKMNString
 
 ChooseAMonString:
-	db "请选择宝可梦。@"
+	db_w "请选择宝可梦。@"
 
 UseOnWhichPKMNString:
-	db "要用于哪只宝可梦？@"
+	db_w "要用于哪只宝可梦？@"
 
 WhichPKMNString:
-	db "哪只宝可梦?@"
+	db_w "哪只宝可梦?@"
 
 TeachWhichPKMNString:
-	db "要让哪只宝可梦学习？@"
+	db_w "要让哪只宝可梦学习？@"
 
 MoveToWhereString:
-	db "要与哪只调整位置？@"
+	db_w "要与哪只调整位置？@"
 
 ChooseAFemalePKMNString: ; unreferenced
-	db "请选择雌性宝可梦。@"
+	db_w "请选择雌性宝可梦。@"
 
 ChooseAMalePKMNString: ; unreferenced
-	db "请选择雄性宝可梦。@"
+	db_w "请选择雄性宝可梦。@"
 
 ToWhichPKMNString:
-	db "要让哪只宝可梦携带？@"
+	db_w "要让哪只宝可梦携带？@"
 
 YouHaveNoPKMNString:
-	db "没有同行宝可梦！@"
+	db_w "没有同行宝可梦！@"
 
 PrintPartyMenuActionText:
 	ld a, [wCurPartyMon]

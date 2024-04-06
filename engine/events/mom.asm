@@ -638,16 +638,16 @@ MomJustDoWhatYouCanText:
 	text_end
 
 Mom_SavedString:
-	db "寄放金额@"
+	db_w "寄放金额@"
 
 Mon_WithdrawString:
-	db "取出金额@"
+	db_w "取出金额@"
 
 Mom_DepositString:
-	db "存入金额@"
+	db_w "存入金额@"
 
 Mom_HeldString:
-	db "手持金额@"
+	db_w "手持金额@"
 
 BankOfMom_MenuHeader:
 	db MENU_BACKUP_TILES ; flags
@@ -658,7 +658,7 @@ BankOfMom_MenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "取钱@"
-	db "存钱@"
-	db "变更@"
-	db "放弃@"
+	db_w "取钱@"
+	db_w "存钱@"
+	db_w "变更@"
+	db_w "放弃@"

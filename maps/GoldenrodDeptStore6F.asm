@@ -79,10 +79,10 @@ GoldenrodVendingMachine:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "美味之水   {d:GOLDENRODDEPTSTORE6F_FRESH_WATER_PRICE}¥@"
-	db "劲爽汽水   {d:GOLDENRODDEPTSTORE6F_SODA_POP_PRICE}¥@"
-	db "果汁牛奶   {d:GOLDENRODDEPTSTORE6F_LEMONADE_PRICE}¥@"
-	db "取消@"
+	db_w "美味之水   {d:GOLDENRODDEPTSTORE6F_FRESH_WATER_PRICE}¥@"
+	db_w "劲爽汽水   {d:GOLDENRODDEPTSTORE6F_SODA_POP_PRICE}¥@"
+	db_w "果汁牛奶   {d:GOLDENRODDEPTSTORE6F_LEMONADE_PRICE}¥@"
+	db_w "取消@"
 
 GoldenrodDeptStore6FLassScript:
 	jumptextfaceplayer GoldenrodDeptStore6FLassText

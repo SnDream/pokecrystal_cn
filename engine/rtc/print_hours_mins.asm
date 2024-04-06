@@ -66,7 +66,7 @@ PrintHoursMins:
 	ret
 
 .colon:
-	db ":@"
+	db_w ":@"
 
-String_AM: db "AM@"
-String_PM: db "PM@"
+String_AM: db_w "AM@"
+String_PM: db_w "PM@"

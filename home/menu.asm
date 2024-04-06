@@ -481,8 +481,8 @@ YesNoMenuHeader::
 .MenuData:
 	db STATICMENU_CURSOR ; | STATICMENU_NO_TOP_SPACING ; flags
 	db 2
-	db "是@"
-	db "否@"
+	db_w "是@"
+	db_w "否@"
 
 OffsetMenuHeader::
 	call _OffsetMenuHeader

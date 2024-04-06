@@ -3868,30 +3868,30 @@ MenuData_119cff: ; unreferenced
 	db 0 ; default option
 
 String_119d07:
-	db "   ▼@"
+	db_w "   ▼@"
 
 Strings_L10ToL100:
-	db "等级10 @"
-	db "等级20 @"
-	db "等级30 @"
-	db "等级40 @"
-	db "等级50 @"
-	db "等级60 @"
-	db "等级70 @"
-	db "等级80 @"
-	db "等级90 @"
-	db "等级100@"
-	db "取消   @"
+	db_w "等级10 @"
+	db_w "等级20 @"
+	db_w "等级30 @"
+	db_w "等级40 @"
+	db_w "等级50 @"
+	db_w "等级60 @"
+	db_w "等级70 @"
+	db_w "等级80 @"
+	db_w "等级90 @"
+	db_w "等级100@"
+	db_w "取消   @"
 
 Strings_Ll0ToL40:
-	db "等级10 @"
-	db "等级20 @"
-	db "等级30 @"
-	db "等级40 @"
-	db "取消   @"
+	db_w "等级10 @"
+	db_w "等级20 @"
+	db_w "等级30 @"
+	db_w "等级40 @"
+	db_w "取消   @"
 	
 BattleTowerCancelString: ; unreferenced
-	db "取消   @"
+	db_w "取消   @"
 
 BattleTower_LevelCheck:
 	ldh a, [rSVBK]
@@ -4628,10 +4628,10 @@ BattleTowerRoomMenu2_UpdateYesNoMenu:
 	ret
 
 String_11a2cf:
-	db "是@"
+	db_w "是@"
 
 String_11a2d3:
-	db "否@"
+	db_w "否@"
 
 MenuHeader_11a2d6: ; unreferenced
 	db MENU_BACKUP_TILES ; flags

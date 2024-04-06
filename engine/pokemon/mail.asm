@@ -567,7 +567,7 @@ MailboxPC:
 .SubMenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "阅读邮件@"
-	db "放入背包@"
-	db "携带邮件@"
-	db "取消@"
+	db_w "阅读邮件@"
+	db_w "放入背包@"
+	db_w "携带邮件@"
+	db_w "取消@"

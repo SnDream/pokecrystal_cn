@@ -118,7 +118,7 @@ NamingScreen:
 	ret
 
 .NicknameStrings:
-	db "的昵称？@"
+	db_w "的昵称？@"
 
 .Player:
 	farcall GetPlayerIcon
@@ -130,7 +130,7 @@ NamingScreen:
 	ret
 
 .PlayerNameString:
-	db "你的名字？@"
+	db_w "你的名字？@"
 
 .Rival:
 	ld de, RivalSpriteGFX
@@ -143,7 +143,7 @@ NamingScreen:
 	ret
 
 .RivalNameString:
-	db "劲敌的名字？@"
+	db_w "劲敌的名字？@"
 
 .Mom:
 	ld de, MomSpriteGFX
@@ -156,7 +156,7 @@ NamingScreen:
 	ret
 
 .MomNameString:
-	db "妈妈的名字？@"
+	db_w "妈妈的名字？@"
 
 .Box:
 	ld de, PokeBallSpriteGFX
@@ -180,7 +180,7 @@ NamingScreen:
 	ret
 
 .BoxNameString:
-	db "盒子的名字？@"
+	db_w "盒子的名字？@"
 
 .Tomodachi:
 	hlcoord 3, 2
@@ -190,7 +190,7 @@ NamingScreen:
 	ret
 
 .oTomodachi_no_namae_sutoringu
-	db "朋友的名字？@"
+	db_w "朋友的名字？@"
 
 .LoadSprite:
 	push de
@@ -1371,7 +1371,7 @@ INCBIN "gfx/naming_screen/mail.2bpp"
 	ret
 
 .PleaseWriteAMailString: ; unreferenced
-	db "メールを<　>かいてね@"
+	db_w "メールを<　>かいてね@"
 
 .InitCharset:
 	call WaitTop

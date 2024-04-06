@@ -1,7 +1,7 @@
-	db "螳螂@" ; species name
+	db_w "螳螂@" ; species name
 	dbw 15, 560 ; height, weight
 
-	db   "以迅捷的动作为傲。"
+	db_w "以迅捷的动作为傲。"
 	next "动作极快，对手还没反应"
 	next "过来就已经将其打倒了。@"
 

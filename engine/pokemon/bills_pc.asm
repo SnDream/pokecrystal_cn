@@ -262,10 +262,10 @@ BillsPCDepositMenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "寄放@"
-	db "查看状态@"
-	db "放生@"
-	db "取消@"
+	db_w "寄放@"
+	db_w "查看状态@"
+	db_w "放生@"
+	db_w "取消@"
 
 BillsPCClearThreeBoxes: ; unreferenced
 	hlcoord 0, 0
@@ -545,10 +545,10 @@ BillsPC_Withdraw:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "取出@"
-	db "查看状态@"
-	db "放生@"
-	db "取消@"
+	db_w "取出@"
+	db_w "查看状态@"
+	db_w "放生@"
+	db_w "取消@"
 
 _MovePKMNWithoutMail:
 	ld hl, wOptions
@@ -757,9 +757,9 @@ _MovePKMNWithoutMail:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 3 ; items
-	db "移动@"
-	db "查看状态@"
-	db "取消@"
+	db_w "移动@"
+	db_w "查看状态@"
+	db_w "取消@"
 
 .PrepInsertCursor:
 	xor a
@@ -1094,7 +1094,7 @@ BillsPC_BoxName:
 	ret
 
 .PartyPKMN:
-	db "同行宝可梦@"
+	db_w "同行宝可梦@"
 
 PCMonInfo:
 ; Display a monster's pic and
@@ -1341,7 +1341,7 @@ BillsPC_RefreshTextboxes:
 	ret
 
 .CancelString:
-	db "取消@"
+	db_w "取消@"
 
 .PlaceNickname:
 	ld a, [de]
@@ -1454,7 +1454,7 @@ BillsPC_RefreshTextboxes:
 	ret
 
 .Placeholder:
-	db "-----@"
+	db_w "-----@"
 
 MACRO copy_box_data
 .loop\@
@@ -2069,7 +2069,7 @@ MovePKMNWithoutMail_InsertMon:
 	ret
 
 .Saving_LeaveOn:
-	db "正在保存…请勿关闭电源！@"
+	db_w "正在保存…请勿关闭电源！@"
 
 .Jumptable:
 	dw .BoxToBox
@@ -2302,23 +2302,23 @@ BillsPC_InitGFX:
 PCSelectLZ: INCBIN "gfx/pc/pc.2bpp.lz"
 PCMailGFX:  INCBIN "gfx/pc/pc_mail.2bpp"
 
-PCString_ChooseaPKMN: db "请选择宝可梦。@"
-PCString_WhatsUp: db "怎么办？@"
-PCString_ReleasePKMN: db "真的要放生吗？@"
-PCString_MoveToWhere: db "请选择移动目标。@"
-PCString_ItsYourLastPKMN: db "同行的宝可梦要没有了！@"
-PCString_TheresNoRoom: db "这里已经放满了！@"
-PCString_NoMoreUsablePKMN: db "可战斗的宝可梦要没有了！@"
-PCString_RemoveMail: db "请取下邮件！@"
-PCString_ReleasedPKMN: db "把宝可梦放生到外面去了。@"
-PCString_Bye: db "再见@"
-PCString_Stored: db "寄放了@"
-PCString_Got: db "取出了@"
-PCString_Non: db "没有@" ; unreferenced
-PCString_BoxFull: db "盒子已经放满了！@"
-PCString_PartyFull: db "不能再带走更多了！@"
-PCString_NoReleasingEGGS: db "无法将蛋放生！@"
-PCString_Bang: db "！@"
+PCString_ChooseaPKMN: db_w "请选择宝可梦。@"
+PCString_WhatsUp: db_w "怎么办？@"
+PCString_ReleasePKMN: db_w "真的要放生吗？@"
+PCString_MoveToWhere: db_w "请选择移动目标。@"
+PCString_ItsYourLastPKMN: db_w "同行的宝可梦要没有了！@"
+PCString_TheresNoRoom: db_w "这里已经放满了！@"
+PCString_NoMoreUsablePKMN: db_w "可战斗的宝可梦要没有了！@"
+PCString_RemoveMail: db_w "请取下邮件！@"
+PCString_ReleasedPKMN: db_w "把宝可梦放生到外面去了。@"
+PCString_Bye: db_w "再见@"
+PCString_Stored: db_w "寄放了@"
+PCString_Got: db_w "取出了@"
+PCString_Non: db_w "没有@" ; unreferenced
+PCString_BoxFull: db_w "盒子已经放满了！@"
+PCString_PartyFull: db_w "不能再带走更多了！@"
+PCString_NoReleasingEGGS: db_w "无法将蛋放生！@"
+PCString_Bang: db_w "！@"
 
 _ChangeBox:
 	call LoadStandardMenuHeader
@@ -2415,10 +2415,10 @@ BillsPC_PrintBoxCountAndCapacity:
 	ret
 
 .Pokemon:
-	db "宝可梦@"
+	db_w "宝可梦@"
 
 .OutOf20:
-	db "/{d:MONS_PER_BOX}@" ; "/20@"
+	db_w "/{d:MONS_PER_BOX}@" ; "/20@"
 
 GetBoxCount:
 	ld a, [wCurBox]
@@ -2484,7 +2484,7 @@ BillsPC_PrintBoxName:
 	ret
 
 .Current:
-	db "当前盒子@"
+	db_w "当前盒子@"
 
 BillsPC_ChangeBoxSubmenu:
 	ld hl, .MenuHeader
@@ -2564,24 +2564,24 @@ BillsPC_ChangeBoxSubmenu:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "切换@"
-	db "起名@"
-	db "打印@"
-	db "放弃@"
+	db_w "切换@"
+	db_w "起名@"
+	db_w "打印@"
+	db_w "放弃@"
 
 BillsPC_PlaceChooseABoxString:
 	ld de, .ChooseABox
 	jr BillsPC_PlaceChangeBoxString
 
 .ChooseABox:
-	db "选择一个盒子。@"
+	db_w "选择一个盒子。@"
 
 BillsPC_PlaceWhatsUpString:
 	ld de, .WhatsUp
 	jr BillsPC_PlaceChangeBoxString
 
 .WhatsUp:
-	db "要怎么做？@"
+	db_w "要怎么做？@"
 
 BillsPC_PlaceEmptyBoxString_SFX:
 	ld de, .NoMonString
@@ -2594,7 +2594,7 @@ BillsPC_PlaceEmptyBoxString_SFX:
 	ret
 
 .NoMonString:
-	db "一只宝可梦也没有！@"
+	db_w "一只宝可梦也没有！@"
 
 BillsPC_PlaceChangeBoxString:
 	push de

@@ -77,7 +77,7 @@ _Option:
 	ret
 
 StringOptions:
-	db   "语速"
+	db_w "语速"
 	next "对战动画"
 	next "比赛规则"
 	next "声音"
@@ -158,9 +158,9 @@ Options_TextSpeed:
 	dw .Mid
 	dw .Slow
 
-.Fast: db "快　@"
-.Mid:  db "普通@"
-.Slow: db "慢　@"
+.Fast: db_w "快　@"
+.Mid:  db_w "普通@"
+.Slow: db_w "慢　@"
 
 GetTextSpeed:
 ; converts TEXT_DELAY_* value in a to OPT_TEXT_SPEED_* value in c,
@@ -222,8 +222,8 @@ Options_BattleScene:
 	and a
 	ret
 
-.On:  db "看　@"
-.Off: db "不看@"
+.On:  db_w "看　@"
+.Off: db_w "不看@"
 
 Options_BattleStyle:
 	ld hl, wOptions
@@ -260,8 +260,8 @@ Options_BattleStyle:
 	and a
 	ret
 
-.Shift: db "替换@"
-.Set:   db "连战@"
+.Shift: db_w "替换@"
+.Set:   db_w "连战@"
 
 Options_Sound:
 	ld hl, wOptions
@@ -305,8 +305,8 @@ Options_Sound:
 	and a
 	ret
 
-.Mono:   db "单声道@"
-.Stereo: db "立体声@"
+.Mono:   db_w "单声道@"
+.Stereo: db_w "立体声@"
 
 	const_def
 	const OPT_PRINT_LIGHTEST ; 0
@@ -367,11 +367,11 @@ Options_Print:
 	dw .Darker
 	dw .Darkest
 
-.Lightest: db "最淡@"
-.Lighter:  db "较淡@"
-.Normal:   db "正常@"
-.Darker:   db "较浓@"
-.Darkest:  db "最浓@"
+.Lightest: db_w "最淡@"
+.Lighter:  db_w "较淡@"
+.Normal:   db_w "正常@"
+.Darker:   db_w "较浓@"
+.Darkest:  db_w "最浓@"
 
 GetPrinterSetting:
 ; converts GBPRINTER_* value in a to OPT_PRINT_* value in c,
@@ -445,8 +445,8 @@ Options_MenuAccount:
 	and a
 	ret
 
-.Off: db "关闭@"
-.On:  db "开启@"
+.Off: db_w "关闭@"
+.On:  db_w "开启@"
 
 Options_Frame:
 	ld hl, wTextboxFrame

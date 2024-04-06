@@ -114,12 +114,12 @@ AcademyBlackboard:
 	dbw BANK(@), NULL
 
 .Text:
-	db "中毒@"
-	db "麻痹@"
-	db "睡眠@"
-	db "灼伤@"
-	db "冰冻@"
-	db "退出@"
+	db_w "中毒@"
+	db_w "麻痹@"
+	db_w "睡眠@"
+	db_w "灼伤@"
+	db_w "冰冻@"
+	db_w "退出@"
 
 AcademyNotebook:
 	opentext

@@ -152,10 +152,10 @@ GoldenrodGameCornerTMVendorMenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "招式学习器25 5500@"
-	db "招式学习器14 5500@"
-	db "招式学习器38 5500@"
-	db "取消@"
+	db_w "招式学习器25 5500@"
+	db_w "招式学习器14 5500@"
+	db_w "招式学习器38 5500@"
+	db_w "取消@"
 
 GoldenrodGameCornerPrizeMonVendorScript:
 	faceplayer
@@ -238,10 +238,10 @@ GoldenrodGameCornerPrizeMonVendorScript:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "凯西     100@"
-	db "卡拉卡拉  800@"
-	db "果然翁  1500@"
-	db "取消@"
+	db_w "凯西     100@"
+	db_w "卡拉卡拉  800@"
+	db_w "果然翁  1500@"
+	db_w "取消@"
 
 GoldenrodGameCornerPharmacistScript:
 	faceplayer

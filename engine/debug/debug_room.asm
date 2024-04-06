@@ -87,27 +87,27 @@ _DebugRoom:
 
 .Strings:
 ; entries correspond to DEBUGROOMMENUITEM_* constants
-	db "清除堆栈@"
-	db "清除窗口工作@"
-	db "获取宝可梦！@"
-	db "完成图鉴@"
-	db "时钟复位@"
-	db "所有家具@"
-	db "获取道具！@"
-	db "编辑实时时钟@"
-	db "下一页@"
-	db "设置GB ID@"
-	db "清除对战成绩@"
-	db "清除图鉴@"
-	db "清除时钟挂起@"
-	db "跳过对战@"
-	db "清除名人堂@"
-	db "ROM校验值@"
-	db "手机调试@"
-	db "重算校验值@"
-	db "清除内存标志@"
-	db "改变性别@"
-	db "对战错宝可梦@"
+	db_w "清除堆栈@"
+	db_w "清除窗口工作@"
+	db_w "获取宝可梦！@"
+	db_w "完成图鉴@"
+	db_w "时钟复位@"
+	db_w "所有家具@"
+	db_w "获取道具！@"
+	db_w "编辑实时时钟@"
+	db_w "下一页@"
+	db_w "设置GB ID@"
+	db_w "清除对战成绩@"
+	db_w "清除图鉴@"
+	db_w "清除时钟挂起@"
+	db_w "跳过对战@"
+	db_w "清除名人堂@"
+	db_w "ROM校验值@"
+	db_w "手机调试@"
+	db_w "重算校验值@"
+	db_w "清除内存标志@"
+	db_w "改变性别@"
+	db_w "对战错宝可梦@"
 
 .Jumptable:
 ; entries correspond to DEBUGROOMMENUITEM_* constants
@@ -245,7 +245,7 @@ DebugRoom_PrintStackBottomTop:
 	ret
 
 .SPString:
-	db "堆栈:@"
+	db_w "堆栈:@"
 
 DebugRoomMenu_WinWorkClr:
 	call YesNoBox
@@ -316,7 +316,7 @@ DebugRoom_PrintWindowStackBottomTop:
 	ret
 
 .WSPString:
-	db "窗指:@"
+	db_w "窗指:@"
 
 DebugRoomMenu_PokedexComp:
 	call YesNoBox
@@ -405,11 +405,11 @@ DebugRoom_PrintBattleSkip:
 	ret
 
 .BTLString:
-	db "对战:@"
+	db_w "对战:@"
 .DoString:
-	db "进行@"
+	db_w "进行@"
 .SkipString:
-	db "跳过@"
+	db_w "跳过@"
 
 DebugRoomMenu_ChangeSex:
 	ld a, BANK(sCrystalData)
@@ -439,7 +439,7 @@ DebugRoom_PrintGender:
 	ret
 
 .SexString:
-	db "性别:@"
+	db_w "性别:@"
 
 DebugRoomMenu_TelDebug:
 	ld a, BANK(sDebugTimeCyclesSinceLastCall)
@@ -475,13 +475,13 @@ DebugRoom_PrintTelDebug:
 	ret
 
 .TelString:
-	db "手机:@"
+	db_w "手机:@"
 .OffString:
-	db "关@"
+	db_w "关@"
 .BusyString:
-	db "较忙@"
+	db_w "较忙@"
 .HardString:
-	db "繁重@"
+	db_w "繁重@"
 
 DebugRoomMenu_RAMFlagClr:
 	call YesNoBox
@@ -507,7 +507,7 @@ DebugRoom_PrintRAMFlag:
 	ret
 
 .RamString:
-	db "内存:@"
+	db_w "内存:@"
 
 DebugRoomMenu_SumRecalc:
 	call YesNoBox
@@ -669,7 +669,7 @@ _CallNonNullPointer:
 	jp hl
 
 DebugRoom_PageString:
-	db " P  @"
+	db_w " P  @"
 
 DebugRoom_IncrementPagedValue:
 	call DebugRoom_GetCurPagedValuePointer
@@ -1105,8 +1105,8 @@ DebugRoomMenu_ItemGet_Page1Values:
 	paged_value wDebugRoomItemID,       1, NUM_POKEMON, MASTER_BALL, .ItemNameString, DebugRoom_PrintItemName, FALSE
 	paged_value wDebugRoomItemQuantity, 1, 99,          1,           .NumberString,   NULL,                    FALSE
 
-.ItemNameString: db "道具@"
-.NumberString:   db "数量@"
+.ItemNameString: db_w "道具@"
+.NumberString:   db_w "数量@"
 
 DebugRoomMenu_PokemonGet:
 	ld hl, .PagedValuesHeader
@@ -1220,10 +1220,10 @@ DebugRoom_SavePokemon:
 	ret
 
 .OTString:
-	db "调▶初训@"
+	db_w "调▶初训@"
 
 .NicknameString:
-	db "调▶宝可梦@"
+	db_w "调▶宝可梦@"
 
 .CompletedText:
 	text "完成！"
@@ -1327,39 +1327,39 @@ DebugRoomMenu_PokemonGet_Page4Values:
 	paged_value wDebugRoomMonBox,           1,   NUM_BOXES,   $0e,            DebugRoom_BoxStructStrings.SendBox,   NULL,                       FALSE
 
 DebugRoom_BoxStructStrings:
-.Pokemon:   db "宝可@"
-.Item:      db "道具@"
-.Move1:     db "招式1@"
-.Move2:     db "招式2@"
-.Move3:     db "招式3@"
-.Move4:     db "招式4@"
-.ID0:       db "ID[0]@"
-.ID1:       db "ID[1]@"
-.BaseExp0:  db "经验值[0]@" ; unreferenced
-.BaseExp1:  db "经验值[1]@" ; unreferenced
-.BaseExp2:  db "经验值[2]@" ; unreferenced
-.HPExp0:    db "HP基础点数[0]@"
-.HPExp1:    db "HP基础点数[1]@"
-.AttkExp0:  db "攻击基础点数[0]@"
-.AttkExp1:  db "攻击基础点数[1]@"
-.DfnsExp0:  db "防御基础点数[0]@"
-.DfnsExp1:  db "防御基础点数[1]@"
-.SpeedExp0: db "速度基础点数[0]@"
-.SpeedExp1: db "速度基础点数[1]@"
-.SpclExp0:  db "特殊基础点数[0]@"
-.SpclExp1:  db "特殊基础点数[1]@"
-.PowerRnd0: db "个体值[0]异色:<LF>         --1-1010<LF>个体值@"
-.PowerRnd1: db "个体值[1]<LF>         10101010<LF>招式点数@"
-.PP1:       db "招式点数1@"
-.PP2:       db "招式点数2@"
-.PP3:       db "招式点数3@"
-.PP4:       db "招式点数4@"
-.Friend:    db "亲密度@"
-.Pokerus:   db "宝可病毒@"
-.NoUse0:    db "未使用[0]@"
-.NoUse1:    db "未使用[1]@"
-.Level:     db "等级@"
-.SendBox:   db "送到盒子@"
+.Pokemon:   db_w "宝可@"
+.Item:      db_w "道具@"
+.Move1:     db_w "招式1@"
+.Move2:     db_w "招式2@"
+.Move3:     db_w "招式3@"
+.Move4:     db_w "招式4@"
+.ID0:       db_w "ID[0]@"
+.ID1:       db_w "ID[1]@"
+.BaseExp0:  db_w "经验值[0]@" ; unreferenced
+.BaseExp1:  db_w "经验值[1]@" ; unreferenced
+.BaseExp2:  db_w "经验值[2]@" ; unreferenced
+.HPExp0:    db_w "HP基础点数[0]@"
+.HPExp1:    db_w "HP基础点数[1]@"
+.AttkExp0:  db_w "攻击基础点数[0]@"
+.AttkExp1:  db_w "攻击基础点数[1]@"
+.DfnsExp0:  db_w "防御基础点数[0]@"
+.DfnsExp1:  db_w "防御基础点数[1]@"
+.SpeedExp0: db_w "速度基础点数[0]@"
+.SpeedExp1: db_w "速度基础点数[1]@"
+.SpclExp0:  db_w "特殊基础点数[0]@"
+.SpclExp1:  db_w "特殊基础点数[1]@"
+.PowerRnd0: db_w "个体值[0]异色:<LF>         --1-1010<LF>个体值@"
+.PowerRnd1: db_w "个体值[1]<LF>         10101010<LF>招式点数@"
+.PP1:       db_w "招式点数1@"
+.PP2:       db_w "招式点数2@"
+.PP3:       db_w "招式点数3@"
+.PP4:       db_w "招式点数4@"
+.Friend:    db_w "亲密度@"
+.Pokerus:   db_w "宝可病毒@"
+.NoUse0:    db_w "未使用[0]@"
+.NoUse1:    db_w "未使用[1]@"
+.Level:     db_w "等级@"
+.SendBox:   db_w "送到盒子@"
 
 DebugRoom_BoxAddresses:
 	table_width 3, DebugRoom_BoxAddresses
@@ -1423,7 +1423,7 @@ DebugRoomMenu_RTCEdit_UpdateClock:
 	ret
 
 DebugRoom_DayHTimeString:
-	db "日期<LF>     H<LF><LF>时间@"
+	db_w "日期<LF>     H<LF><LF>时间@"
 
 DebugRoom_GetClock:
 	ld a, SRAM_ENABLE
@@ -1469,13 +1469,13 @@ DebugRoomMenu_RTCEdit_Page1Values:
 	paged_value wDebugRoomRTCDay+0, $00, $ff,    0, .DayLString,   NULL, TRUE
 	paged_value wDebugRoomRTCDay+1, $00, $ff,    0, .DayHString,   NULL, TRUE
 
-.SecondString: db "秒@"
-.MinuteString: db "分@"
-.HourString:   db "时@"
-.DayLString:   db "日期低@"
-.DayHString:   db "日期高 位7:溢出<LF><LF>"
-               db "      位6:挂起<LF><LF>"
-               db "      位0:日最高位@"
+.SecondString: db_w "秒@"
+.MinuteString: db_w "分@"
+.HourString:   db_w "时@"
+.DayLString:   db_w "日期低@"
+.DayHString:   db_w "日期高 位7:溢出<LF><LF>"
+               db_w "      位6:挂起<LF><LF>"
+               db_w "      位0:日最高位@"
 
 DebugRoomMenu_HaltChkClr:
 	call YesNoBox
@@ -1516,13 +1516,13 @@ DebugRoom_PrintRTCHaltChk:
 	ret
 
 .RTCString:
-	db "时钟:@"
+	db_w "时钟:@"
 
 .OKString:
-	db "正常@"
+	db_w "正常@"
 
 .HaltString:
-	db "挂起@"
+	db_w "挂起@"
 
 DebugRoomMenu_GBIDSet:
 	ld hl, .PagedValuesHeader
@@ -1556,8 +1556,8 @@ DebugRoomMenu_GBIDSet_Page1Values:
 	paged_value wDebugRoomGBID+0, $00, $ff, $00, .GBID0String, NULL, TRUE
 	paged_value wDebugRoomGBID+1, $00, $ff, $00, .GBID1String, NULL, TRUE
 
-.GBID0String: db "GB ID [0]@"
-.GBID1String: db "GB ID [1]@"
+.GBID0String: db_w "GB ID [0]@"
+.GBID1String: db_w "GB ID [1]@"
 
 DebugRoomMenu_BtlRecClr:
 	call YesNoBox
@@ -1657,7 +1657,7 @@ DebugRoom_PrintROMChecksum: ; unreferenced
 	ret
 
 .SumString:
-	db "校验:@"
+	db_w "校验:@"
 
 DebugRoomMenu_ROMChecksum:
 	ld hl, .WaitText
@@ -1767,4 +1767,4 @@ PrintHexNumber:
 	ret
 
 .HexDigits:
-	db "0123456789ABCDEF"
+	db_w "0123456789ABCDEF"

@@ -132,7 +132,7 @@ AnimateHallOfFame:
 	ret
 
 .String_NewHallOfFamer:
-	db "恭喜登入名人堂！！@"
+	db_w "恭喜登入名人堂！！@"
 
 GetHallOfFameParty:
 	ld hl, wHallOfFamePokemonList
@@ -401,13 +401,13 @@ _HallOfFamePC:
 	ret
 
 .EmptyString:
-	db "登入名人堂@"
+	db_w "登入名人堂@"
 
 .HOFMaster:
-	db "第…几次来着?@"
+	db_w "第…几次来着?@"
 
 .TimeFamer:
-	db "第   次@"
+	db_w "第   次@"
 
 LoadHOFTeam:
 	ld a, [wJumptableIndex]
@@ -610,4 +610,4 @@ HOF_AnimatePlayerPic:
 	ret
 
 .PlayTime:
-	db "游戏时间@"
+	db_w "游戏时间@"

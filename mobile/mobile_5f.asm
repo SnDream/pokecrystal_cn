@@ -587,9 +587,9 @@ MenuHeader_ChallengeExplanationCancel:
 MenuData_ChallengeExplanationCancel:
 	db STATICMENU_CURSOR | STATICMENU_WRAP ; flags
 	db 3
-	db "挑战@"
-	db "听说明@"
-	db "取消@"
+	db_w "挑战@"
+	db_w "听说明@"
+	db_w "取消@"
 
 Function17d2b6:
 	call Function17d2c0

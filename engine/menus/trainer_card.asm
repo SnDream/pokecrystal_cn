@@ -260,7 +260,7 @@ TrainerCard_PrintTopHalfOfCard:
 	ret
 
 .Name_Money:
-	db   "名字/"
+	db_w "名字/"
 	next ""
 	next "零花钱@"
 
@@ -311,19 +311,19 @@ TrainerCard_Page1_PrintDexCaught_GameTime:
 	ret
 
 ; .Dex_PlayTime:
-; 	db   "#DEX"
+; 	db_w "#DEX"
 ; 	next "PLAY TIME@"
 
 .Dex
-    db "图鉴@"
+    db_w "图鉴@"
 .PlayTime:
-	db "游戏时间@"
+	db_w "游戏时间@"
 
 .Unused: ; unreferenced
-	db "只@"
+	db_w "只@"
 
 .Badges:
-	db "徽章▶@"
+	db_w "徽章▶@"
 
 .StatusTilemap:
 	db $29, $2a, $2b, $2c, $2d, -1

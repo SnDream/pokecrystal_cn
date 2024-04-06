@@ -1783,9 +1783,9 @@ Slots_AskBet:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 3 ; items
-	db "3枚@"
-	db "2枚@"
-	db "1枚@"
+	db_w "3枚@"
+	db_w "2枚@"
+	db_w "1枚@"
 
 Slots_AskPlayAgain:
 	ld hl, wCoins

@@ -90,7 +90,7 @@ CherrygroveCityGuideGent:
 	end
 
 .mapcardname
-	db "地图卡@"
+	db_w "地图卡@"
 
 .No:
 	writetext GuideGentNoText

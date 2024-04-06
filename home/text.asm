@@ -507,23 +507,23 @@ PlaceCommandCharacter::
 	pop de
 	jp NextChar
 
-TMCharText::      db "TM@"
-TrainerCharText:: db "训练家@"
-PCCharText::      db "PC@"
-RocketCharText::  db "ROCKET@"
-PlacePOKeText::   db "POKé@"
-KougekiText::     db "こうげき@"
-SixDotsCharText:: db "……@"
-EnemyText::       db "敌人的@"
-PlacePKMNText::   db "<PK><MN>@"
-PlacePOKEText::   db "<PO><KE>@"
-String_Space::    db " @"
+TMCharText::      db_w "TM@"
+TrainerCharText:: db_w "训练家@"
+PCCharText::      db_w "PC@"
+RocketCharText::  db_w "ROCKET@"
+PlacePOKeText::   db_w "POKé@"
+KougekiText::     db_w "こうげき@"
+SixDotsCharText:: db_w "……@"
+EnemyText::       db_w "敌人的@"
+PlacePKMNText::   db_w "<PK><MN>@"
+PlacePOKEText::   db_w "<PO><KE>@"
+String_Space::    db_w " @"
 ; These strings have been dummied out.
 PlaceJPRouteText::
 PlaceWatashiText::
-PlaceKokoWaText:: db "@"
-KunSuffixText::   db "@"
-ChanSuffixText::  db "@"
+PlaceKokoWaText:: db_w "@"
+KunSuffixText::   db_w "@"
+ChanSuffixText::  db_w "@"
 
 NextLineChar::
 	pop hl
@@ -646,7 +646,7 @@ ContText::
 	pop de
 	jp NextChar
 
-.cont: db "<_CONT>@"
+.cont: db_w "<_CONT>@"
 
 PlaceDexEnd::
 ; Ends a Pokédex entry in Gen 1.
@@ -1136,11 +1136,11 @@ TextCommand_DAY::
 	dw .Fri
 	dw .Satur
 
-.Sun:    db "日@"
-.Mon:    db "一@"
-.Tues:   db "二@"
-.Wednes: db "三@"
-.Thurs:  db "四@"
-.Fri:    db "五@"
-.Satur:  db "六@"
-.Day:    db "星期@"
+.Sun:    db_w "日@"
+.Mon:    db_w "一@"
+.Tues:   db_w "二@"
+.Wednes: db_w "三@"
+.Thurs:  db_w "四@"
+.Fri:    db_w "五@"
+.Satur:  db_w "六@"
+.Day:    db_w "星期@"

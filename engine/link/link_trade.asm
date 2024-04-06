@@ -124,7 +124,7 @@ InitTradeSpeciesList:
 	ret
 
 .CancelString:
-	db "取消@"
+	db_w "取消@"
 
 _LoadTradeScreenBorderGFX:
 	call __LoadTradeScreenBorderGFX
@@ -179,7 +179,7 @@ PrintWaitingTextAndSyncAndExchangeNybble:
 	jp DelayFrames
 
 .Waiting:
-	db "请稍等……！@"
+	db_w "请稍等……！@"
 
 LinkTradeMenu:
 	call .MenuAction

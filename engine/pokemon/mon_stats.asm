@@ -114,7 +114,7 @@ PrintTempMonStats:
 	ret
 
 .StatNames:
-	db   "攻击"
+	db_w "攻击"
 	next "防御"
 	next "特攻"
 	next "特防"
@@ -341,7 +341,7 @@ ListMovePP:
 	ret
 
 .String_ListMovePP:
-	db "--@"
+	db_w "--@"
 
 BrokenPlacePPUnits: ; unreferenced
 ; Probably would have these parameters:
@@ -483,7 +483,7 @@ PlaceLargeStatusString:
 	ret
 
 LargeFntString:
-	db "濒死@" ; "FNT@"
+	db_w "濒死@" ; "FNT@"
 
 PlaceLargeNonFaintStatus:
 	push de
@@ -513,11 +513,11 @@ PlaceLargeNonFaintStatus:
 	pop de
 	ret
 
-LargeSlpString: db "睡眠@" ; "SLP@"
-LargePsnString: db "中毒@" ; "PSN@"
-LargeBrnString: db "烧伤@" ; "BRN@"
-LargeFrzString: db "冰冻@" ; "FRZ@"
-LargeParString: db "麻痹@" ; "PAR@"
+LargeSlpString: db_w "睡眠@" ; "SLP@"
+LargePsnString: db_w "中毒@" ; "PSN@"
+LargeBrnString: db_w "烧伤@" ; "BRN@"
+LargeFrzString: db_w "冰冻@" ; "FRZ@"
+LargeParString: db_w "麻痹@" ; "PAR@"
 
 ListMoves:
 ; List moves at hl, spaced every [wListMovesLineSpacing] tiles.
@@ -578,4 +578,4 @@ ListMoves:
 	ret
 
 .string_nonmove
-	db "-@"
+	db_w "-@"

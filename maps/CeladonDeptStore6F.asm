@@ -90,10 +90,10 @@ CeladonDeptStore6FVendingMachine:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "美味之水   {d:CELADONDEPTSTORE6F_FRESH_WATER_PRICE}¥@"
-	db "劲爽汽水   {d:CELADONDEPTSTORE6F_SODA_POP_PRICE}¥@"
-	db "果汁牛奶   {d:CELADONDEPTSTORE6F_LEMONADE_PRICE}¥@"
-	db "取消@"
+	db_w "美味之水   {d:CELADONDEPTSTORE6F_FRESH_WATER_PRICE}¥@"
+	db_w "劲爽汽水   {d:CELADONDEPTSTORE6F_SODA_POP_PRICE}¥@"
+	db_w "果汁牛奶   {d:CELADONDEPTSTORE6F_LEMONADE_PRICE}¥@"
+	db_w "取消@"
 
 CeladonDeptStore6FDirectory:
 	jumptext CeladonDeptStore6FDirectoryText

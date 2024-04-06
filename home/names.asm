@@ -244,14 +244,14 @@ GetTMHMName::
 	ret
 
 .TMText:
-	db "招式学习器"
+	db_w "招式学习器"
 .TMTextEnd:
-	db "@"
+	db_w "@"
 
 .HMText:
-	db "秘传学习器"
+	db_w "秘传学习器"
 .HMTextEnd:
-	db "@"
+	db_w "@"
 
 INCLUDE "home/hm_moves.asm"
 

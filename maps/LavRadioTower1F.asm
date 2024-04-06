@@ -48,7 +48,7 @@ LavRadioTower1FGentlemanScript:
 	end
 
 .expncardname
-	db "扩展卡@"
+	db_w "扩展卡@"
 
 LavRadioTower1FSuperNerd2Script:
 	faceplayer

@@ -240,7 +240,7 @@ RestartClock:
 	ret
 
 JPHourString: ; unreferenced
-	db "じ@" ; HR
+	db_w "じ@" ; HR
 
 JPMinuteString: ; unreferenced
-	db "ふん@" ; MIN
+	db_w "ふん@" ; MIN

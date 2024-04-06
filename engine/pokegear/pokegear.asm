@@ -321,7 +321,7 @@ InitPokegearTilemap:
 	ret
 
 .switch
-	db "  切换 ▶@"
+	db_w "  切换 ▶@"
 
 .Map:
 	ld a, [wPokegearMapPlayerIconLandmark]
@@ -546,8 +546,8 @@ Pokegear_UpdateClock:
 	call PlaceHLTextAtBC
 	ret
 
-	db "ごぜん@"
-	db "ごご@"
+	db_w "ごぜん@"
+	db_w "ごご@"
 
 .GearTodayText:
 	text_far _GearTodayText
@@ -1277,10 +1277,10 @@ PokegearPhoneContactSubmenu:
 .CallDeleteCancelStrings:
 	dwcoord 14, 6
 	db 3
-	db   "呼叫"
+	db_w "呼叫"
 	next "删除"
 	next "取消"
-	db   "@"
+	db_w "@"
 
 .CallDeleteCancelJumptable:
 	dw .Call
@@ -1290,9 +1290,9 @@ PokegearPhoneContactSubmenu:
 .CallCancelStrings:
 	dwcoord 14, 8
 	db 2
-	db   "呼叫"
+	db_w "呼叫"
 	next "取消"
-	db   "@"
+	db_w "@"
 
 .CallCancelJumptable:
 	dw .Call
@@ -1639,8 +1639,8 @@ LoadStation_BuenasPassword:
 	ld de, BuenasPasswordName
 	ret
 
-BuenasPasswordName:    db "葵妍的密语@"
-NotBuenasPasswordName: db "@"
+BuenasPasswordName:    db_w "葵妍的密语@"
+NotBuenasPasswordName: db_w "@"
 
 LoadStation_UnownRadio:
 	ld a, UNOWN_RADIO
@@ -1772,15 +1772,15 @@ NoRadioName:
 	call Textbox
 	ret
 
-OaksPKMNTalkName:     db "大木博士的宝可梦讲座@"
-PokedexShowName:      db "好好了解 宝可梦图鉴@"
-PokemonMusicName:     db "宝可梦音乐台@"
-LuckyChannelName:     db "幸运频道@"
-UnownStationName:     db "?????@"
+OaksPKMNTalkName:     db_w "大木博士的宝可梦讲座@"
+PokedexShowName:      db_w "好好了解 宝可梦图鉴@"
+PokemonMusicName:     db_w "宝可梦音乐台@"
+LuckyChannelName:     db_w "幸运频道@"
+UnownStationName:     db_w "?????@"
 
-PlacesAndPeopleName:  db "那座城，这些人@"
-LetsAllSingName:      db "大家一起来唱歌吧@"
-PokeFluteStationName: db "宝可梦之笛@"
+PlacesAndPeopleName:  db_w "那座城，这些人@"
+LetsAllSingName:      db_w "大家一起来唱歌吧@"
+PokeFluteStationName: db_w "宝可梦之笛@"
 
 _TownMap:
 	ld hl, wOptions
@@ -2018,15 +2018,17 @@ PlayRadio:
 
 .jump_return
 	ld hl, wRadioText
-	ld a, HIGH("《")
+	getchar_w "《"
+	ld a, HIGH(CHARMAP_W_CHAR)
 	ld [hli], a
-	ld a, LOW("《")
+	ld a, LOW(CHARMAP_W_CHAR)
 	ld [hli], a
 	call CopyName2
 	dec hl
-	ld a, HIGH("》")
+	getchar_w "》"
+	ld a, HIGH(CHARMAP_W_CHAR)
 	ld [hli], a
-	ld a, LOW("》")
+	ld a, LOW(CHARMAP_W_CHAR)
 	ld [hli], a
 	ld [hl], "@"
 
@@ -2250,7 +2252,7 @@ TownMapBubble:
 	ret
 
 .Where:
-	db "去哪？@"
+	db_w "去哪？@"
 
 .Name:
 ; We need the map location of the default flypoint
@@ -2564,7 +2566,7 @@ Pokedex_GetArea:
 	ret
 
 .String_SNest:
-	db "的分布@"
+	db_w "的分布@"
 
 .GetAndPlaceNest:
 	ld [wTownMapCursorLandmark], a

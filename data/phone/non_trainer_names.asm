@@ -9,9 +9,9 @@ NonTrainerCallerNames:
 	dw .buena
 	assert_table_length NUM_NONTRAINER_PHONECONTACTS + 1
 
-.none:     db "----------@"
-.mom:      db "妈妈@"
-.bill:     db "正辉@"
-.elm:      db "空木博士@"
-.bikeshop: db "自行车店@"
-.buena:    db "葵妍  电台主播@"
+.none:     db_w "----------@"
+.mom:      db_w "妈妈@"
+.bill:     db_w "正辉@"
+.elm:      db_w "空木博士@"
+.bikeshop: db_w "自行车店@"
+.buena:    db_w "葵妍  电台主播@"

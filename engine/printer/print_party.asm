@@ -74,11 +74,11 @@ PrintPage1:
 	ret
 
 .Height:
-	db "身高@"
+	db_w "身高@"
 .Weight:
-	db "体重@"
+	db_w "体重@"
 .PokemonStr
-	db "宝可梦@"
+	db_w "宝可梦@"
 
 PrintPage2:
 	farcall dfsClearCache
@@ -131,34 +131,34 @@ PrintPage2:
 	ret
 
 GBPrinterStrings: ; used only for BANK(GBPrinterStrings)
-GBPrinterString_Null: db "@"
+GBPrinterString_Null: db_w "@"
 GBPrinterString_CheckingLink: next " 正在检查连接...@"
 GBPrinterString_Transmitting: next "  正在传输...@"
 GBPrinterString_Printing:     next "  正在打印...@"
 GBPrinterString_PrinterError1:
-	db   " 打印错误  错误1"
+	db_w " 打印错误  错误1"
 	next ""
 	next "请阅读袖珍打印机的"
 	next "说明书。"
-	db   "@"
+	db_w "@"
 GBPrinterString_PrinterError2:
-	db   " 打印错误  错误2"
+	db_w " 打印错误  错误2"
 	next ""
 	next "请阅读袖珍打印机的"
 	next "说明书。"
-	db   "@"
+	db_w "@"
 GBPrinterString_PrinterError3:
-	db   " 打印错误  错误3"
+	db_w " 打印错误  错误3"
 	next ""
 	next "请阅读袖珍打印机的"
 	next "说明书。"
-	db   "@"
+	db_w "@"
 GBPrinterString_PrinterError4:
-	db   " 打印错误  错误4"
+	db_w " 打印错误  错误4"
 	next ""
 	next "请阅读袖珍打印机的"
 	next "说明书。"
-	db   "@"
+	db_w "@"
 
 PrintPartyMonPage1:
 	call ClearBGPalettes
@@ -428,24 +428,24 @@ PlaceGenderAndShininess:
 	ret
 
 PrintParty_OTString:
-	db "初训/@"
+	db_w "初训/@"
 
 PrintParty_MoveString:
-	db "名/@"
+	db_w "名/@"
 
 PrintParty_IDNoString:
-	db "<ID>№.@"
+	db_w "<ID>№.@"
 
 PrintParty_StatsString:
-	db   "攻击"
+	db_w "攻击"
 	next "防御"
 	next "特攻"
 	next "特防"
 	next "速度"
-	db   "@"
+	db_w "@"
 
 PrintParty_NoMoveString:
-	db "--------@"
+	db_w "--------@"
 
 GBPrinterHPIcon:
 INCBIN "gfx/printer/hp.1bpp"

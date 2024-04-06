@@ -112,11 +112,11 @@ DrawPokedexSearchResultsWindow:
 	ret
 
 .results
-	db "个结果！@"
+	db_w "个结果！@"
 
 ; .esults_D
 ; ; (SEARCH R)
-; 	db   "ESULTS"
+; 	db_w "ESULTS"
 ; 	next ""
 ; ; (### FOUN)
 ; 	next "D!@"

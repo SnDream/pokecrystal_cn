@@ -429,7 +429,7 @@ TMHM_DisplayPocketItems:
 	ret
 
 .HChar
-	db $c9, $50 ; "秘@"
+	db_w $c9, $50 ; "秘@"
 
 TMHMPocket_GetCurrentLineCoord:
 	hlcoord 7, 1
@@ -459,7 +459,7 @@ PlaceMoveNameAfterTMHMName: ; unreferenced
 	ret
 
 TMHM_CancelString:
-	db "取消@"
+	db_w "取消@"
 
 TMHM_GetCurrentPocketPosition:
 	ld hl, wTMsHMs

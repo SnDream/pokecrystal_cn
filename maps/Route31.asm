@@ -241,7 +241,7 @@ Route31MailRecipientScript:
 	end
 
 ReceivedSpearowMailText:
-	db   "其实，黑暗洞穴还"
+	db_w "其实，黑暗洞穴还"
 	next "能通往其他道路。@"
 
 Route31YoungsterScript:

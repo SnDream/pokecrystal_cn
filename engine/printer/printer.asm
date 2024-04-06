@@ -637,7 +637,7 @@ PlacePrinterStatusStringBorderless: ; unreferenced
 	ret
 
 String_PressBToCancel:
-	db "按B键中止@"
+	db_w "按B键中止@"
 
 PrinterStatusStringPointers:
 	dw GBPrinterString_Null ; @
@@ -688,7 +688,7 @@ PrintPCBox_Page1:
 	ret
 
 .String_PokemonList:
-	db "宝可梦列表@"
+	db_w "宝可梦列表@"
 
 PrintPCBox_Page2:
 	hlcoord 0, 0
@@ -1000,13 +1000,13 @@ Printer_PlaceEmptyBoxSlotString:
 	ret
 
 ; .EmptyBoxSlotString:
-; 	db "  ------@"
+; 	db_w "  ------@"
 
 .str2
-    db "/"
+    db_w "/"
 	; fallthrough
 .str1:
-	db "-----@"
+	db_w "-----@"
 
 Printer_MoveHalfPageTileToStaticArea:
 	ld hl, vTiles1

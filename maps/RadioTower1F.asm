@@ -158,7 +158,7 @@ RadioTower1FRadioCardWomanScript:
 	end
 
 .RadioCardText:
-	db "广播卡@"
+	db_w "广播卡@"
 
 .ReceiveItem:
 	jumpstd ReceiveItemScript

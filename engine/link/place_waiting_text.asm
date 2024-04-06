@@ -21,4 +21,4 @@ PlaceWaitingText::
 	jp DelayFrames
 
 .Waiting:
-	db "请稍等……！@"
+	db_w "请稍等……！@"

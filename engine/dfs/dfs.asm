@@ -1547,10 +1547,11 @@ dfsFirstCharRightAlign::
 	jr z, .singlechar
 .doublechar
 	inc hl
-	ld a, HIGH("　")
+	getchar_w "　"
+	ld a, HIGH(CHARMAP_W_CHAR)
 	ld [wDFSCombineCode], a
-if HIGH("　") != LOW("　")
-	ld a, LOW("　")
+if HIGH(CHARMAP_W_CHAR) != LOW(CHARMAP_W_CHAR)
+	ld a, LOW(CHARMAP_W_CHAR)
 endc
 	ld [wDFSCombineCode + 1], a
 	ldh a, [rSVBK]
@@ -1675,29 +1676,30 @@ FontPointer:
 ; 	jr .Broken
 
 ; .TestString1
-; 	db "测试文本@"
+; 	db_w "测试文本@"
 ; .TestString2
-; 	db "测试文", HIGH("本"), "@"
+;	getchar_w("本")
+; 	db_w "测试文", HIGH(CHARMAP_W_CHAR), "@"
 ; .TestString3
-; 	db "中Aa混Zz@"
+; 	db_w "中Aa混Zz@"
 ; .TestString4
-; 	db "中", $01, $FF, "@"
+; 	db_w "中", $01, $FF, "@"
 ; .TestString5
-; 	db "中", $00, "文@"
+; 	db_w "中", $00, "文@"
 ; .TestString6
-; 	db "中", $00, $01, "文@"
+; 	db_w "中", $00, $01, "文@"
 ; .TestString7
-; 	db "中", $01, $FD, "文@"
+; 	db_w "中", $01, $FD, "文@"
 ; .TestString8
-; 	db $01, $01, $01, $FC, $13, $01, $13, $FC
-; 	db $18, $01, $18, $FC, $28, $01, $28, $FC
-; 	db $2E, $01, $2E, $FC
-; 	db $60, $70, $FC, $FD, $FE, $FF
-; 	db "@"
+; 	db_w $01, $01, $01, $FC, $13, $01, $13, $FC
+; 	db_w $18, $01, $18, $FC, $28, $01, $28, $FC
+; 	db_w $2E, $01, $2E, $FC
+; 	db_w $60, $70, $FC, $FD, $FE, $FF
+; 	db_w "@"
 ; .TestString9
-; 	db "中文@@测试"
+; 	db_w "中文@@测试"
 ; .TestString10
-; 	db "这是A<CONT>控制符文本@"
+; 	db_w "这是A<CONT>控制符文本@"
 ; .TestString11
-; 	db "这是", $01, "<CONT>控制符@"
+; 	db_w "这是", $01, "<CONT>控制符@"
 ; .TestStringEnd

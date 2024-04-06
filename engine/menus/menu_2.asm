@@ -110,11 +110,11 @@ DisplayMoneyAndCoinBalance:
 	ret
 
 MoneyString:
-	db "零花钱      元@"
+	db_w "零花钱      元@"
 CoinString:
-	db "代币@"
+	db_w "代币@"
 ShowMoney_TerminatorString:
-	db  "枚@"
+	db_w "枚@"
 
 StartMenu_PrintSafariGameStatus: ; unreferenced
 	ld hl, wOptions
@@ -144,9 +144,9 @@ StartMenu_PrintSafariGameStatus: ; unreferenced
 	ret
 
 .slash_500
-	db "<／><５><０><０>@"
+	db_w "<／><５><０><０>@"
 .booru_ko
-	db "ボール<　><　><　>こ@"
+	db_w "ボール<　><　><　>こ@"
 
 StartMenu_DrawBugContestStatusBox:
 	hlcoord 0, 0
@@ -204,15 +204,15 @@ StartMenu_PrintBugContestStatus:
 	ret
 
 .BallsJPString: ; unreferenced
-	db "ボール<　><　><　>こ@"
+	db_w "ボール<　><　><　>こ@"
 .CaughtString:
-	db "捕获@"
+	db_w "捕获@"
 .BallsString:
-	db "剩余   球@"
+	db_w "剩余   球@"
 .NoneString:
-	db "无@"
+	db_w "无@"
 .LevelString:
-	db "等级@"; $6D,$6B,"@" ;":L"
+	db_w "等级@"; $6D,$6B,"@" ;":L"
 
 FindApricornsInBag:
 ; Checks the bag for Apricorns.

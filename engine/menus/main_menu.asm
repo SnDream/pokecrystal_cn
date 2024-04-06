@@ -65,14 +65,14 @@ MainMenu:
 
 .Strings:
 ; entries correspond to MAINMENUITEM_* constants
-	db "继续游戏@"
-	db "从头开始@"
-	db "重新设置@"
-	db "神秘礼物@"
-	db "手机@"
-	db "手机竞技场@"
+	db_w "继续游戏@"
+	db_w "从头开始@"
+	db_w "重新设置@"
+	db_w "神秘礼物@"
+	db_w "手机@"
+	db_w "手机竞技场@"
 if DEF(_DEBUG)
-	db "调试空间@"
+	db_w "调试空间@"
 endc
 
 .Jumptable:
@@ -323,9 +323,9 @@ MainMenu_PrintCurrentTimeAndDay:
 	ret
 
 .hourString:
-	db "时@"
+	db_w "时@"
 .minString: ; unreferenced
-	db "分@"
+	db_w "分@"
 
 .PrintTimeNotSet:
 	hlcoord 1, 16
@@ -334,7 +334,7 @@ MainMenu_PrintCurrentTimeAndDay:
 	ret
 
 .TimeNotSetString:
-	db "时钟的时间 不明@"
+	db_w "时钟的时间 不明@"
 
 .MainMenuTimeUnknownText: ; unreferenced
 	text_far _MainMenuTimeUnknownText
@@ -358,15 +358,15 @@ MainMenu_PrintCurrentTimeAndDay:
 	ret
 
 .Days:
-	db "日@"
-	db "一@"
-	db "二@"
-	db "三@"
-	db "四@"
-	db "五@"
-	db "六@"
+	db_w "日@"
+	db_w "一@"
+	db_w "二@"
+	db_w "三@"
+	db_w "四@"
+	db_w "五@"
+	db_w "六@"
 .Day:
-	db "星期@"
+	db_w "星期@"
 
 ClearTilemapEtc:
 	xor a

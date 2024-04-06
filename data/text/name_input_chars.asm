@@ -1,7 +1,7 @@
 ; see engine/menus/naming_screen.asm
 
 ChineseInput:
-	db   "ABCDE FGHIJ KLMNOP"
+	db_w "ABCDE FGHIJ KLMNOP"
 	next "QRSTU VWXYZ ", $F2, $F2, $F2, $F2, $F2, $F2
 	next $61
 	next $EE
@@ -9,7 +9,7 @@ ChineseInput:
 	;               S    Y    M               D    E    L               E    N    D
 
 EnglishInput:
-	db   "ABCDE FGHIJ KLMNOP"
+	db_w "ABCDE FGHIJ KLMNOP"
 	next "QRSTU VWXYZ       "
 	next $61
 	next $EE

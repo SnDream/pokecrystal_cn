@@ -177,7 +177,7 @@ GetCaughtLevel:
 	; ret
 
 ; .unknown_level
-	; db "???@"
+	; db_w "???@"
 
 GetCaughtTime:
 	ld a, [wSeerCaughtData]
@@ -202,9 +202,9 @@ GetCaughtTime:
 	ret
 
 .times
-	db "清晨@"
-	db "白天@"
-	db "夜晚@"
+	db_w "清晨@"
+	db_w "白天@"
+	db_w "夜晚@"
 
 UnknownCaughtData:
 	ld hl, .unknown
@@ -213,7 +213,7 @@ UnknownCaughtData:
 	ret
 
 .unknown
-	db "不明@"
+	db_w "不明@"
 
 GetCaughtLocation:
 	ld a, [wSeerCaughtGender]
@@ -271,9 +271,9 @@ GetCaughtOT:
 	ret
 
 .male
-	db "@"
+	db_w "@"
 .female
-	db "@"
+	db_w "@"
 
 PrintSeerText:
 	ld e, a

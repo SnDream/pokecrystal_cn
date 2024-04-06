@@ -166,11 +166,11 @@ endc
 	ret
 
 .String_PressAToLink_BToCancel:
-	db   "按A键"
+	db_w "按A键"
 	next "就会进行连接！"
 	next "按B键"
 	next "就会停止连接。"
-	db   "@"
+	db_w "@"
 
 .MysteryGiftCanceledText:
 	text_far _MysteryGiftCanceledText
@@ -1699,11 +1699,11 @@ endr
 	ret
 
 .String_PressAToLink_BToCancel_JP:
-	db   "エーボタン<WO>おすと"
+	db_w "エーボタン<WO>おすと"
 	next "つうしん<PKMN>おこなわれるよ<！>"
 	next "ビーボタン<WO>おすと"
 	next "つうしん<WO>ちゅうし<　>します"
-	db   "@"
+	db_w "@"
 
 .NameCardReceivedCardText:
 	text_far _NameCardReceivedCardText

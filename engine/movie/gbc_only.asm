@@ -129,7 +129,7 @@ DrawGBCOnlyGraphic:
 	ret
 
 GBCOnlyString: ; 4eb38
-	db   "此游戏卡为任天堂"
+	db_w "此游戏卡为任天堂"
 	next "彩色袖珍游戏机专用。"
 	next "请在任天堂彩色袖珍"
 	next "游戏机上进行游戏。@"

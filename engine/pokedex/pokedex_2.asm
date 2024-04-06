@@ -226,7 +226,7 @@ DisplayDexEntry:
 	; ret
 
 POKeString: ; unreferenced
-	db "宝可梦@"
+	db_w "宝可梦@"
 
 GetDexEntryPointer:
 ; return dex entry pointer b:de

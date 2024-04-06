@@ -290,6 +290,6 @@ BattleMonMenu:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 3 ; items
-	db "替换@"
-	db "查看能力@"
-	db "退出@"
+	db_w "替换@"
+	db_w "查看能力@"
+	db_w "退出@"

@@ -116,10 +116,10 @@ CeladonPrizeRoom_TMMenuHeader:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "招式学习器32 {d:CELADONGAMECORNERPRIZEROOM_TM32_COINS}@"
-	db "招式学习器29 {d:CELADONGAMECORNERPRIZEROOM_TM29_COINS}@"
-	db "招式学习器15 {d:CELADONGAMECORNERPRIZEROOM_TM15_COINS}@"
-	db "取消@"
+	db_w "招式学习器32 {d:CELADONGAMECORNERPRIZEROOM_TM32_COINS}@"
+	db_w "招式学习器29 {d:CELADONGAMECORNERPRIZEROOM_TM29_COINS}@"
+	db_w "招式学习器15 {d:CELADONGAMECORNERPRIZEROOM_TM15_COINS}@"
+	db_w "取消@"
 
 CeladonGameCornerPrizeRoomPokemonVendor:
 	faceplayer
@@ -202,10 +202,10 @@ CeladonGameCornerPrizeRoomPokemonVendor:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "皮卡丘   {d:CELADONGAMECORNERPRIZEROOM_PIKACHU_COINS}@"
-	db "多边兽   {d:CELADONGAMECORNERPRIZEROOM_PORYGON_COINS}@"
-	db "幼基拉斯  {d:CELADONGAMECORNERPRIZEROOM_LARVITAR_COINS}@"
-	db "取消@"
+	db_w "皮卡丘   {d:CELADONGAMECORNERPRIZEROOM_PIKACHU_COINS}@"
+	db_w "多边兽   {d:CELADONGAMECORNERPRIZEROOM_PORYGON_COINS}@"
+	db_w "幼基拉斯  {d:CELADONGAMECORNERPRIZEROOM_LARVITAR_COINS}@"
+	db_w "取消@"
 
 CeladonGameCornerPrizeRoomGentlemanText:
 	text "I wanted PORYGON,"

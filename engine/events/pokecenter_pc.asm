@@ -61,11 +61,11 @@ PokemonCenterPC:
 	dw HallOfFamePC, .String_HallOfFame
 	dw TurnOffPC,    .String_TurnOff
 
-.String_PlayersPC:  db "<PLAYER>的电脑@"
-.String_BillsPC:    db "正辉的电脑@"
-.String_OaksPC:     db "大木的电脑@"
-.String_HallOfFame: db "名人堂@"
-.String_TurnOff:    db "关机@"
+.String_PlayersPC:  db_w "<PLAYER>的电脑@"
+.String_BillsPC:    db_w "正辉的电脑@"
+.String_OaksPC:     db_w "大木的电脑@"
+.String_HallOfFame: db_w "名人堂@"
+.String_TurnOff:    db_w "关机@"
 
 .WhichPC:
 ; entries correspond to PCPC_* constants
@@ -281,13 +281,13 @@ PlayersPCMenuData:
 	dw PlayerLogOffMenu,       .LogOff
 	dw PlayerLogOffMenu,       .TurnOff
 
-.WithdrawItem: db "取出道具@"
-.DepositItem:  db "寄放道具@"
-.TossItem:     db "丢弃道具@"
-.MailBox:      db "邮箱@"
-.Decoration:   db "家具@"
-.TurnOff:      db "关机@"
-.LogOff:       db "退出@"
+.WithdrawItem: db_w "取出道具@"
+.DepositItem:  db_w "寄放道具@"
+.TossItem:     db_w "丢弃道具@"
+.MailBox:      db_w "邮箱@"
+.Decoration:   db_w "家具@"
+.TurnOff:      db_w "关机@"
+.LogOff:       db_w "退出@"
 
 .WhichPC:
 ; entries correspond to PLAYERSPC_* constants

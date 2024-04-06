@@ -461,11 +461,11 @@ MemoryGame_InitStrings:
 	ret
 
 .dummy_text
-	db "@"
+	db_w "@"
 .japstr1
-	db "とったもの@"
+	db_w "とったもの@"
 .japstr2
-	db "あと<　>かい@"
+	db_w "あと<　>かい@"
 
 MemoryGame_Card2Coord:
 	ld d, 0

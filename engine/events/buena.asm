@@ -226,7 +226,7 @@ PrintBlueCardBalance:
 	ret
 
 .Points_string:
-	db "点数@"
+	db_w "点数@"
 
 BlueCardBalanceMenuHeader:
 	db MENU_BACKUP_TILES ; flags

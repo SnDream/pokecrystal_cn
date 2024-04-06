@@ -191,49 +191,49 @@ StartMenu::
 	dw StartMenu_Pokegear, .PokegearString, .PokegearDesc
 	dw StartMenu_Quit,     .QuitString,     .QuitDesc
 
-.PokedexString:  db "图鉴@"
-.PartyString:    db "宝可梦@"
-.PackString:     db "背包@"
-.StatusString:   db "<PLAYER>@"
-.SaveString:     db "记录@"
-.OptionString:   db "设置@"
-.ExitString:     db "关闭@"
-.PokegearString: db "装置@"
-.QuitString:     db "中止@"
+.PokedexString:  db_w "图鉴@"
+.PartyString:    db_w "宝可梦@"
+.PackString:     db_w "背包@"
+.StatusString:   db_w "<PLAYER>@"
+.SaveString:     db_w "记录@"
+.OptionString:   db_w "设置@"
+.ExitString:     db_w "关闭@"
+.PokegearString: db_w "装置@"
+.QuitString:     db_w "中止@"
 
 .PokedexDesc:
-	db   "宝可梦的秘密"
+	db_w "宝可梦的秘密"
 	next "尽在其中@"
 
 .PartyDesc:
-	db   "同行宝可梦的"
+	db_w "同行宝可梦的"
 	next "状况一览@"
 
 .PackDesc:
-	db   "能收纳道具的"
+	db_w "能收纳道具的"
 	next "多口袋背包@"
 
 .PokegearDesc:
-	db   "训练家之旅的"
+	db_w "训练家之旅的"
 	next "实用工具@"
 
 .StatusDesc:
-	db   "你现在的"
+	db_w "你现在的"
 	next "状况一览@"
 
 .SaveDesc:
-	db   "在休息之前"
+	db_w "在休息之前"
 	next "先记录状态@"
 
 .OptionDesc:
-	db   "对规则等等"
+	db_w "对规则等等"
 	next "进行调整@"
 
 .ExitDesc:
-	db   "关闭本菜单@"
+	db_w "关闭本菜单@"
 
 .QuitDesc:
-	db   "离开"
+	db_w "离开"
 	next "并进行裁定@"
 
 .OpenMenu:

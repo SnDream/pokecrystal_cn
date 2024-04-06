@@ -1652,9 +1652,9 @@ HandleScreens:
 	jp CopyName2
 
 .Your:
-	db "我方@"
+	db_w "我方@"
 .Enemy:
-	db "敌人@"
+	db_w "敌人@"
 
 .LightScreenTick:
 	ld a, [de]
@@ -3063,7 +3063,7 @@ MonFaintedAnimation:
 	ret
 
 .Spaces:
-	db "       @"
+	db_w "       @"
 
 SlideBattlePicOut:
 	ldh [hMapObjectIndex], a
@@ -5670,7 +5670,7 @@ MoveSelectionScreen:
 	jp MoveSelectionScreen
 
 .empty_string
-	db "@"
+	db_w "@"
 
 .pressed_up
 	ld a, [wMenuCursorY]
@@ -5849,9 +5849,9 @@ MoveInfoBox:
 	ret
 
 .Disabled:
-	db "封住！@"
+	db_w "封住！@"
 .Type:
-	db "属性@"
+	db_w "属性@"
 
 .PrintPP:
 	hlcoord 14, 13
@@ -8569,11 +8569,11 @@ DisplayLinkBattleResult:
 	ret
 
 .YouWin:
-	db "你赢了@"
+	db_w "你赢了@"
 .YouLose:
-	db "你输了@"
+	db_w "你输了@"
 .Draw:
-	db " 平局@"
+	db_w " 平局@"
 
 .Mobile_InvalidBattle:
 	hlcoord 6, 8
@@ -8585,7 +8585,7 @@ DisplayLinkBattleResult:
 	ret
 
 .InvalidBattle:
-	db "不合法战斗@"
+	db_w "不合法战斗@"
 
 IsMobileBattle2:
 	ld a, [wLinkMode]
@@ -8754,18 +8754,18 @@ ReadAndPrintLinkBattleRecord:
 	ret
 
 ; .Scores:
-; 	db "   0    0    0@"
+; 	db_w "   0    0    0@"
 
 .Format:
-	db "----- ---- ---- ----@"
+	db_w "----- ---- ---- ----@"
 .Record:
-	db "<PLAYER>的对战成绩@"
+	db_w "<PLAYER>的对战成绩@"
 .Win:
-	db "胜@"
+	db_w "胜@"
 .Lose:
-	db "败@"
+	db_w "败@"
 .Draw:
-	db "平@"
+	db_w "平@"
 
 BattleEnd_HandleRoamMons:
 	ld a, [wBattleType]

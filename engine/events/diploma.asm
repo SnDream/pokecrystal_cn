@@ -45,18 +45,18 @@ PlaceDiplomaOnScreen:
 	ret
 
 .Player:
-	db "玩家@"
+	db_w "玩家@"
 
 .EmptyString:
-	db "@"
+	db_w "@"
 
 .Certification:
-	db   "恭喜您完成"
+	db_w "恭喜您完成"
 	next "新型宝可梦图鉴！"
 	next ""
 	next "特发此状，以资鼓励！"
 	next "      GAME FREAK"
-	db   "@"
+	db_w "@"
 
 PrintDiplomaPage2:
 	ld a, DFS_VRAM_LIMIT_VRAM0
@@ -88,8 +88,8 @@ PrintDiplomaPage2:
 	ld [wDFSVramLimit], a
 	ret
 
-.PlayTime: db "游戏时间@"
-.GameFreak: db "GAME FREAK@"
+.PlayTime: db_w "游戏时间@"
+.GameFreak: db_w "GAME FREAK@"
 
 DiplomaGFX:
 INCBIN "gfx/diploma/diploma.2bpp.lz"

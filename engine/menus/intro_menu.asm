@@ -30,16 +30,16 @@ PrintDayOfWeek:
 	ret
 
 .Days:
-	db "日@"
-	db "一@"
-	db "二@"
-	db "三@"
-	db "四@"
-	db "五@"
-	db "六@"
+	db_w "日@"
+	db_w "一@"
+	db_w "二@"
+	db_w "三@"
+	db_w "四@"
+	db_w "五@"
+	db_w "六@"
 
 .Day:
-	db "星期@"
+	db_w "星期@"
 
 NewGame_ClearTilemapEtc:
 	xor a
@@ -265,7 +265,7 @@ SetDefaultBoxNames:
 	ret
 
 .Box:
-	db "盒子@"
+	db_w "盒子@"
 
 InitializeMagikarpHouse:
 	ld hl, wBestMagikarpLengthFeet
@@ -278,7 +278,7 @@ InitializeMagikarpHouse:
 	ret
 
 .Ralph:
-	db "泰明@"
+	db_w "泰明@"
 
 InitializeNPCNames:
 	ld hl, .Rival
@@ -301,10 +301,10 @@ InitializeNPCNames:
 	call CopyBytes
 	ret
 
-.Rival:  db "???@"
-.Red:    db "赤红@"
-.Green:  db "青绿@"
-.Mom:    db "妈妈@"
+.Rival:  db_w "???@"
+.Red:    db_w "赤红@"
+.Green:  db_w "青绿@"
+.Mom:    db_w "妈妈@"
 
 InitializeWorld:
 	call ShrinkPlayer
@@ -539,10 +539,10 @@ Continue_LoadMenuHeader:
 .MenuData_Dex:
 	db 0 ; flags
 	db 4 ; items
-	db "主角@"
-	db "拥有徽章@"
-	db "宝可梦图鉴@"
-	db "游戏时间@"
+	db_w "主角@"
+	db_w "拥有徽章@"
+	db_w "宝可梦图鉴@"
+	db_w "游戏时间@"
 
 .MenuHeader_NoDex:
 	db MENU_BACKUP_TILES ; flags
@@ -553,10 +553,10 @@ Continue_LoadMenuHeader:
 .MenuData_NoDex:
 	db 0 ; flags
 	db 4 ; items
-	db "主角@"
-	db "拥有徽章@"
-	db " @"
-	db "游戏时间@"
+	db_w "主角@"
+	db_w "拥有徽章@"
+	db_w " @"
+	db_w "游戏时间@"
 
 Continue_DisplayBadgesDexPlayerName:
 	call MenuBoxCoord2Tile
@@ -589,7 +589,7 @@ Continue_DisplayBadgesDexPlayerName:
 	ret
 
 .Player:
-	db "<PLAYER>@"
+	db_w "<PLAYER>@"
 
 Continue_PrintGameTime:
 	decoord 8, 8, 0
@@ -605,7 +605,7 @@ Continue_UnknownGameTime:
 	ret
 
 .three_question_marks
-	db "不明@"
+	db_w "不明@"
 
 Continue_DisplayBadgeCount:
 	push hl
@@ -619,7 +619,7 @@ Continue_DisplayBadgeCount:
 	ld de, .numstr
 	jp PlaceString
 .numstr
-	db "枚@"
+	db_w "枚@"
 
 Continue_DisplayPokedexNumCaught:
 	ld a, [wStatusFlags]
@@ -640,7 +640,7 @@ endc
 	ld de, .numstr
 	jp PlaceString
 .numstr
-	db "只@"
+	db_w "只@"
 
 Continue_DisplayGameTime:
 	ld de, wGameTimeHours
@@ -805,9 +805,9 @@ NamePlayer:
 	ret
 
 .Chris:
-	db "克里斯@@@@@"
+	db_w "克里斯@@@@@"
 .Kris:
-	db "克丽丝@@@@@"
+	db_w "克丽丝@@@@@"
 
 GSShowPlayerNamingChoices: ; unreferenced
 	call LoadMenuHeader

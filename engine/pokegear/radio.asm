@@ -571,7 +571,7 @@ OaksPKMNTalk11:
 	jp PlaceRadioString
 
 .pokemon_string
-	db "宝可梦@"
+	db_w "宝可梦@"
 
 OaksPKMNTalk12:
 	ld hl, wRadioTextDelay
@@ -583,7 +583,7 @@ OaksPKMNTalk12:
 	jp PlaceRadioString
 
 .pokemon_channel_string
-	db "宝可梦频道@"
+	db_w "宝可梦频道@"
 
 OaksPKMNTalk13:
 	ld hl, wRadioTextDelay
@@ -595,7 +595,7 @@ OaksPKMNTalk13:
 	jp PlaceRadioString
 
 .terminator
-	db "@"
+	db_w "@"
 
 OaksPKMNTalk14:
 	ld hl, wRadioTextDelay
@@ -616,7 +616,7 @@ OaksPKMNTalk14:
 	ret
 
 .terminator
-	db "@"
+	db_w "@"
 
 PlaceRadioString:
 	ld [wCurRadioLine], a
@@ -709,17 +709,20 @@ PokedexShow2:
 	push hl
 	call CopyDexEntryPart1
 	dec hl
-	ld [hl] , HIGH("宝")
+	getchar_w "宝"
+	ld [hl] , HIGH(CHARMAP_W_CHAR)
 	inc hl
-	ld [hl] , LOW("宝")
+	ld [hl] , LOW(CHARMAP_W_CHAR)
 	inc hl
-	ld [hl] , HIGH("可")
+	getchar_w "可"
+	ld [hl] , HIGH(CHARMAP_W_CHAR)
 	inc hl
-	ld [hl] , LOW("可")
+	ld [hl] , LOW(CHARMAP_W_CHAR)
 	inc hl
-	ld [hl] , HIGH("梦")
+	getchar_w "梦"
+	ld [hl] , HIGH(CHARMAP_W_CHAR)
 	inc hl
-	ld [hl] , LOW("梦")
+	ld [hl] , LOW(CHARMAP_W_CHAR)
 	inc hl
 	ld [hl], "<DONE>"
 	ld hl, wPokedexShowPointerAddr
@@ -1754,7 +1757,7 @@ BuenasPasswordCheckTime:
 	ret
 
 BuenasPasswordChannelName:
-	db "葵妍的密语@"
+	db_w "葵妍的密语@"
 
 BuenaRadioText1:
 	text_far _BuenaRadioText1

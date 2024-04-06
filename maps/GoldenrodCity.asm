@@ -101,10 +101,10 @@ MoveTutorScript:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 4 ; items
-	db "喷射火焰@"
-	db "十万伏特@"
-	db "冰冻光束@"
-	db "取消@"
+	db_w "喷射火焰@"
+	db_w "十万伏特@"
+	db_w "冰冻光束@"
+	db_w "取消@"
 
 .Refused:
 	writetext GoldenrodCityMoveTutorAwwButTheyreAmazingText

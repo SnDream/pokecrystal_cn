@@ -1151,9 +1151,9 @@ Pokedex_DrawMainScreenBG:
 	ret
 
 String_SEEN:
-	db "发现@"
+	db_w "发现@"
 String_OWN:
-	db "捉到@"
+	db_w "捉到@"
 String_SELECT_OPTION:
 	db $3b, $47 ,$48, $49, $44, $45, $46 ,$3c; SELECT > OPTION
 	; fallthrough
@@ -1202,13 +1202,13 @@ Pokedex_DrawDexEntryScreenBG:
 .Number: ; unreferenced
 	db $5c, $5d, -1 ; No.
 .Height:
-	; db "HT  ?", $5e, "??", $5f, -1 ; HT  ?'??"
-	db "身高@"
+	; db_w "HT  ?", $5e, "??", $5f, -1 ; HT  ?'??"
+	db_w "身高@"
 .Height2:
 	db $6f, $6f, $6f, $5e, -1 ; ???m
 .Weight:
-	; db "WT   ???lb", -1
-	db "体重@"
+	; db_w "WT   ???lb", -1
+	db_w "体重@"
 .Weight2:
 	db $6f, $6f, $6f, $5f, $60, -1 ; ???kg
 .MenuItems:
@@ -1244,13 +1244,13 @@ Pokedex_DrawOptionScreenBG:
 	db $3b, $7f, $44, $45, $46, $7f, $3c, -1 ;设置
 
 .Modes:
-	db   "新型图鉴模式"
+	db_w "新型图鉴模式"
 	next "传统图鉴模式"
 	next "拼音排序模式"
-	db   "@"
+	db_w "@"
 
 .UnownMode:
-	db "未知图腾图鉴@"
+	db_w "未知图腾图鉴@"
 
 Pokedex_DrawSearchScreenBG:
 	call Pokedex_FillBackgroundColor2
@@ -1279,17 +1279,17 @@ Pokedex_DrawSearchScreenBG:
 	db $3b, $7f, $4a, $4b, $4c, $7f, $3c, -1 ;搜索
 
 .TypeLeftRightArrows:
-	db $3d, "     ", $3e, -1
+	db_w $3d, "     ", $3e, -1
 
 .Types:
-	db   "属性1"
+	db_w "属性1"
 	next "属性2"
-	db   "@"
+	db_w "@"
 
 .Menu:
-	db   "开始搜索!!"
+	db_w "开始搜索!!"
 	next "取消"
-	db   "@"
+	db_w "@"
 
 Pokedex_DrawSearchResultsScreenBG:
 	call Pokedex_FillBackgroundColor2
@@ -1330,9 +1330,9 @@ Pokedex_DrawSearchResultsScreenBG:
 	ret
 
 .BottomWindowText:
-	db "搜索@"
+	db_w "搜索@"
 .BottomTypeText:
-	db "属性@"
+	db_w "属性@"
 
 Pokedex_PlaceSearchResultsTypeStrings:
 	ld a, [wDexSearchMonType1]
@@ -1645,7 +1645,7 @@ Pokedex_PlaceDefaultStringIfNotSeen:
 	ret
 
 .NameNotSeen:
-	db "-----@"
+	db_w "-----@"
 
 Pokedex_DrawFootprint:
 	hlcoord 18, 1
@@ -1816,19 +1816,19 @@ Pokedex_DisplayModeDescription:
 	dw .UnownMode
 
 .NewMode:
-	db   "将宝可梦按照"
+	db_w "将宝可梦按照"
 	next "进化关系的基准表示。@"
 
 .OldMode:
-	db   "将宝可梦按照"
+	db_w "将宝可梦按照"
 	next "正式的编号顺序表示。@"
 
 .ABCMode:
-	db   "将宝可梦按照"
+	db_w "将宝可梦按照"
 	next "拼音的顺序表示。@"
 
 .UnownMode:
-	db   "将未知图腾按照"
+	db_w "将未知图腾按照"
 	next "捕捉的顺序记录。@"
 
 Pokedex_DisplayChangingModesMessage:
@@ -1851,7 +1851,7 @@ Pokedex_DisplayChangingModesMessage:
 	ret
 
 String_ChangingModesPleaseWait:
-	db   "正在切换模式!!@"
+	db_w "正在切换模式!!@"
 
 Pokedex_UpdateSearchMonType:
 	ld a, [wDexArrowCursorPosIndex]
@@ -2050,7 +2050,7 @@ Pokedex_DisplayTypeNotFoundMessage:
 	ret
 
 .TypeNotFound:
-	db   "未能找到所指定的"
+	db_w "未能找到所指定的"
 	next "属性。@"
 
 Pokedex_UpdateCursorOAM:
@@ -2657,13 +2657,13 @@ Pokedex_DFSCamouflage:
 	ld [wDFSVramLimit], a
 	ret
 DFSCamouflageText1:
-	db   "搜索"
+	db_w "搜索"
 	next "属性"
-	db   "@"
+	db_w "@"
 DFSCamouflageText2:
-	db   "发现"
+	db_w "发现"
 	next "捉到"
-	db   "@"
+	db_w "@"
 
 Pokedex_SetBGMapMode3:
 	ld a, $3

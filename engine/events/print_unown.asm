@@ -211,20 +211,20 @@ endc
 	ret
 
 AlphRuinsStampString:
-	db "阿露福纪念章@"
+	db_w "阿露福纪念章@"
 
 UnownDexDoWhatString:
-	db "做什么呢？@"
+	db_w "做什么呢？@"
 
 UnownDexMenuString:
-	db   UNOWNSTAMP_BOLD_A, "键▶打印"
+	db_w UNOWNSTAMP_BOLD_A, "键▶打印"
 	next UNOWNSTAMP_BOLD_B, "键▶取消"
 	next "←键▶上个"
 	next "→键▶下个"
-	db   "@"
+	db_w "@"
 
 UnownDexVacantString:
-	db "空白@"
+	db_w "空白@"
 
 UnownDexATile:
 INCBIN "gfx/printer/bold_a.1bpp"
