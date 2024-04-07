@@ -45,7 +45,7 @@ DEF CHARLEN_W    EQUS "charlen_w"
 ; [charmap_w Definitions]
 ; DEF     CHARMAP_W_{name}_MAX_LENGTH = $xx
 ; charmap {name}
-; charmap CHARMAP_W_{name}_PLANE_{0..n}
+; charmap CHARMAP_W_{name}_PLANE_{0..n+1}
 ; charmap CHARMAP_W_{name}_LENGTH
 
 ; Macro Private Definitions
@@ -90,19 +90,20 @@ MACRO newcharmap_w
 
 	pushc
 	if _NARG < 3
-		DEF _CHARMAP_W_J = 0
 		newcharmap CHARMAP_W_{CHARMAP_W_NAME}_LENGTH
+		for _CHARMAP_W_I, \1 + 1
+			newcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}
+		endr
 	else
 		DEF _CHARMAP_W_J = CHARMAP_W_\3_MAX_LENGTH
 		newcharmap CHARMAP_W_{CHARMAP_W_NAME}_LENGTH, CHARMAP_W_\3_LENGTH
+		for _CHARMAP_W_I, _CHARMAP_W_J
+			newcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}, CHARMAP_W_\3_PLANE_{d:_CHARMAP_W_I}
+		endr
+		for _CHARMAP_W_I, _CHARMAP_W_J, \1 + 1
+			newcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}, CHARMAP_W_\3_PLANE_{d:CHARMAP_W_\3_MAX_LENGTH}
+		endr
 	endc
-
-	for _CHARMAP_W_I, _CHARMAP_W_J
-		newcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}, CHARMAP_W_\3_PLANE_{d:_CHARMAP_W_I}
-	endr
-	for _CHARMAP_W_I, _CHARMAP_W_J, \1
-		newcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}
-	endr
 	popc
 ENDM
 
@@ -121,8 +122,6 @@ ENDM
 MACRO pushc_w
 	REDEF _CHARMAP_W_STACK_ENTRY_{d:_CHARMAP_W_STACK_P} EQUS "{CHARMAP_W_NAME}"
 	DEF _CHARMAP_W_STACK_P += 1
-	REDEF CHARMAP_W_NAME EQUS ""
-	DEF CHARMAP_W_MAX_LENGTH = 0
 	pushc
 ENDM
 
@@ -135,9 +134,7 @@ MACRO popc_w
 	endc
 	DEF _CHARMAP_W_STACK_P -= 1
 	REDEF CHARMAP_W_NAME EQUS "{_CHARMAP_W_STACK_ENTRY_{d:_CHARMAP_W_STACK_P}}"
-	if STRLEN("{CHARMAP_W_NAME}") > 0
-		DEF CHARMAP_W_MAX_LENGTH = CHARMAP_W_{CHARMAP_W_NAME}_MAX_LENGTH
-	endc
+	DEF CHARMAP_W_MAX_LENGTH = CHARMAP_W_{CHARMAP_W_NAME}_MAX_LENGTH
 	popc
 ENDM
 
@@ -169,7 +166,7 @@ MACRO charmap_w
 		DEF _CHARMAP_W_J = _CHARMAP_W_I + 2
 		charmap \1, \<{d:_CHARMAP_W_J}>
 	endr
-	for _CHARMAP_W_I, _NARG - 1, CHARMAP_W_MAX_LENGTH
+	for _CHARMAP_W_I, _NARG - 1, CHARMAP_W_MAX_LENGTH + 1
 		setcharmap CHARMAP_W_{CHARMAP_W_NAME}_PLANE_{d:_CHARMAP_W_I}
 		charmap \1, 0
 	endr
@@ -192,7 +189,7 @@ ENDM
 ; and "Text" will be forced to treat as an 8-bit value only.
 ;
 ; For cases where only the 8-bit values in charmap are used,
-; you can just use the native db.
+; you can just use the native db. (See CHARMAP_W_DB_COMPMODE)
 MACRO db_w
 	rept _NARG
 		pushc
