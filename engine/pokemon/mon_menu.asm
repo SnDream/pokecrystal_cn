@@ -578,8 +578,8 @@ MonMailAction:
 .MenuData:
 	db STATICMENU_CURSOR ; flags
 	db 3 ; items
-	db_w "阅读邮件@"
-	db_w "取下邮件@"
+	db_w "阅读信件@"
+	db_w "取下信件@"
 	db_w "取消@"
 
 .MailLoseMessageText:
