@@ -17,7 +17,7 @@ MonMenuOptionStrings:
 	li "持有物"
 	li "退出"
 	li "可用招式"
-	li "邮件"
+	li "信件"
 	li "错误!"
 	assert_list_length NUM_MONMENUVALUES
 

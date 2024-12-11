@@ -13,5 +13,5 @@ NonTrainerCallerNames:
 .mom:      db_w "妈妈@"
 .bill:     db_w "正辉@"
 .elm:      db_w "空木博士@"
-.bikeshop: db_w "自行车店@"
+.bikeshop: db_w "奇迹自行车店店长@"
 .buena:    db_w "葵妍  电台主播@"

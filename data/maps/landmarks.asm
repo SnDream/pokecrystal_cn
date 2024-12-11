@@ -128,7 +128,7 @@ NationalParkName:    db_w "自然公园@"
 TinTowerName:        db_w "铃铛塔@"
 LighthouseName:      db_w "浅葱灯塔@"
 WhirlIslandsName:    db_w "漩涡岛@"
-MtMortarName:        db_w "擂钵山@"
+MtMortarName:        db_w "雷钵山@"
 DragonsDenName:      db_w "龙穴@"
 IcePathName:         db_w "冰雪小径@"
 NotApplicableName:   db_w "鬼屋@"; unreferenced ; "オバケやしき" ("HAUNTED HOUSE") in Japanese

@@ -1773,7 +1773,7 @@ NoRadioName:
 	ret
 
 OaksPKMNTalkName:     db_w "大木博士的宝可梦讲座@"
-PokedexShowName:      db_w "好好了解 宝可梦图鉴@"
+PokedexShowName:      db_w "通俗易懂的宝可梦图鉴@"
 PokemonMusicName:     db_w "宝可梦音乐台@"
 LuckyChannelName:     db_w "幸运频道@"
 UnownStationName:     db_w "?????@"
